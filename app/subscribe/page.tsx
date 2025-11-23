@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -15,7 +15,7 @@ type CountryOption = 'Nigeria' | 'Ghana' | 'Kenya' | 'Other'
 
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'country'>
 
-export default function SubscribePage() {
+function SubscribeContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planSlug = searchParams.get('plan')
@@ -229,6 +229,18 @@ export default function SubscribePage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function SubscribePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">Loading...</div>
+      </div>
+    }>
+      <SubscribeContent />
+    </Suspense>
   )
 }
 

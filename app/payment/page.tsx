@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,7 +17,7 @@ type TransactionInsert = Database['public']['Tables']['transactions']['Insert']
 type TransactionUpdate = Database['public']['Tables']['transactions']['Update']
 
 // This is a placeholder - you'll need to integrate actual payment gateways
-export default function PaymentPage() {
+function PaymentContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const planId = searchParams.get('plan')
@@ -313,6 +313,18 @@ export default function PaymentPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">Loading...</div>
+      </div>
+    }>
+      <PaymentContent />
+    </Suspense>
   )
 }
 
