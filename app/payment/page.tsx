@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Plan, PlanPrice, Country } from '@/types'
 import { Database } from '@/types/database'
 import { toast } from 'sonner'
-import { notifySubscriptionEvent, notifyAdminNewSubscription } from '@/lib/notifications'
 
 type CountryOption = 'Nigeria' | 'Ghana' | 'Kenya' | 'Other'
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'country'>
@@ -120,10 +119,21 @@ function PaymentContent() {
       // 2. Redirect to payment page
       // 3. Handle webhook callback
 
-      // Simulate payment success (REMOVE IN PRODUCTION)
+      // TODO: Integrate actual payment gateway here
+      // For activation fees, keep status as 'pending' for admin approval
+      // For subscription payments, we'll handle them differently
+      if (paymentType === 'activation') {
+        // Activation fee payments stay as 'pending' until admin approves
+        // Don't update transaction status or subscription here
+        toast.success('Activation fee payment submitted! Awaiting admin approval.')
+        router.push('/dashboard')
+        return
+      }
+
+      // Simulate payment success for subscription payments (REMOVE IN PRODUCTION)
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      // Update transaction status
+      // Update transaction status for subscription payments
       if (transaction) {
         const updateData: TransactionUpdate = {
           status: 'completed',
@@ -180,13 +190,23 @@ function PaymentContent() {
               .eq('id', user!.id)
               .single()
             
-            await notifySubscriptionEvent(
-              user!.id,
-              plan.name,
-              'confirmed',
-              userData?.email,
-              userData?.full_name || undefined
-            )
+            // Call API to create notification
+            try {
+              await fetch('/api/notifications/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'subscription_event',
+                  userId: user!.id,
+                  planName: plan.name,
+                  userEmail: userData?.email,
+                  userName: userData?.full_name,
+                  event: 'confirmed',
+                }),
+              })
+            } catch (err) {
+              console.error('Failed to send notification:', err)
+            }
           }
         } else {
           // Create new subscription
@@ -215,68 +235,48 @@ function PaymentContent() {
 
           // Notify subscription confirmed if active
           if (!plan.requires_activation) {
-            await notifySubscriptionEvent(
-              user!.id,
-              plan.name,
-              'confirmed',
-              userData?.email,
-              userData?.full_name || undefined
-            )
+            // Call API to create notification
+            try {
+              await fetch('/api/notifications/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'subscription_event',
+                  userId: user!.id,
+                  planName: plan.name,
+                  userEmail: userData?.email,
+                  userName: userData?.full_name,
+                  event: 'confirmed',
+                }),
+              })
+            } catch (err) {
+              console.error('Failed to send notification:', err)
+            }
           }
 
           // Notify admin of new subscription
-          await notifyAdminNewSubscription(
-            user!.id,
-            plan.name,
-            userData?.email || user!.email!,
-            userData?.full_name || undefined
-          )
-        }
-      } else if (paymentType === 'activation') {
-        // Update subscription to active
-        const subResult = await supabase
-          .from('user_subscriptions')
-          .select('*')
-          .eq('user_id', user!.id)
-          .eq('plan_id', plan.id)
-          .maybeSingle()
-        
-        const subscription = subResult.data as any
-
-        if (subscription) {
-          const startDate = new Date()
-          const expiryDate = new Date()
-          expiryDate.setDate(expiryDate.getDate() + parseInt(duration || '7'))
-
-          const updateData: UserSubscriptionUpdate = {
-              activation_fee_paid: true,
-              plan_status: 'active',
-              start_date: startDate.toISOString(),
-              expiry_date: expiryDate.toISOString(),
-            updated_at: new Date().toISOString(),
+          try {
+            await fetch('/api/notifications/create', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'admin_new_subscription',
+                userId: user!.id,
+                planName: plan.name,
+                userEmail: userData?.email || user!.email!,
+                userName: userData?.full_name,
+              }),
+            })
+          } catch (err) {
+            console.error('Failed to send admin notification:', err)
           }
-          const result: any = await supabase
-            .from('user_subscriptions')
-            // @ts-expect-error - Supabase type inference issue
-            .update(updateData)
-            .eq('id', subscription.id)
-          const { error } = result
-          if (error) throw error
 
-          // Notify subscription confirmed
-          const { data: userData } = await supabase
-            .from('users')
-            .select('email, full_name')
-            .eq('id', user!.id)
-            .single()
-
-          await notifySubscriptionEvent(
-            user!.id,
-            plan.name,
-            'confirmed',
-            userData?.email,
-            userData?.full_name || undefined
-          )
+          // Check if activation fee is required and redirect to payment
+          if (plan.requires_activation && price.activation_fee) {
+            toast.success('Subscription payment successful! Please pay the activation fee to unlock predictions.')
+            router.push(`/subscribe?plan=${plan.slug}&step=activation`)
+            return
+          }
         }
       }
 

@@ -43,7 +43,18 @@ export function PredictionsList({ allPlans, subscriptions }: PredictionsListProp
   // Check if plan is unlocked (user has active subscription)
   const isPlanUnlocked = (planId: string): boolean => {
     const subscription = subscriptions.find((s) => s.plan_id === planId)
-    return subscription?.plan_status === 'active'
+    if (!subscription) return false
+    
+    // Must be active status
+    if (subscription.plan_status !== 'active') return false
+    
+    // For plans that require activation, also check if activation fee is paid
+    const plan = allPlans.find((p) => p.id === planId)
+    if (plan?.requires_activation && !subscription.activation_fee_paid) {
+      return false
+    }
+    
+    return true
   }
 
   // Fetch team logos for predictions using fixtures API (same as home page)

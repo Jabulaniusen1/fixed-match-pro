@@ -71,12 +71,16 @@ export function TransactionsManager({ transactions: initialTransactions, subscri
     try {
       const supabase = createClient()
 
+      // Check if this is an activation fee payment
+      const isActivationFee = selectedTransaction.payment_type === 'activation'
+
       // Log transaction details for debugging
       console.log('Transaction details:', {
         id: selectedTransaction.id,
         subscription_id: selectedTransaction.subscription_id,
         user_id: selectedTransaction.user_id,
         plan_id: selectedTransaction.plan_id,
+        payment_type: selectedTransaction.payment_type,
       })
 
       // Find the subscription related to this transaction by querying the database directly
@@ -152,59 +156,108 @@ export function TransactionsManager({ transactions: initialTransactions, subscri
         currentStatus: subscription.plan_status,
         userId: subscription.user_id,
         planId: subscription.plan_id,
+        isActivationFee,
       })
 
-      // Get duration from transaction metadata or default to 30 days
-      const metadata = selectedTransaction.metadata as any
-      const durationDays = metadata?.duration_days || 30
+      if (isActivationFee) {
+        // For activation fee payments, update transaction status and subscription
+        // Update transaction status to completed
+        const txUpdateData: TransactionUpdate = {
+          status: 'completed',
+          updated_at: new Date().toISOString(),
+        }
+        const txResult: any = await supabase
+          .from('transactions')
+          // @ts-expect-error - Supabase type inference issue
+          .update(txUpdateData)
+          .eq('id', selectedTransaction.id)
+        const { error: txError } = txResult
+        if (txError) throw txError
 
-      const startDate = new Date()
-      const expiryDate = new Date()
-      expiryDate.setDate(expiryDate.getDate() + durationDays)
+        // Get duration from subscription or default to 30 days
+        let durationDays = 30
+        if (subscription.expiry_date && subscription.start_date) {
+          const start = new Date(subscription.start_date)
+          const expiry = new Date(subscription.expiry_date)
+          durationDays = Math.ceil((expiry.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+        }
 
-      // Update subscription to active
-      const updateData: UserSubscriptionUpdate = {
-        subscription_fee_paid: true,
-        plan_status: 'active',
-        start_date: startDate.toISOString(),
-        expiry_date: expiryDate.toISOString(),
-        updated_at: new Date().toISOString(),
-      }
+        const startDate = subscription.start_date ? new Date(subscription.start_date) : new Date()
+        const expiryDate = subscription.expiry_date ? new Date(subscription.expiry_date) : new Date()
+        if (!subscription.expiry_date) {
+          expiryDate.setDate(expiryDate.getDate() + durationDays)
+        }
 
-      console.log('Update data:', updateData)
+        // Update subscription to active with activation fee paid
+        const updateData: UserSubscriptionUpdate = {
+          activation_fee_paid: true,
+          plan_status: 'active',
+          start_date: startDate.toISOString(),
+          expiry_date: expiryDate.toISOString(),
+          updated_at: new Date().toISOString(),
+        }
 
-      const result: any = await supabase
-        .from('user_subscriptions')
-        // @ts-expect-error - Supabase type inference issue
-        .update(updateData)
-        .eq('id', subscriptionId)
-        .select()
-      
-      const { data: updatedSub, error: subError } = result
-
-      if (subError) {
-        console.error('Error updating subscription:', subError)
-        console.error('Subscription ID used:', subscriptionId)
-        console.error('Update data:', updateData)
-        throw subError
-      }
-
-      console.log('Update result:', { updatedSub, rowCount: updatedSub?.length })
-
-      if (!updatedSub || updatedSub.length === 0) {
-        console.error('No rows updated. Checking if subscription exists...')
-        // Double-check if subscription exists
-        const verifyResult = await supabase
+        const result: any = await supabase
           .from('user_subscriptions')
-          .select('*')
+          // @ts-expect-error - Supabase type inference issue
+          .update(updateData)
           .eq('id', subscriptionId)
-          .maybeSingle()
+          .select()
         
-        console.error('Verification query result:', verifyResult)
-        throw new Error(`Subscription update failed - no rows updated. Subscription ID: ${subscriptionId}, Subscription exists: ${!!verifyResult.data}`)
+        const { data: updatedSub, error: subError } = result
+
+        if (subError) {
+          console.error('Error updating subscription:', subError)
+          throw subError
+        }
+
+        if (!updatedSub || updatedSub.length === 0) {
+          throw new Error(`Subscription update failed - no rows updated. Subscription ID: ${subscriptionId}`)
+        }
+
+        toast.success('Activation fee approved! User can now access predictions.')
+      } else {
+        // For subscription payments, use existing logic
+        // Get duration from transaction metadata or default to 30 days
+        const metadata = selectedTransaction.metadata as any
+        const durationDays = metadata?.duration_days || 30
+
+        const startDate = new Date()
+        const expiryDate = new Date()
+        expiryDate.setDate(expiryDate.getDate() + durationDays)
+
+        // Update subscription to active
+        const updateData: UserSubscriptionUpdate = {
+          subscription_fee_paid: true,
+          plan_status: 'active',
+          start_date: startDate.toISOString(),
+          expiry_date: expiryDate.toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+
+        console.log('Update data:', updateData)
+
+        const result: any = await supabase
+          .from('user_subscriptions')
+          // @ts-expect-error - Supabase type inference issue
+          .update(updateData)
+          .eq('id', subscriptionId)
+          .select()
+        
+        const { data: updatedSub, error: subError } = result
+
+        if (subError) {
+          console.error('Error updating subscription:', subError)
+          throw subError
+        }
+
+        if (!updatedSub || updatedSub.length === 0) {
+          throw new Error(`Subscription update failed - no rows updated. Subscription ID: ${subscriptionId}`)
+        }
+
+        toast.success('Subscription activated! User is now a premium member.')
       }
 
-      toast.success('Subscription activated! User is now a premium member.')
       setShowActivateDialog(false)
       window.location.reload()
     } catch (error: any) {
@@ -235,6 +288,11 @@ export function TransactionsManager({ transactions: initialTransactions, subscri
     (tx: any) => tx.status === 'pending' && tx.payment_type === 'subscription'
   )
   
+  // Get pending activation fee payments
+  const pendingActivationFees = transactions.filter(
+    (tx: any) => tx.status === 'pending' && tx.payment_type === 'activation'
+  )
+  
   // Get completed transactions that haven't been activated yet
   const completedNotActivated = transactions.filter((tx: any) => {
     if (tx.status !== 'completed' || tx.payment_type !== 'subscription') return false
@@ -250,12 +308,105 @@ export function TransactionsManager({ transactions: initialTransactions, subscri
 
   return (
     <div className="space-y-6">
+      {/* Pending Activation Fee Payments */}
+      {pendingActivationFees.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Pending Activation Fee Payments</CardTitle>
+                <CardDescription>Approve activation fee payments to grant access to predictions</CardDescription>
+              </div>
+              <Badge variant="outline" className="text-lg px-3 py-1 bg-orange-50 text-orange-700 border-orange-200">
+                {pendingActivationFees.length}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Plan</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Payment Method</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Payment Proof</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pendingActivationFees.map((tx: any) => {
+                  const proofUrl = getPaymentProofUrl(tx)
+                  const subscription = subscriptions.find(
+                    (sub: any) => sub.user_id === tx.user_id && sub.plan_id === tx.plan_id
+                  )
+                  const isAlreadyActivated = subscription?.plan_status === 'active' && subscription?.activation_fee_paid === true
+
+                  return (
+                    <TableRow key={tx.id}>
+                      <TableCell className="font-medium">
+                        {(tx.users as any)?.full_name || (tx.users as any)?.email || 'Unknown'}
+                      </TableCell>
+                      <TableCell>{(tx.plans as any)?.name || 'N/A'}</TableCell>
+                      <TableCell>
+                        {tx.currency} {tx.amount}
+                      </TableCell>
+                      <TableCell>{tx.payment_gateway || 'N/A'}</TableCell>
+                      <TableCell>
+                        {new Date(tx.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {proofUrl ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setViewingProof(proofUrl)}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View Proof
+                          </Button>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">No proof</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {!isAlreadyActivated ? (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedTransaction(tx)
+                                setShowActivateDialog(true)
+                              }}
+                              className="bg-orange-600 hover:bg-orange-700"
+                            >
+                              <CheckCircle2 className="h-4 w-4 mr-1" />
+                              Approve & Activate
+                            </Button>
+                          ) : (
+                            <Badge variant="outline" className="text-green-700 border-green-200">
+                              Already Activated
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Pending Payments */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Pending Payments</CardTitle>
+              <CardTitle>Pending Subscription Payments</CardTitle>
               <CardDescription>Review and confirm payment proofs</CardDescription>
             </div>
             <Badge variant="outline" className="text-lg px-3 py-1">
@@ -505,9 +656,15 @@ export function TransactionsManager({ transactions: initialTransactions, subscri
       <Dialog open={showActivateDialog} onOpenChange={setShowActivateDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Activate Subscription</DialogTitle>
+            <DialogTitle>
+              {selectedTransaction?.payment_type === 'activation' 
+                ? 'Approve Activation Fee & Activate Subscription'
+                : 'Activate Subscription'}
+            </DialogTitle>
             <DialogDescription>
-              Make this user a premium member by activating their subscription
+              {selectedTransaction?.payment_type === 'activation'
+                ? 'Approve the activation fee payment and grant user access to predictions'
+                : 'Make this user a premium member by activating their subscription'}
             </DialogDescription>
           </DialogHeader>
           {selectedTransaction && (
@@ -525,13 +682,28 @@ export function TransactionsManager({ transactions: initialTransactions, subscri
                   <span className="font-medium">Amount: </span>
                   {selectedTransaction.currency} {selectedTransaction.amount}
                 </p>
+                <p className="text-sm">
+                  <span className="font-medium">Payment Type: </span>
+                  {selectedTransaction.payment_type === 'activation' ? 'Activation Fee' : 'Subscription'}
+                </p>
                 <div className="rounded-lg bg-blue-50 p-3 text-blue-800 text-sm mt-4">
                   <p className="font-medium mb-1">This will:</p>
                   <ul className="list-disc list-inside space-y-1">
-                    <li>Mark the subscription as active</li>
-                    <li>Set subscription_fee_paid to true</li>
-                    <li>Set start and expiry dates</li>
-                    <li>Grant user access to premium predictions</li>
+                    {selectedTransaction.payment_type === 'activation' ? (
+                      <>
+                        <li>Mark the activation fee payment as completed</li>
+                        <li>Set activation_fee_paid to true</li>
+                        <li>Set subscription status to active</li>
+                        <li>Grant user access to premium predictions</li>
+                      </>
+                    ) : (
+                      <>
+                        <li>Mark the subscription as active</li>
+                        <li>Set subscription_fee_paid to true</li>
+                        <li>Set start and expiry dates</li>
+                        <li>Grant user access to premium predictions</li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </div>

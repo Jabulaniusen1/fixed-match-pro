@@ -64,15 +64,15 @@ export function Navbar() {
   return (
     <nav className="relative bg-white border-b border-purple-500">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="">
             <Image
               src="/logo.png"
               alt={`${siteHeader} Logo`}
-              width={70}
-              height={70}
-              className=" w-auto object-contain"
+              width={105}
+              height={105}
+              className=" w-auto "
               priority
             />
           </Link>
