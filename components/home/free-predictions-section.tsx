@@ -68,14 +68,83 @@ export function FreePredictionsSection() {
         // Convert fixtures to predictions
         const allPredictions: FreePrediction[] = []
         
+        // Determine max predictions based on filter
+        // Only "free" (Safe Picks) should have 5, others should have more
+        const maxPredictions = selectedFilter === 'free' ? 5 : 15
+        
         // Track which prediction types we've used to ensure variety
         const typeRotation = ['Home Win', 'Away Win', 'Over 2.5', 'Over 1.5', 'BTTS', 'Double Chance']
         let typeIndex = 0
         
-        // Process fixtures until we have 5 predictions
+        // For "all" filter, we need to collect all predictions from all filters
+        if (selectedFilter === 'all') {
+          // Process all fixtures and create predictions for all available types
+          for (const fixture of fixtures) {
+            try {
+              // Fetch odds for this fixture
+              let oddsData: any = null
+              try {
+                const odds = await getOdds(fixture.match_id)
+                if (Array.isArray(odds) && odds.length > 0) {
+                  oddsData = odds[0]
+                }
+              } catch (oddsError) {
+                console.error('Error fetching odds:', oddsError)
+              }
+
+              // Create predictions for all available types
+              const predictionTypes: Array<{type: string, odds: number}> = []
+              
+              if (oddsData) {
+                if (oddsData.odd_1) predictionTypes.push({type: 'Home Win', odds: parseFloat(oddsData.odd_1)})
+                if (oddsData.odd_2) predictionTypes.push({type: 'Away Win', odds: parseFloat(oddsData.odd_2)})
+                if (oddsData['o+2.5']) predictionTypes.push({type: 'Over 2.5', odds: parseFloat(oddsData['o+2.5'])})
+                if (oddsData['o+1.5']) predictionTypes.push({type: 'Over 1.5', odds: parseFloat(oddsData['o+1.5'])})
+                if (oddsData.bts_yes) predictionTypes.push({type: 'BTTS', odds: parseFloat(oddsData.bts_yes)})
+                if (oddsData.odd_1x) predictionTypes.push({type: 'Double Chance', odds: parseFloat(oddsData.odd_1x)})
+              } else {
+                // Default predictions if no odds
+                predictionTypes.push(
+                  {type: 'Over 2.5', odds: 1.85},
+                  {type: 'Home Win', odds: 1.85},
+                  {type: 'BTTS', odds: 1.85},
+                  {type: 'Over 1.5', odds: 1.85},
+                  {type: 'Away Win', odds: 1.85},
+                  {type: 'Double Chance', odds: 1.85}
+                )
+              }
+
+              // Create a prediction for each available type
+              for (const {type: predictionType, odds: typeOdds} of predictionTypes) {
+                const confidence = Math.min(95, Math.max(60, 100 - (typeOdds - 1) * 20))
+                
+                allPredictions.push({
+                  id: `${fixture.match_id}-${predictionType}`,
+                  home_team: fixture.match_hometeam_name || 'Home Team',
+                  away_team: fixture.match_awayteam_name || 'Away Team',
+                  league: fixture.league_name || 'Unknown League',
+                  prediction_type: predictionType,
+                  odds: typeOdds,
+                  confidence: confidence,
+                  kickoff_time: `${fixture.match_date} ${fixture.match_time || '00:00'}`,
+                  status: fixture.match_status === 'Finished' ? 'finished' : 
+                          fixture.match_live === '1' ? 'live' : 'not_started',
+                  home_team_logo: fixture.team_home_badge,
+                  away_team_logo: fixture.team_away_badge,
+                  home_score: fixture.match_hometeam_score || undefined,
+                  away_score: fixture.match_awayteam_score || undefined,
+                  match_id: fixture.match_id,
+                })
+              }
+            } catch (error) {
+              console.error(`Error processing fixture ${fixture.match_id}:`, error)
+            }
+          }
+        } else {
+          // For other filters, process fixtures until we have enough predictions
         for (const fixture of fixtures) {
           // Stop if we have enough predictions
-          if (allPredictions.length >= 5) {
+            if (allPredictions.length >= maxPredictions) {
             break
           }
           
@@ -101,7 +170,7 @@ export function FreePredictionsSection() {
             const availableTypes: string[] = []
             let predictionType: string
             
-            if (selectedFilter === 'free' || selectedFilter === 'all') {
+            if (selectedFilter === 'free') {
               // Add multiple prediction types for free/all - get all available types
               if (oddsData) {
                 if (oddsData.odd_1) availableTypes.push('Home Win')
@@ -173,11 +242,6 @@ export function FreePredictionsSection() {
               predictionType = availableTypes[0] || 'Over 2.5'
             }
             
-            // Stop if we already have 5
-            if (allPredictions.length >= 5) {
-              break
-            }
-            
             let odds = 1.85
             let confidence = 75
 
@@ -225,9 +289,12 @@ export function FreePredictionsSection() {
             console.error(`Error processing fixture ${fixture.match_id}:`, error)
           }
         }
+        }
 
-        // Limit to 5 predictions and ensure we have exactly 5
-        const finalPredictions = allPredictions.slice(0, 5)
+        // For "free" filter, limit to 5. For others, use all collected predictions
+        const finalPredictions = selectedFilter === 'free' 
+          ? allPredictions.slice(0, 5)
+          : allPredictions
         console.log('Final predictions:', finalPredictions)
         console.log('Total predictions created:', allPredictions.length)
         setPredictions(finalPredictions)
@@ -561,25 +628,35 @@ export function FreePredictionsSection() {
                     </div>
                   </div>
 
+                  {/* Score Row - Show if available */}
+                  {(prediction.home_score !== undefined && prediction.away_score !== undefined) && (
+                    <div className="flex items-center justify-center gap-2 py-1">
+                      <span className="text-sm font-semibold text-gray-900">
+                        {prediction.home_score} - {prediction.away_score}
+                      </span>
+                    </div>
+                  )}
+
                   {/* Header Bar */}
-                  <div className="bg-[#1e40af] text-white px-3 py-2 rounded grid grid-cols-4 gap-2 text-xs font-semibold">
-                    <div>Status</div>
-                    <div>Tip</div>
+                  <div className="bg-[#1e40af] text-white px-2 py-2 rounded grid grid-cols-5 gap-1 text-[10px] sm:text-xs font-semibold">
+                    <div className="text-center">Status</div>
+                    <div className="text-center">Tip</div>
+                    <div className="text-center">Score</div>
                     <div className="text-center">Odd</div>
-                    <div className="text-center">Confidence</div>
+                    <div className="text-center">Conf</div>
                   </div>
 
                   {/* Prediction Row */}
-                  <div className="bg-gray-200 px-3 py-2 rounded grid grid-cols-4 gap-2 items-center">
-                    <div className="flex items-center">
+                  <div className="bg-gray-200 px-2 py-2 rounded grid grid-cols-5 gap-1 items-center">
+                    <div className="flex items-center justify-center">
                       <Badge
                         variant={prediction.status === 'finished' ? 'default' : prediction.status === 'live' ? 'destructive' : 'outline'}
-                        className="text-xs"
+                        className="text-[10px] px-1.5 py-0.5"
                       >
-                        {prediction.status === 'finished' ? 'Finished' : prediction.status === 'live' ? 'Live' : 'Not Started'}
+                        {prediction.status === 'finished' ? 'FT' : prediction.status === 'live' ? 'Live' : 'NS'}
                       </Badge>
                     </div>
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-[10px] sm:text-xs font-medium text-gray-900 text-center truncate">
                       {prediction.prediction_type === 'Over 1.5' ? 'Ov 1.5' :
                        prediction.prediction_type === 'Over 2.5' ? 'Ov 2.5' :
                        prediction.prediction_type === 'Home Win' ? '1' :
@@ -587,11 +664,16 @@ export function FreePredictionsSection() {
                        prediction.prediction_type === 'Double Chance' ? '12' :
                        prediction.prediction_type}
                     </div>
-                    <div className="lg:text-sm text-xs font-semibold text-gray-900 text-center">
+                    <div className="text-[10px] sm:text-xs font-semibold text-gray-900 text-center">
+                      {prediction.home_score !== undefined && prediction.away_score !== undefined 
+                        ? `${prediction.home_score}-${prediction.away_score}`
+                        : '-'}
+                    </div>
+                    <div className="text-[10px] sm:text-xs font-semibold text-gray-900 text-center">
                       {prediction.odds.toFixed(2)}
                     </div>
                     <div className="flex items-center justify-center">
-                      <CircularProgress value={prediction.confidence} size={44} strokeWidth={4} />
+                      <CircularProgress value={prediction.confidence} size={32} strokeWidth={3} />
                     </div>
                   </div>
                 </div>

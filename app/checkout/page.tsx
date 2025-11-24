@@ -8,9 +8,11 @@ import { PageLayout } from '@/components/layout/page-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Input } from '@/components/ui/input'
-import { Upload, X, Check, Copy } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Combobox } from '@/components/ui/combobox'
+import { Upload, X, Check, Copy, Globe } from 'lucide-react'
 import { Plan, PlanPrice, PaymentMethod } from '@/types'
 import { Database } from '@/types/database'
 import { toast } from 'sonner'
@@ -20,6 +22,14 @@ type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'country'>
 type TransactionInsert = Database['public']['Tables']['transactions']['Insert']
 type UserSubscriptionUpdate = Database['public']['Tables']['user_subscriptions']['Update']
 type UserSubscriptionInsert = Database['public']['Tables']['user_subscriptions']['Insert']
+
+// Helper function to map any country name to supported CountryOption
+const mapCountryToOption = (countryName: string): CountryOption => {
+  if (countryName === 'Nigeria') return 'Nigeria'
+  if (countryName === 'Ghana') return 'Ghana'
+  if (countryName === 'Kenya') return 'Kenya'
+  return 'Other'
+}
 
 function CheckoutContent() {
   const router = useRouter()
@@ -31,7 +41,12 @@ function CheckoutContent() {
   const [selectedPrice, setSelectedPrice] = useState<PlanPrice | null>(null)
   const [selectedDuration, setSelectedDuration] = useState<number>(durationParam ? parseInt(durationParam) : 30)
   const [user, setUser] = useState<any>(null)
-  const [userCountry, setUserCountry] = useState<CountryOption>('Nigeria')
+  const [userCountry, setUserCountry] = useState<string>('Nigeria')
+  const [selectedCountry, setSelectedCountry] = useState<string>('Nigeria')
+  const [showCountryDialog, setShowCountryDialog] = useState(false)
+  const [tempCountry, setTempCountry] = useState<string>('Nigeria')
+  const [countries, setCountries] = useState<Array<{ value: string; label: string }>>([])
+  const [loadingCountries, setLoadingCountries] = useState(true)
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null)
   const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false)
@@ -40,6 +55,30 @@ function CheckoutContent() {
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [loading, setLoading] = useState(true)
+
+  // Fetch countries from API
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        setLoadingCountries(true)
+        const response = await fetch('/api/countries')
+        if (!response.ok) throw new Error('Failed to fetch countries')
+        const data = await response.json()
+        
+        const countryOptions = data.map((country: any) => ({
+          value: country.name,
+          label: country.name,
+        }))
+        
+        setCountries(countryOptions)
+      } catch (error) {
+        console.error('Error fetching countries:', error)
+      } finally {
+        setLoadingCountries(false)
+      }
+    }
+    fetchCountries()
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,27 +101,15 @@ function CheckoutContent() {
 
       const userProfile = result.data as UserProfile | null
 
-      if (userProfile?.country && ['Nigeria', 'Ghana', 'Kenya', 'Other'].includes(userProfile.country)) {
-        setUserCountry(userProfile.country as CountryOption)
-      }
-
-      // Get active payment methods (filter by user country or methods without country restriction)
-      const userCountryName = userProfile?.country || 'Nigeria'
-      const { data: methodsData } = await supabase
-        .from('payment_methods')
-        .select('*')
-        .eq('is_active', true)
-        .or(`country.is.null,country.eq.${userCountryName}`)
-        .order('display_order')
-
-      // Filter in memory as fallback (in case RLS doesn't handle it)
-      const filteredMethods = methodsData?.filter(method => {
-        const methodCountry = (method as any).country
-        return !methodCountry || methodCountry === userCountryName
-      })
-
-      if (filteredMethods) {
-        setPaymentMethods(filteredMethods)
+      if (userProfile?.country) {
+        // Map stored country option to full country name for display
+        // If it's one of our supported options, use it directly
+        // Otherwise default to Nigeria
+        const countryOption = userProfile.country as CountryOption
+        const countryName = countryOption === 'Other' ? 'Nigeria' : countryOption
+        setUserCountry(countryName)
+        setSelectedCountry(countryName)
+        setTempCountry(countryName)
       }
 
       // Get plan
@@ -99,8 +126,9 @@ function CheckoutContent() {
         if (planData) {
           setPlan(planData)
           
-          // Get price for selected duration
-          const countryName = userProfile?.country || 'Nigeria'
+          // Get price for selected duration and country
+          // Map selected country to CountryOption for price lookup
+          const countryOption = mapCountryToOption(selectedCountry)
           const { data: pricesData } = await supabase
             .from('plan_prices')
             .select('*')
@@ -109,13 +137,16 @@ function CheckoutContent() {
 
           if (pricesData && pricesData.length > 0) {
             // Try to find country-specific price first, then fallback to Nigeria, then any price
-            const countryPrice = pricesData.find((p: any) => p.country === countryName)
+            const countryPrice = pricesData.find((p: any) => p.country === countryOption)
             if (countryPrice) {
               setSelectedPrice(countryPrice)
             } else {
               const nigeriaPrice = pricesData.find((p: any) => p.country === 'Nigeria')
               setSelectedPrice(nigeriaPrice || pricesData[0])
             }
+          } else {
+            // No price found
+            setSelectedPrice(null)
           }
         }
       }
@@ -126,20 +157,61 @@ function CheckoutContent() {
     fetchData()
   }, [planSlug, selectedDuration, router])
 
-  // Fetch price when duration changes
+  // Fetch payment methods when country changes
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      const supabase = createClient()
+      const { data: methodsData } = await supabase
+        .from('payment_methods')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order')
+
+      // Filter in memory based on countries array
+      // Crypto and Skrill are available for all countries
+      const filteredMethods = methodsData?.filter((method: any) => {
+        const methodData = method as any
+        const methodCountries = methodData.countries 
+          ? (Array.isArray(methodData.countries) ? methodData.countries : [])
+          : (methodData.country ? [methodData.country] : [])
+        
+        // Crypto and Skrill are always available
+        if (method.type === 'crypto' || method.type === 'skrill') {
+          return true
+        }
+        
+        // If no countries specified, available for all
+        if (methodCountries.length === 0) {
+          return true
+        }
+        
+        // Check if selected country is in the list
+        return methodCountries.includes(selectedCountry)
+      })
+
+      if (filteredMethods) {
+        setPaymentMethods(filteredMethods as PaymentMethod[])
+        // Reset selected payment method if it's no longer available
+        if (selectedPaymentMethod && !filteredMethods.find((m: any) => m.id === selectedPaymentMethod.id)) {
+          setSelectedPaymentMethod(null)
+          setShowPaymentConfirmation(false)
+          setPaymentProof(null)
+          setProofPreview(null)
+        }
+      }
+    }
+
+    fetchPaymentMethods()
+  }, [selectedCountry, selectedPaymentMethod])
+
+  // Fetch price when duration or country changes
   useEffect(() => {
     const fetchPrice = async () => {
       if (!plan) return
 
       const supabase = createClient()
-      const result = await supabase
-        .from('users')
-        .select('country')
-        .eq('id', user?.id)
-        .maybeSingle()
-
-      const userProfile = result.data as UserProfile | null
-      const countryName = userProfile?.country || 'Nigeria'
+      // Map selected country to CountryOption for price lookup
+      const countryOption = mapCountryToOption(selectedCountry)
       const { data: pricesData } = await supabase
         .from('plan_prices')
         .select('*')
@@ -148,20 +220,23 @@ function CheckoutContent() {
 
       if (pricesData && pricesData.length > 0) {
         // Try to find country-specific price first, then fallback to Nigeria, then any price
-        const countryPrice = pricesData.find((p: any) => p.country === countryName)
+        const countryPrice = pricesData.find((p: any) => p.country === countryOption)
         if (countryPrice) {
           setSelectedPrice(countryPrice)
         } else {
           const nigeriaPrice = pricesData.find((p: any) => p.country === 'Nigeria')
           setSelectedPrice(nigeriaPrice || pricesData[0])
         }
+      } else {
+        // No price found
+        setSelectedPrice(null)
       }
     }
 
-    if (plan && user) {
+    if (plan) {
       fetchPrice()
     }
-  }, [selectedDuration, plan, user])
+  }, [selectedDuration, selectedCountry, plan])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -351,6 +426,69 @@ function CheckoutContent() {
           .eq('id', transaction.id)
       }
 
+      // Notify admin about new payment
+      try {
+        // Get admin user
+        const adminResult: any = await supabase
+          .from('users')
+          .select('id, email')
+          .eq('is_admin', true)
+          .limit(1)
+          .single()
+        const adminUser = adminResult.data as any
+
+        if (adminUser) {
+          // Get user info for notification
+          const userProfileResult: any = await supabase
+            .from('users')
+            .select('full_name, email')
+            .eq('id', user.id)
+            .single()
+          const userProfile = userProfileResult.data as any
+
+          const planName = plan.name
+          const userName = userProfile?.full_name || user.email?.split('@')[0] || 'User'
+          const userEmail = userProfile?.email || user.email
+
+          // Create notification for admin
+          await supabase
+            .from('notifications')
+            // @ts-expect-error - Supabase type inference issue
+            .insert({
+              user_id: adminUser.id,
+              type: 'admin_new_payment',
+              title: 'New Payment Submitted',
+              message: `${userName} (${userEmail}) has submitted a payment proof for ${planName}. Amount: ${selectedPrice.currency} ${selectedPrice.price}`,
+              read: false,
+            })
+
+          // Send email to admin
+          try {
+            await fetch('/api/notifications/send-email', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: 'admin_new_payment',
+                userId: adminUser.id,
+                planName,
+                userEmail,
+                userName,
+                amount: selectedPrice.price,
+                currency: selectedPrice.currency,
+              }),
+            })
+          } catch (emailError) {
+            console.error('Error sending admin notification email:', emailError)
+            // Don't throw - notification is already created
+          }
+        }
+      } catch (notifError) {
+        console.error('Error creating admin notification:', notifError)
+        // Don't throw - payment is already submitted
+      }
+
       toast.success('Payment proof submitted! Your subscription will be activated after admin confirmation.')
       router.push('/dashboard')
     } catch (error: any) {
@@ -361,18 +499,62 @@ function CheckoutContent() {
     }
   }
 
-  // Determine currency - Naira for Nigeria/Other, others based on country
+  // Determine currency from the price's currency field, or fallback based on country
   const getCurrencySymbol = () => {
-    if (userCountry === 'Nigeria' || userCountry === 'Other') {
+    // Use currency from the price if available
+    if (selectedPrice?.currency) {
+      const currencyMap: Record<string, string> = {
+        'NGN': '₦',
+        'GHS': '₵',
+        'KES': 'KSh',
+        'USD': '$',
+        'EUR': '€',
+      }
+      return currencyMap[selectedPrice.currency] || selectedPrice.currency
+    }
+    
+    // Fallback to country-based currency
+    const countryOption = mapCountryToOption(selectedCountry)
+    if (countryOption === 'Nigeria' || countryOption === 'Other') {
       return '₦'
-    } else if (userCountry === 'Ghana') {
+    } else if (countryOption === 'Ghana') {
       return '₵'
-    } else if (userCountry === 'Kenya') {
+    } else if (countryOption === 'Kenya') {
       return 'KSh'
     }
     return '₦' // Default to Naira
   }
   const currency = getCurrencySymbol()
+
+  const handleCountryChange = () => {
+    setSelectedCountry(tempCountry)
+    setShowCountryDialog(false)
+    // Reset payment method selection when country changes
+    setSelectedPaymentMethod(null)
+    setShowPaymentConfirmation(false)
+    setPaymentProof(null)
+    setProofPreview(null)
+  }
+
+  const handlePaymentMethodAction = async (method: PaymentMethod) => {
+    setSelectedPaymentMethod(method)
+    
+    // For Paystack or other online payment gateways, redirect to payment
+    const isPaystack = method.name.toLowerCase().includes('paystack')
+    const isOnlinePayment = method.type === 'skrill' || method.type === 'paypal' || isPaystack
+    
+    if (isPaystack || isOnlinePayment) {
+      // TODO: Integrate actual payment gateway redirect here
+      // For now, show payment confirmation
+      setShowPaymentConfirmation(true)
+    } else {
+      // For manual payment methods (bank transfer, mobile money, crypto), show payment proof upload
+      setShowPaymentConfirmation(true)
+    }
+    
+    setPaymentProof(null)
+    setProofPreview(null)
+  }
 
   if (loading) {
     return (
@@ -384,12 +566,12 @@ function CheckoutContent() {
     )
   }
 
-  if (!plan || !selectedPrice) {
+  if (!plan) {
     return (
       <PageLayout title="Checkout" subtitle="Complete your subscription">
         <div className="container mx-auto px-4 py-12">
           <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Invalid plan details</h1>
+            <h1 className="text-2xl font-bold mb-4">Plan not found</h1>
             <Button asChild>
               <a href="/subscriptions">Back to Subscriptions</a>
             </Button>
@@ -399,226 +581,279 @@ function CheckoutContent() {
     )
   }
 
+  if (!selectedPrice) {
   return (
     <PageLayout title="Checkout" subtitle="Complete your subscription">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="grid gap-8 md:grid-cols-2">
-          {/* Order Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Plan:</span>
-                  <span className="font-semibold">{plan.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Duration:</span>
-                  <span className="font-semibold">
-                    {selectedDuration === 7 ? '1 Week' : '1 Month'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Amount:</span>
-                  <span className="text-2xl font-bold text-[#1e40af]">
-                    {currency}{(() => {
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center max-w-md mx-auto">
+            <h1 className="text-2xl font-bold mb-4">Price Not Available</h1>
+            <p className="text-muted-foreground mb-4">
+              No price has been set for {plan.name} in {selectedCountry}. Please contact support or select a different country.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Button variant="outline" onClick={() => setShowCountryDialog(true)}>
+              <a href="/subscriptions">Change Country</a>
+                </Button>
+                <Button asChild>
+                  <a href="/subscriptions">Back to Subscriptions</a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </PageLayout>
+      )
+    }
+
+  const planName = plan.name.toUpperCase()
+  const planDescription = plan.description || `This gives you access to all VIP stores for ${selectedDuration === 7 ? 'one week' : 'one month'}`
                       const priceValue = typeof selectedPrice.price === 'number' 
                         ? selectedPrice.price 
                         : parseFloat(String(selectedPrice.price || '0'))
-                      return priceValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
-                    })()}
-                  </span>
-                </div>
-                {plan.requires_activation && selectedPrice.activation_fee && (
-                  <div className="pt-2 border-t">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Activation Fee:</span>
-                      <span className="font-semibold">
-                        {currency}{(() => {
-                          const feeValue = typeof selectedPrice.activation_fee === 'number' 
-                            ? selectedPrice.activation_fee 
-                            : parseFloat(String(selectedPrice.activation_fee || '0'))
-                          return feeValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
-                        })()}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      (Paid separately after subscription)
-                    </p>
+  const formattedPrice = priceValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  return (
+    <PageLayout title="Checkout" subtitle="Complete your subscription">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Package Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-purple-900 mb-2">{planName}</h1>
+          <p className="text-lg text-gray-600 mb-4">{planDescription}</p>
+          <div className="text-4xl md:text-5xl font-bold text-purple-900 mb-4">
+            {currency}{formattedPrice}
+              </div>
+
+          {/* Country Display with Change Button */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-2">
+            <span className="text-red-600 font-semibold">
+              Payment Options available in {selectedCountry}!
+            </span>
+            <Dialog open={showCountryDialog} onOpenChange={setShowCountryDialog}>
+              <DialogTrigger asChild>
+                <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 h-auto">
+                  <Globe className="h-4 w-4 mr-1" />
+                  Not your country? Change country
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Change Country</DialogTitle>
+                  <DialogDescription>
+                    Select your country to see available payment methods
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  {loadingCountries ? (
+                    <div className="text-center py-4">Loading countries...</div>
+                  ) : (
+                    <Combobox
+                      options={countries}
+                      value={tempCountry}
+                      onValueChange={(value) => setTempCountry(value)}
+                      placeholder="Select a country..."
+                      searchPlaceholder="Search countries..."
+                      emptyMessage="No country found."
+                    />
+                  )}
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setShowCountryDialog(false)}>
+                      Cancel
+                  </Button>
+                    <Button onClick={handleCountryChange} disabled={loadingCountries}>
+                      Change Country
+                  </Button>
                   </div>
-                )}
-              </div>
-
-              {plan.benefits && plan.benefits.length > 0 && (
-                <div className="pt-4 border-t">
-                  <h3 className="font-semibold mb-2">Benefits:</h3>
-                  <ul className="space-y-1 text-sm text-muted-foreground">
-                    {plan.benefits.map((benefit, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-[#22c55e] mt-0.5 flex-shrink-0" />
-                        <span>{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Payment Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Details</CardTitle>
-              <CardDescription>
-                Select your payment method and upload proof of payment
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Duration Selection */}
-              <div className="space-y-2">
-                <Label>Select Duration</Label>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant={selectedDuration === 7 ? 'default' : 'outline'}
-                    onClick={() => setSelectedDuration(7)}
-                    className="flex-1"
-                  >
-                    1 Week
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={selectedDuration === 30 ? 'default' : 'outline'}
-                    onClick={() => setSelectedDuration(30)}
-                    className="flex-1"
-                  >
-                    1 Month
-                  </Button>
+              </DialogContent>
+            </Dialog>
                 </div>
               </div>
 
-              {/* Payment Method Selection */}
-              <div className="space-y-3">
-                <Label>Payment Method</Label>
-                <RadioGroup 
-                  value={selectedPaymentMethod?.id || ''} 
-                  onValueChange={(value) => {
-                    const method = paymentMethods.find(m => m.id === value)
-                    setSelectedPaymentMethod(method || null)
-                    setShowPaymentConfirmation(false)
-                    setPaymentProof(null)
-                    setProofPreview(null)
-                  }}
+        {/* Payment Methods Grid */}
+        {paymentMethods.length === 0 ? (
+          <div className="text-center py-12 border rounded-lg bg-gray-50">
+            <p className="text-lg text-gray-600 mb-2">No payment methods available for {selectedCountry}</p>
+            <p className="text-sm text-gray-500">Please change your country to see available payment methods</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {paymentMethods.map((method) => {
+              const isPaystack = method.name.toLowerCase().includes('paystack')
+              const isOnlinePayment = method.type === 'skrill' || method.type === 'paypal' || isPaystack
+              
+              return (
+                <div
+                  key={method.id}
+                  className={`rounded-lg p-6 ${
+                    isPaystack
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white border-2 border-green-500'
+                  }`}
                 >
-                  {paymentMethods.map((method) => (
-                    <div key={method.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                      <RadioGroupItem value={method.id} id={method.id} />
-                      <Label htmlFor={method.id} className="cursor-pointer flex-1">
+                  {/* Logo and Title */}
+                  <div className="flex flex-col items-center mb-6">
+                    {method.logo_url ? (
+                      <div className={`relative w-24 h-24 mb-4 ${isPaystack ? '' : 'bg-white rounded-lg p-2'}`}>
+                        <Image
+                          src={method.logo_url}
+                          alt={method.name}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className={`w-24 h-24 mb-4 flex items-center justify-center rounded-lg ${
+                        isPaystack ? 'bg-white/20' : 'bg-gray-100'
+                      }`}>
+                        <span className={`text-3xl font-bold ${
+                          isPaystack ? 'text-white' : 'text-gray-400'
+                        }`}>
+                          {method.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    <h3 className={`text-xl font-bold text-center ${
+                      isPaystack ? 'text-white' : 'text-gray-900'
+                    }`}>
                         {method.name}
-                    </Label>
-                  </div>
-                  ))}
-                </RadioGroup>
+                    </h3>
               </div>
 
               {/* Payment Details */}
-              {selectedPaymentMethod && !showPaymentConfirmation && (
-                <div className="space-y-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="font-semibold text-blue-900">Payment Details</h3>
-                  <div className="space-y-2 text-sm">
-                    {selectedPaymentMethod.type === 'bank_transfer' && (
+                  <div className={`space-y-3 mb-6 ${isPaystack ? 'text-white/90' : 'text-gray-700'}`}>
+                    {isPaystack && (
+                      <p className="text-sm text-center">
+                        Pay with ATM Card, USSD and Bank. Your account will be automatically activated after a successful transaction.
+                      </p>
+                    )}
+                    
+                    {!isPaystack && (
                       <>
-                        {(selectedPaymentMethod.details as any)?.account_name && (
+                        <p className="font-semibold mb-3">Payment should be made to</p>
+                        
+                        {method.type === 'bank_transfer' && (
+                          <>
+                            {(method.details as any)?.account_name && (
+                              <div>
+                                <span className="text-sm">Account Name: </span>
+                                <span className="font-semibold text-blue-600">{(method.details as any).account_name}</span>
+                              </div>
+                            )}
+                            {(method.details as any)?.bank_name && (
+                              <div>
+                                <span className="text-sm">Bank Name: </span>
+                                <span className="font-semibold text-blue-600">{(method.details as any).bank_name}</span>
+                              </div>
+                            )}
+                            {(method.details as any)?.account_number && (
                           <div>
-                            <span className="font-medium">Account Name: </span>
-                            <span>{(selectedPaymentMethod.details as any).account_name}</span>
+                                <span className="text-sm">Account No: </span>
+                                <span className="font-semibold text-blue-600 font-mono">{(method.details as any).account_number}</span>
+                          </div>
+                            )}
+                          </>
+                        )}
+
+                        {(method.type as string) === 'mobile_money' && (
+                          <>
+                            {(method.details as any)?.phone_number && (
+                              <div>
+                                <span className="text-sm">Phone Number: </span>
+                                <span className="font-semibold text-blue-600 font-mono">{(method.details as any).phone_number}</span>
                           </div>
                         )}
-                        {(selectedPaymentMethod.details as any)?.account_number && (
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">Account Number: </span>
-                            <span className="font-mono">{(selectedPaymentMethod.details as any).account_number}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 w-6 p-0"
-                              onClick={() => {
-                                navigator.clipboard.writeText((selectedPaymentMethod.details as any).account_number)
-                                toast.success('Account number copied!')
-                              }}
-                            >
-                              <Copy className="h-3 w-3" />
-                            </Button>
+                            {(method.details as any)?.network && (
+                          <div>
+                                <span className="text-sm">Network: </span>
+                                <span className="font-semibold text-blue-600">{(method.details as any).network}</span>
                           </div>
                         )}
-                        {(selectedPaymentMethod.details as any)?.bank_name && (
+                            {(method.details as any)?.account_name && (
                           <div>
-                            <span className="font-medium">Bank: </span>
-                            <span>{(selectedPaymentMethod.details as any).bank_name}</span>
-                          </div>
-                        )}
-                        {(selectedPaymentMethod.details as any)?.swift_code && (
-                          <div>
-                            <span className="font-medium">SWIFT Code: </span>
-                            <span className="font-mono">{(selectedPaymentMethod.details as any).swift_code}</span>
+                                <span className="text-sm">Account Name: </span>
+                                <span className="font-semibold text-blue-600">{(method.details as any).account_name}</span>
                           </div>
                         )}
                       </>
                     )}
-                    {selectedPaymentMethod.type === 'crypto' && (
-                      <>
-                        {(selectedPaymentMethod.details as any)?.wallet_address && (
-                          <div className="flex items-start gap-2">
-                            <div className="flex-1 min-w-0">
-                              <span className="font-medium">Wallet Address: </span>
-                              <span className="font-mono break-all text-xs">{(selectedPaymentMethod.details as any).wallet_address}</span>
+
+                        {method.type === 'crypto' && (
+                          <>
+                            {(method.details as any)?.wallet_address && (
+                              <div>
+                                <span className="text-sm">{method.currency}: </span>
+                                <span className="font-semibold text-blue-600 font-mono text-xs break-all">
+                                  {(method.details as any).wallet_address}
+                                </span>
                             </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 w-6 p-0 flex-shrink-0"
-                              onClick={() => {
-                                navigator.clipboard.writeText((selectedPaymentMethod.details as any).wallet_address)
-                                toast.success('Wallet address copied!')
-                              }}
-                            >
-                              <Copy className="h-3 w-3" />
-                            </Button>
+                            )}
+                            {(method.details as any)?.network && (
+                              <div>
+                                <span className="text-sm">Network: </span>
+                                <span className="font-semibold text-blue-600">{(method.details as any).network}</span>
                           </div>
+                            )}
+                          </>
                         )}
-                        {(selectedPaymentMethod.details as any)?.network && (
+
+                        {((method.type as string) === 'skrill' || (method.type as string) === 'paypal') && (
+                          <>
+                            {(method.details as any)?.email && (
+                              <div>
+                                <span className="text-sm">Email: </span>
+                                <span className="font-semibold text-blue-600">{(method.details as any).email}</span>
+                              </div>
+                            )}
+                            {(method.details as any)?.account_name && (
                           <div>
-                            <span className="font-medium">Network: </span>
-                            <span>{(selectedPaymentMethod.details as any).network}</span>
+                                <span className="text-sm">Account Name: </span>
+                                <span className="font-semibold text-blue-600">{(method.details as any).account_name}</span>
                           </div>
                         )}
                       </>
                     )}
-                    {(selectedPaymentMethod.details as any)?.instructions && (
-                      <div className="pt-2 border-t border-blue-300">
-                        <p className="text-xs text-blue-700">
-                          <span className="font-medium">Note: </span>
-                          {(selectedPaymentMethod.details as any).instructions}
+
+                        <div className="border-t border-gray-300 pt-3 mt-3">
+                          <p className="text-sm">
+                            After successful payment, kindly click on the "I have made payment" button at the bottom of this page.
                         </p>
                       </div>
+                      </>
                     )}
                   </div>
+
+                  {/* Action Button */}
                   <Button
-                    type="button"
-                    className="w-full mt-4"
-                    onClick={handleConfirmPayment}
+                    onClick={() => handlePaymentMethodAction(method)}
+                    className={`w-full ${
+                      isPaystack
+                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                        : 'bg-purple-600 hover:bg-purple-700 text-white'
+                    }`}
+                    size="lg"
                   >
-                    I have made payment
+                    {isPaystack || isOnlinePayment
+                      ? `Pay ${currency}${formattedPrice}`
+                      : 'I have made payment'
+                    }
                   </Button>
+                </div>
+              )
+            })}
                 </div>
               )}
 
+        {/* Payment Proof Upload Modal */}
+        <Dialog open={showPaymentConfirmation} onOpenChange={setShowPaymentConfirmation}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Upload Payment Proof</DialogTitle>
+              <DialogDescription>
+                Upload proof of your payment for {selectedPaymentMethod?.name || 'selected payment method'}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-6 py-4">
               {/* Payment Proof Upload */}
-              {showPaymentConfirmation && selectedPaymentMethod && (
                 <div className="space-y-3">
                   <Label>Payment Proof</Label>
                   {!proofPreview ? (
@@ -662,13 +897,28 @@ function CheckoutContent() {
                     </div>
                   )}
                 </div>
-              )}
 
-              {/* Submit Button */}
-              {showPaymentConfirmation && selectedPaymentMethod && (
+              <div className="rounded-lg bg-blue-50 p-4 text-blue-800 text-sm">
+                <p className="font-semibold mb-1">Note:</p>
+                <p>
+                  After uploading your payment proof, your subscription will be set to pending.
+                  An admin will review and confirm your payment to activate your subscription.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
               <Button
-                className="w-full"
-                size="lg"
+                variant="outline"
+                onClick={() => {
+                  setShowPaymentConfirmation(false)
+                  setPaymentProof(null)
+                  setProofPreview(null)
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
                 onClick={handleSubmit}
                   disabled={!paymentProof || submitting || uploading}
               >
@@ -678,17 +928,18 @@ function CheckoutContent() {
                     'Submit Payment Proof'
                 )}
               </Button>
-              )}
+            </div>
+          </DialogContent>
+        </Dialog>
 
-              <div className="rounded-lg bg-blue-50 p-4 text-blue-800 text-sm">
-                <p className="font-semibold mb-1">Note:</p>
-                <p>
-                  After uploading your payment proof, your subscription will be set to pending.
-                  An admin will review and confirm your payment to activate your subscription.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Support Link */}
+        <div className="text-center mt-8 text-sm text-gray-600">
+          <p>
+            Can't find your suitable payment method? Contact support team on{' '}
+            <a href="https://wa.me/your-number" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+              WhatsApp
+            </a>
+          </p>
         </div>
       </div>
     </PageLayout>

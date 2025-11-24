@@ -6,6 +6,9 @@ export type NotificationType =
   | 'subscription_expired'
   | 'subscription_removed'
   | 'admin_new_subscription'
+  | 'payment_rejected'
+  | 'payment_approved'
+  | 'admin_new_payment'
 
 interface CreateNotificationParams {
   userId: string

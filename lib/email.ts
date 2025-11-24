@@ -208,5 +208,116 @@ export const emailTemplates = {
       </html>
     `,
   }),
+
+  paymentApproved: (planName: string) => ({
+    subject: `Payment Approved - ${planName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+            .button { display: inline-block; padding: 12px 30px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>✅ Payment Approved!</h1>
+            </div>
+            <div class="content">
+              <p>Hello,</p>
+              <p>Great news! Your payment for <strong>${planName}</strong> has been approved and your subscription is now active!</p>
+              <p>You can now access all premium features and predictions for your plan.</p>
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/dashboard" class="button">Go to Dashboard</a>
+              <p style="margin-top: 30px; color: #666; font-size: 14px;">Best regards,<br>The PredictSafe Team</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }),
+
+  adminNewPayment: (userEmail: string, userName: string, planName: string, amount: string, currency: string) => ({
+    subject: `New Payment Submitted - ${planName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+            .info-box { background: white; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #8b5cf6; }
+            .button { display: inline-block; padding: 12px 30px; background: #8b5cf6; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>💰 New Payment Submitted!</h1>
+            </div>
+            <div class="content">
+              <p>Hello Admin,</p>
+              <p>A new payment has been submitted and requires your review:</p>
+              <div class="info-box">
+                <p><strong>User:</strong> ${userName || userEmail}</p>
+                <p><strong>Email:</strong> ${userEmail}</p>
+                <p><strong>Plan:</strong> ${planName}</p>
+                <p><strong>Amount:</strong> ${currency} ${amount}</p>
+              </div>
+              <p>Please review the payment proof and activate the subscription if payment is confirmed.</p>
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/admin/transactions" class="button">Review Payment</a>
+              <p style="margin-top: 30px; color: #666; font-size: 14px;">Best regards,<br>PredictSafe System</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }),
+
+  paymentRejected: (planName: string, reason?: string) => ({
+    subject: `Payment Rejected - ${planName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+            .alert-box { background: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 5px; margin: 20px 0; }
+            .button { display: inline-block; padding: 12px 30px; background: #1e40af; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>❌ Payment Rejected</h1>
+            </div>
+            <div class="content">
+              <p>Hello,</p>
+              <p>We regret to inform you that your payment for <strong>${planName}</strong> has been rejected.</p>
+              ${reason ? `
+              <div class="alert-box">
+                <p><strong>Reason:</strong></p>
+                <p>${reason}</p>
+              </div>
+              ` : ''}
+              <p>If you believe this is an error, please contact our support team with your payment proof for review.</p>
+              <p>You can resubmit your payment with a valid proof of payment.</p>
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/subscribe" class="button">Try Again</a>
+              <p style="margin-top: 30px; color: #666; font-size: 14px;">If you have any questions, please contact our support team.<br>Best regards,<br>The PredictSafe Team</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }),
 }
 

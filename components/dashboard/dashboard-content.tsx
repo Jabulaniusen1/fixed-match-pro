@@ -50,9 +50,9 @@ export function DashboardContent({
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-2 border-gray-200 hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 lg:pb-2 p-4">
             <CardTitle className="text-sm font-medium text-gray-600">Total Subscriptions</CardTitle>
             <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
               <Crown className="h-4 w-4 text-[#1e40af]" />
@@ -60,12 +60,12 @@ export function DashboardContent({
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <div className="text-2xl font-bold text-gray-900">{subscriptions.length}</div>
-            <p className="text-xs text-gray-500 mt-1">All time subscriptions</p>
+            <p className="text-xs text-gray-500 lg:mt-1">All time subscriptions</p>
           </CardContent>
         </Card>
 
         <Card className="border-2 border-gray-200 hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 lg:pb-2 p-4">
             <CardTitle className="text-sm font-medium text-gray-600">Active Plans</CardTitle>
             <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
               <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -73,12 +73,12 @@ export function DashboardContent({
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <div className="text-2xl font-bold text-gray-900">{activeSubscriptions}</div>
-            <p className="text-xs text-green-600 mt-1">Currently active</p>
+            <p className="text-xs text-green-600 lg:mt-1">Currently active</p>
           </CardContent>
         </Card>
 
         <Card className="border-2 border-gray-200 hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 lg:pb-2 p-4">
             <CardTitle className="text-sm font-medium text-gray-600">Days with Us</CardTitle>
             <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
               <Calendar className="h-4 w-4 text-purple-600" />
@@ -86,12 +86,12 @@ export function DashboardContent({
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <div className="text-2xl font-bold text-gray-900">{daysSince}</div>
-            <p className="text-xs text-gray-500 mt-1">Member since {formatDate(memberSince)}</p>
+            <p className="text-xs text-gray-500 lg:mt-1">Member since {formatDate(memberSince)}</p>
           </CardContent>
         </Card>
 
         <Card className="border-2 border-gray-200 hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 lg:pb-2 p-4">
             <CardTitle className="text-sm font-medium text-gray-600">Pending Status</CardTitle>
             <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
               <Clock className="h-4 w-4 text-yellow-600" />
@@ -101,7 +101,7 @@ export function DashboardContent({
             <div className="text-2xl font-bold text-gray-900">
               {subscriptions.filter(s => s.plan_status === 'pending' || s.plan_status === 'pending_activation').length}
             </div>
-            <p className="text-xs text-gray-500 mt-1">Awaiting activation</p>
+            <p className="text-xs text-gray-500 lg:mt-1">Awaiting activation</p>
           </CardContent>
         </Card>
       </div>

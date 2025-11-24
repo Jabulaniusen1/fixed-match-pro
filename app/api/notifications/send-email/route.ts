@@ -17,11 +17,12 @@ export async function POST(request: NextRequest) {
     // Get user email if not provided
     let recipientEmail = userEmail
     if (!recipientEmail && userId) {
-      const { data: userData } = await supabase
+      const userDataResult: any = await supabase
         .from('users')
         .select('email, full_name')
         .eq('id', userId)
         .single()
+      const userData = userDataResult.data as { email: string; full_name?: string } | null
       
       if (userData) {
         recipientEmail = userData.email
@@ -58,17 +59,18 @@ export async function POST(request: NextRequest) {
         }
         emailData = emailTemplates.subscriptionRemoved(planName)
         break
-      case 'admin_new_subscription':
-        if (!planName || !userEmail) {
-          return NextResponse.json({ error: 'Plan name and user email required' }, { status: 400 })
+      case 'payment_rejected':
+        if (!planName) {
+          return NextResponse.json({ error: 'Plan name required' }, { status: 400 })
         }
-        // Get admin email from environment or use a default
-        const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER
-        if (!adminEmail) {
-          return NextResponse.json({ error: 'Admin email not configured' }, { status: 500 })
+        const { reason } = body
+        emailData = emailTemplates.paymentRejected(planName, reason)
+        break
+      case 'payment_approved':
+        if (!planName) {
+          return NextResponse.json({ error: 'Plan name required' }, { status: 400 })
         }
-        emailData = emailTemplates.adminNewSubscription(userEmail, userName || userEmail, planName)
-        recipientEmail = adminEmail
+        emailData = emailTemplates.paymentApproved(planName)
         break
       default:
         return NextResponse.json({ error: 'Invalid notification type' }, { status: 400 })

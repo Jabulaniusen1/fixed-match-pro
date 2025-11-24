@@ -7,13 +7,25 @@ import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Combobox } from '@/components/ui/combobox'
 import { Badge } from '@/components/ui/badge'
-import { Plan, PlanPrice, Country } from '@/types'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Plan, PlanPrice, Country, PaymentMethod } from '@/types'
 import { Database } from '@/types/database'
+import Image from 'next/image'
 
 type CountryOption = 'Nigeria' | 'Ghana' | 'Kenya' | 'Other'
 
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'country'>
+
+// Helper function to map any country name to supported CountryOption
+const mapCountryToOption = (countryName: string): CountryOption => {
+  if (countryName === 'Nigeria') return 'Nigeria'
+  if (countryName === 'Ghana') return 'Ghana'
+  if (countryName === 'Kenya') return 'Kenya'
+  return 'Other'
+}
 
 function SubscribeContent() {
   const router = useRouter()
@@ -26,8 +38,36 @@ function SubscribeContent() {
   const [selectedDuration, setSelectedDuration] = useState<number>(7)
   const [selectedPrice, setSelectedPrice] = useState<PlanPrice | null>(null)
   const [user, setUser] = useState<any>(null)
-  const [userCountry, setUserCountry] = useState<CountryOption>('Nigeria')
+  const [userCountry, setUserCountry] = useState<string>('Nigeria')
+  const [selectedCountry, setSelectedCountry] = useState<string>('Nigeria')
+  const [countries, setCountries] = useState<Array<{ value: string; label: string }>>([])
+  const [loadingCountries, setLoadingCountries] = useState(true)
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Fetch countries from API
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        setLoadingCountries(true)
+        const response = await fetch('/api/countries')
+        if (!response.ok) throw new Error('Failed to fetch countries')
+        const data = await response.json()
+        
+        const countryOptions = data.map((country: any) => ({
+          value: country.name,
+          label: country.name,
+        }))
+        
+        setCountries(countryOptions)
+      } catch (error) {
+        console.error('Error fetching countries:', error)
+      } finally {
+        setLoadingCountries(false)
+      }
+    }
+    fetchCountries()
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,8 +90,12 @@ function SubscribeContent() {
       
       const userProfile = result.data as UserProfile | null
 
-      if (userProfile?.country && ['Nigeria', 'Ghana', 'Kenya', 'Other'].includes(userProfile.country)) {
-        setUserCountry(userProfile.country as CountryOption)
+      if (userProfile?.country) {
+        // Map stored country option to full country name for display
+        const countryOption = userProfile.country as CountryOption
+        const countryName = countryOption === 'Other' ? 'Nigeria' : countryOption
+        setUserCountry(countryName)
+        setSelectedCountry(countryName)
       }
 
       // Get plan
@@ -67,7 +111,7 @@ function SubscribeContent() {
           setPlan(planData)
 
           // Get prices for user's country
-          const countryName = userProfile?.country || 'Nigeria'
+          const countryOption = userProfile?.country ? mapCountryToOption(userProfile.country === 'Other' ? 'Nigeria' : userProfile.country) : 'Nigeria'
           const { data: pricesData } = await supabase
             .from('plan_prices')
             .select('*')
@@ -77,7 +121,7 @@ function SubscribeContent() {
           if (pricesData && pricesData.length > 0) {
             setPrices(pricesData)
             // Prefer country-specific price, fallback to Nigeria, then any price
-            const countryPrice = pricesData.find((p: any) => p.country === countryName)
+            const countryPrice = pricesData.find((p: any) => p.country === countryOption)
             if (countryPrice) {
               setSelectedPrice(countryPrice)
             } else {
@@ -93,6 +137,73 @@ function SubscribeContent() {
 
     fetchData()
   }, [planSlug, selectedDuration, router])
+
+  // Fetch payment methods when country changes
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      const supabase = createClient()
+      const { data: methodsData } = await supabase
+        .from('payment_methods')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order')
+
+      // Filter payment methods based on selected country
+      const filteredMethods = methodsData?.filter((method: any) => {
+        const methodData = method as any
+        const methodCountries = methodData.countries 
+          ? (Array.isArray(methodData.countries) ? methodData.countries : [])
+          : (methodData.country ? [methodData.country] : [])
+        
+        // Crypto and Skrill are always available
+        if (method.type === 'crypto' || method.type === 'skrill') {
+          return true
+        }
+        
+        // If no countries specified, available for all
+        if (methodCountries.length === 0) {
+          return true
+        }
+        
+        // Check if selected country is in the list
+        return methodCountries.includes(selectedCountry)
+      })
+
+      if (filteredMethods) {
+        setPaymentMethods(filteredMethods)
+      }
+    }
+
+    fetchPaymentMethods()
+  }, [selectedCountry])
+
+  // Update prices when country changes
+  useEffect(() => {
+    const updatePrices = async () => {
+      if (!plan) return
+
+      const supabase = createClient()
+      const { data: pricesData } = await supabase
+        .from('plan_prices')
+        .select('*')
+        .eq('plan_id', plan.id)
+        .eq('duration_days', selectedDuration)
+
+      if (pricesData && pricesData.length > 0) {
+        setPrices(pricesData)
+        // Prefer country-specific price, fallback to Nigeria, then any price
+        const countryPrice = pricesData.find((p: any) => p.country === selectedCountry)
+        if (countryPrice) {
+          setSelectedPrice(countryPrice)
+        } else {
+          const nigeriaPrice = pricesData.find((p: any) => p.country === 'Nigeria')
+          setSelectedPrice(nigeriaPrice || pricesData[0])
+        }
+      }
+    }
+
+    updatePrices()
+  }, [selectedCountry, plan, selectedDuration])
 
   const handlePayment = () => {
     if (!plan || !selectedPrice) return
@@ -126,13 +237,14 @@ function SubscribeContent() {
     )
   }
 
-  // Determine currency - Naira for Nigeria/Other, others based on country
+  // Determine currency - Naira for Nigeria/Other, others based on selected country
   const getCurrencySymbol = () => {
-    if (userCountry === 'Nigeria' || userCountry === 'Other') {
+    const countryOption = mapCountryToOption(selectedCountry)
+    if (countryOption === 'Nigeria' || countryOption === 'Other') {
       return '₦'
-    } else if (userCountry === 'Ghana') {
+    } else if (countryOption === 'Ghana') {
       return '₵'
-    } else if (userCountry === 'Kenya') {
+    } else if (countryOption === 'Kenya') {
       return 'KSh'
     }
     return '₦' // Default to Naira
@@ -172,6 +284,59 @@ function SubscribeContent() {
             </>
           ) : (
             <>
+              {/* Country Selection */}
+              <div className="space-y-2">
+                <Label>Select Country</Label>
+                {loadingCountries ? (
+                  <div className="text-center py-4 border rounded-md">Loading countries...</div>
+                ) : (
+                  <Combobox
+                    options={countries}
+                    value={selectedCountry}
+                    onValueChange={(value) => setSelectedCountry(value)}
+                    placeholder="Select a country..."
+                    searchPlaceholder="Search countries..."
+                    emptyMessage="No country found."
+                  />
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Payment methods will be filtered based on your country selection
+                </p>
+              </div>
+
+              {/* Payment Methods Preview */}
+              {paymentMethods.length > 0 && (
+                <div className="space-y-2">
+                  <Label>Available Payment Methods</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {paymentMethods.map((method) => (
+                      <div
+                        key={method.id}
+                        className="flex items-center gap-2 p-2 border rounded-lg bg-gray-50"
+                      >
+                        {method.logo_url ? (
+                          <div className="relative w-8 h-8 flex-shrink-0">
+                            <Image
+                              src={method.logo_url}
+                              alt={method.name}
+                              fill
+                              className="object-contain"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 flex-shrink-0 border rounded flex items-center justify-center bg-white">
+                            <span className="text-xs font-semibold">
+                              {method.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                        <span className="text-sm font-medium truncate">{method.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <label className="text-sm font-medium">Select Duration</label>
                 <Select

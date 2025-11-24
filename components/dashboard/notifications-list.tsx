@@ -104,6 +104,14 @@ export function NotificationsList({ notifications: initialNotifications, unreadC
         return '⏰'
       case 'subscription_removed':
         return '⚠️'
+      case 'payment_rejected':
+        return '❌'
+      case 'payment_approved':
+        return '✅'
+      case 'admin_new_payment':
+        return '💰'
+      case 'admin_new_subscription':
+        return '🎉'
       default:
         return '🔔'
     }
@@ -119,6 +127,14 @@ export function NotificationsList({ notifications: initialNotifications, unreadC
         return 'bg-yellow-100 text-yellow-800'
       case 'subscription_removed':
         return 'bg-red-100 text-red-800'
+      case 'payment_rejected':
+        return 'bg-red-100 text-red-800'
+      case 'payment_approved':
+        return 'bg-green-100 text-green-800'
+      case 'admin_new_payment':
+        return 'bg-purple-100 text-purple-800'
+      case 'admin_new_subscription':
+        return 'bg-purple-100 text-purple-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }

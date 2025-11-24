@@ -428,39 +428,39 @@ export interface Database {
         Row: {
           id: string
           name: string
-          type: 'bank_transfer' | 'crypto'
+          type: 'bank_transfer' | 'mobile_money' | 'crypto' | 'skrill' | 'paypal' | 'other'
           currency: string | null
           details: Json
           is_active: boolean
           display_order: number
           logo_url: string | null
-          country: string | null
+          countries: Json | null
           created_at: string
           updated_at: string
         }
         Insert: {
           id?: string
           name: string
-          type: 'bank_transfer' | 'crypto'
+          type: 'bank_transfer' | 'mobile_money' | 'crypto' | 'skrill' | 'paypal' | 'other'
           currency?: string | null
           details: Json
           is_active?: boolean
           display_order?: number
           logo_url?: string | null
-          country?: string | null
+          countries?: Json | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
           name?: string
-          type?: 'bank_transfer' | 'crypto'
+          type?: 'bank_transfer' | 'mobile_money' | 'crypto' | 'skrill' | 'paypal' | 'other'
           currency?: string | null
           details?: Json
           is_active?: boolean
           display_order?: number
           logo_url?: string | null
-          country?: string | null
+          countries?: Json | null
           created_at?: string
           updated_at?: string
         }

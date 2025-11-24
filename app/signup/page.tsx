@@ -13,6 +13,7 @@ import { Combobox } from '@/components/ui/combobox'
 import { toast } from 'sonner'
 import { Database } from '@/types/database'
 import { Navbar } from '@/components/layout/navbar'
+import { getRandomAvatar } from '@/lib/utils/avatars'
 
 type UserInsert = Database['public']['Tables']['users']['Insert']
 
@@ -122,6 +123,29 @@ export default function SignupPage() {
       if (authError) throw authError
 
       if (authData.user) {
+        // Get a random avatar from the avatars bucket
+        console.log('Fetching random avatar...')
+        const randomAvatarUrl = await getRandomAvatar()
+        console.log('Random avatar URL:', randomAvatarUrl)
+        
+        // Function to update user with avatar
+        const updateUserAvatar = async () => {
+          if (randomAvatarUrl) {
+            const { error: updateError } = await supabase
+              .from('users')
+              .update({ avatar_url: randomAvatarUrl })
+              .eq('id', authData.user.id)
+            
+            if (updateError) {
+              console.error('Error updating user avatar:', updateError)
+            } else {
+              console.log('Successfully updated user avatar')
+            }
+          } else {
+            console.warn('No avatar URL to assign')
+          }
+        }
+        
         // Try to create user profile manually as backup (trigger should handle this)
         // This ensures the user is created even if trigger hasn't run yet
         try {
@@ -130,6 +154,7 @@ export default function SignupPage() {
             email,
             full_name: fullName,
           country: countryName,
+          avatar_url: randomAvatarUrl,
         }
         const result: any = await supabase
           .from('users')
@@ -137,18 +162,56 @@ export default function SignupPage() {
           .insert(userData)
         const { error: profileError } = result
 
-          // If error is due to duplicate (trigger already created it), that's fine
-          if (profileError && !profileError.message?.includes('duplicate') && !profileError.code?.includes('23505')) {
+          // If error is due to duplicate (trigger already created it), update with avatar
+          if (profileError && (profileError.message?.includes('duplicate') || profileError.code?.includes('23505'))) {
+            // User already exists (trigger created it), update with avatar
+            console.log('User already exists, updating avatar...')
+            await updateUserAvatar()
+          } else if (profileError) {
             console.warn('User profile creation warning:', profileError)
-            // Don't throw - trigger will handle it
+            // Still try to update avatar even if insert failed
+            await updateUserAvatar()
+          } else {
+            // Insert succeeded, but also ensure avatar is set (in case it was null)
+            console.log('User created successfully, verifying avatar...')
+            if (!randomAvatarUrl) {
+              // If avatar fetch failed, try again
+              const retryAvatarUrl = await getRandomAvatar()
+              if (retryAvatarUrl) {
+                await supabase
+                  .from('users')
+                  .update({ avatar_url: retryAvatarUrl })
+                  .eq('id', authData.user.id)
+              }
+            }
           }
         } catch (profileError: any) {
           // If it's a duplicate key error, the trigger already created the user
-          if (!profileError.message?.includes('duplicate') && !profileError.code?.includes('23505')) {
+          if (profileError.message?.includes('duplicate') || profileError.code?.includes('23505')) {
+            // User already exists (trigger created it), update with avatar
+            console.log('User already exists (catch), updating avatar...')
+            await updateUserAvatar()
+          } else {
             console.warn('User profile creation warning:', profileError)
-            // Don't throw - trigger will handle it
+            // Still try to update avatar
+            await updateUserAvatar()
           }
         }
+        
+        // Final fallback: wait a bit and try to update avatar one more time
+        // This handles race conditions where trigger creates user after our insert attempt
+        setTimeout(async () => {
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('avatar_url')
+            .eq('id', authData.user.id)
+            .single()
+          
+          if (existingUser && !existingUser.avatar_url && randomAvatarUrl) {
+            console.log('Fallback: Updating avatar after delay...')
+            await updateUserAvatar()
+          }
+        }, 1000)
 
         toast.success('Account created successfully! Please check your email to verify your account.')
         router.push('/login')
@@ -321,4 +384,5 @@ export default function SignupPage() {
     </div>
   )
 }
+
 

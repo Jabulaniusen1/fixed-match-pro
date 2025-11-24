@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Database } from '@/types/database'
+import { SubscriptionCountdown } from '@/components/admin/subscription-countdown'
 
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'is_admin'>
 
@@ -67,6 +68,17 @@ export default async function AdminDashboard() {
     `)
     .order('created_at', { ascending: false })
     .limit(10)
+
+  // Get active subscriptions with expiry dates for countdown
+  const { data: activeSubscriptions } = await supabase
+    .from('user_subscriptions')
+    .select(`
+      *,
+      users(email, full_name),
+      plan:plans(name)
+    `)
+    .eq('plan_status', 'active')
+    .not('expiry_date', 'is', null)
 
   return (
     <AdminLayout>
@@ -190,6 +202,11 @@ export default async function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Subscription Expiry Countdown */}
+        {activeSubscriptions && activeSubscriptions.length > 0 && (
+          <SubscriptionCountdown subscriptions={activeSubscriptions} />
+        )}
 
         {/* Recent Transactions */}
         <Card className="border-2 border-gray-200 shadow-sm">

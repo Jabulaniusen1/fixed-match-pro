@@ -62,7 +62,7 @@ export function Navbar() {
   }
 
   return (
-    <nav className="relative bg-white border-b border-purple-500">
+    <nav className="relative py-4 bg-white border-b border-purple-500">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
