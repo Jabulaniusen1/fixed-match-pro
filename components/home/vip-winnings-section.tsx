@@ -8,7 +8,12 @@ import { Badge } from '@/components/ui/badge'
 import { VIPWinning } from '@/types'
 import { formatDate } from '@/lib/utils/date'
 
-export function VIPWinningsSection() {
+interface VIPWinningsSectionProps {
+  planIds?: string[] // Optional: filter by plan IDs
+  showAll?: boolean // If true, show all wins regardless of plan
+}
+
+export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSectionProps) {
   const [winnings, setWinnings] = useState<VIPWinning[]>([])
   const [loading, setLoading] = useState(true)
   const [offset, setOffset] = useState(0)
@@ -16,16 +21,23 @@ export function VIPWinningsSection() {
 
   useEffect(() => {
     fetchWinnings()
-  }, [offset])
+  }, [offset, planIds, showAll])
 
   const fetchWinnings = async () => {
     setLoading(true)
     const supabase = createClient()
     
-    const { data, error } = await supabase
+    let query = supabase
       .from('vip_winnings')
       .select('*')
       .order('date', { ascending: false })
+
+    // Filter by plan IDs if provided and not showing all
+    if (!showAll && planIds && planIds.length > 0) {
+      query = query.in('plan_id', planIds)
+    }
+    
+    const { data, error } = await query
       .range(offset, offset + limit - 1)
 
     if (error) {
@@ -46,10 +58,6 @@ export function VIPWinningsSection() {
   return (
     <section className="py-8 lg:py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="mb-4 lg:mb-8">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 lg:mb-2 text-[#1e40af] text-center">VIP Previous Winnings</h2>
-          <p className="text-sm lg:text-base text-gray-600 text-center">Track our successful predictions</p>
-        </div>
         
         {loading ? (
           <div className="grid gap-3 lg:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -90,6 +98,9 @@ export function VIPWinningsSection() {
                     <h3 className="font-bold text-base lg:text-lg mb-1 lg:mb-2 text-gray-900">
                       {winning.home_team} vs {winning.away_team}
                     </h3>
+                    {winning.league && (
+                      <p className="text-xs text-gray-500 mb-1">{winning.league}</p>
+                    )}
                     <p className="text-xs lg:text-sm font-semibold text-[#1e40af] mb-1 lg:mb-2">
                       {winning.prediction_type}
                     </p>

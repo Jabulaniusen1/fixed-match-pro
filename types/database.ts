@@ -249,7 +249,9 @@ export interface Database {
       vip_winnings: {
         Row: {
           id: string
+          plan_id: string | null
           plan_name: string
+          league: string | null
           home_team: string
           away_team: string
           prediction_type: string
@@ -259,7 +261,9 @@ export interface Database {
         }
         Insert: {
           id?: string
+          plan_id?: string | null
           plan_name: string
+          league?: string | null
           home_team: string
           away_team: string
           prediction_type: string
@@ -269,7 +273,9 @@ export interface Database {
         }
         Update: {
           id?: string
+          plan_id?: string | null
           plan_name?: string
+          league?: string | null
           home_team?: string
           away_team?: string
           prediction_type?: string

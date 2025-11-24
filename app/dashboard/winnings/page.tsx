@@ -18,17 +18,26 @@ export default async function WinningsPage() {
     .eq('id', user.id)
     .single()
 
+  // Get user's active subscriptions to filter VIP wins by their plans
+  const { data: subscriptions } = await supabase
+    .from('user_subscriptions')
+    .select('plan_id')
+    .eq('user_id', user.id)
+    .eq('plan_status', 'active')
+
+  const planIds = (subscriptions as Array<{ plan_id: string }> | null)?.map((s) => s.plan_id).filter(Boolean) || []
+
   return (
     <DashboardLayout user={user} userProfile={userProfile}>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Previous VIP Winnings</h1>
           <p className="text-muted-foreground">
-            View winning records from all paid packages
+            View winning records from your subscribed packages
           </p>
         </div>
 
-        <VIPWinningsSection />
+        <VIPWinningsSection planIds={planIds} showAll={planIds.length === 0} />
       </div>
     </DashboardLayout>
   )

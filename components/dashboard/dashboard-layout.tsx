@@ -46,11 +46,11 @@ const navItems: NavItem[] = [
     label: 'Winnings',
     icon: <Trophy className="h-5 w-5 lg:h-6 lg:w-6" />
   },
-  {
-    href: '/dashboard/settings',
-    label: 'Settings',
-    icon: <Settings className="h-5 w-5 lg:h-6 lg:w-6" />
-  }
+  // {
+  //   href: '/dashboard/settings',
+  //   label: 'Settings',
+  //   icon: <Settings className="h-5 w-5 lg:h-6 lg:w-6" />
+  // }
 ]
 
 export function DashboardLayout({ children, user, userProfile }: DashboardLayoutProps) {

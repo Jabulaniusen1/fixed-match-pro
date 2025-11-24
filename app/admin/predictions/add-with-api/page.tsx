@@ -7,11 +7,26 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
 import { AdminLayout } from '@/components/admin/admin-layout'
 import { toast } from 'sonner'
 import { Database } from '@/types/database'
 
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'is_admin'>
+
+interface PreviewPrediction {
+  plan_type: string
+  home_team: string
+  away_team: string
+  league: string
+  prediction_type: string
+  odds: number
+  confidence: number
+  kickoff_time: string
+  status: string
+}
 
 function AddPredictionWithAPIContent() {
   const router = useRouter()
@@ -19,12 +34,15 @@ function AddPredictionWithAPIContent() {
   const planSlug = searchParams.get('plan') || 'profit-multiplier'
   
   const [loading, setLoading] = useState(false)
+  const [updating, setUpdating] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
   const [date, setDate] = useState(() => {
     const today = new Date()
     return today.toISOString().split('T')[0]
   })
   const [minConfidence, setMinConfidence] = useState([70]) // Default minimum confidence: 70%
+  const [previewPredictions, setPreviewPredictions] = useState<PreviewPrediction[]>([])
+  const [selectedPredictions, setSelectedPredictions] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -69,6 +87,8 @@ function AddPredictionWithAPIContent() {
   const handleSyncPredictions = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
+    setPreviewPredictions([])
+    setSelectedPredictions(new Set())
 
     try {
       const planType = getPlanTypeFromSlug(planSlug)
@@ -81,25 +101,88 @@ function AddPredictionWithAPIContent() {
           date,
           planType,
           minConfidence: minConfidence[0],
+          preview: true, // Enable preview mode
         }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to sync predictions')
+        throw new Error(data.error || 'Failed to fetch predictions')
       }
 
-      const message = data.filtered > 0
-        ? `Successfully synced ${data.synced || 0} predictions! ${data.filtered} predictions were filtered out (confidence < ${data.minConfidence}%)`
-        : `Successfully synced ${data.synced || 0} predictions!`
+      if (data.predictions && Array.isArray(data.predictions)) {
+        setPreviewPredictions(data.predictions)
+        // Select all by default
+        setSelectedPredictions(new Set(data.predictions.map((_: any, index: number) => index)))
+        
+        const message = data.filtered > 0
+          ? `Found ${data.predictions.length} predictions! ${data.filtered} predictions were filtered out (confidence < ${data.minConfidence}%)`
+          : `Found ${data.predictions.length} predictions!`
+        
+        toast.success(message)
+      } else {
+        toast.info('No predictions found for the selected date')
+      }
+    } catch (error: any) {
+      console.error('Error fetching predictions:', error)
+      toast.error(error.message || 'Failed to fetch predictions')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSelectAll = () => {
+    if (selectedPredictions.size === previewPredictions.length) {
+      setSelectedPredictions(new Set())
+    } else {
+      setSelectedPredictions(new Set(previewPredictions.map((_, index) => index)))
+    }
+  }
+
+  const handleToggleSelection = (index: number) => {
+    const newSelected = new Set(selectedPredictions)
+    if (newSelected.has(index)) {
+      newSelected.delete(index)
+    } else {
+      newSelected.add(index)
+    }
+    setSelectedPredictions(newSelected)
+  }
+
+  const handleUpdateSelected = async () => {
+    if (selectedPredictions.size === 0) {
+      toast.error('Please select at least one prediction to update')
+      return
+    }
+
+    setUpdating(true)
+
+    try {
+      const predictionsToInsert = Array.from(selectedPredictions).map(index => previewPredictions[index])
       
-      toast.success(message)
+      const response = await fetch('/api/football/insert-predictions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          predictions: predictionsToInsert,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to insert predictions')
+      }
+
+      toast.success(`Successfully inserted ${data.synced || 0} predictions!`)
       router.push('/admin/predictions')
     } catch (error: any) {
-      console.error('Error syncing predictions:', error)
-      toast.error(error.message || 'Failed to sync predictions')
-      setLoading(false)
+      console.error('Error inserting predictions:', error)
+      toast.error(error.message || 'Failed to insert predictions')
+      setUpdating(false)
     }
   }
 
@@ -185,7 +268,7 @@ function AddPredictionWithAPIContent() {
 
               <div className="flex gap-4 pt-4">
                 <Button type="submit" disabled={loading} className="flex-1">
-                  {loading ? 'Syncing...' : 'Sync Predictions'}
+                  {loading ? 'Fetching Predictions...' : 'Fetch Predictions'}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
                   Cancel
@@ -194,6 +277,93 @@ function AddPredictionWithAPIContent() {
             </form>
           </CardContent>
         </Card>
+
+        {previewPredictions.length > 0 && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base lg:text-lg">Preview Predictions</CardTitle>
+                  <CardDescription className="text-xs lg:text-sm">
+                    Review and select predictions to insert ({selectedPredictions.size} of {previewPredictions.length} selected)
+                  </CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSelectAll}
+                  >
+                    {selectedPredictions.size === previewPredictions.length ? 'Deselect All' : 'Select All'}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleUpdateSelected}
+                    disabled={updating || selectedPredictions.size === 0}
+                  >
+                    {updating ? 'Updating...' : `Update Selected (${selectedPredictions.size})`}
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={selectedPredictions.size === previewPredictions.length && previewPredictions.length > 0}
+                          onCheckedChange={handleSelectAll}
+                        />
+                      </TableHead>
+                      <TableHead>Match</TableHead>
+                      <TableHead>League</TableHead>
+                      <TableHead>Prediction</TableHead>
+                      <TableHead>Odds</TableHead>
+                      <TableHead>Confidence</TableHead>
+                      <TableHead>Kickoff</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {previewPredictions.map((prediction, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedPredictions.has(index)}
+                            onCheckedChange={() => handleToggleSelection(index)}
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {prediction.home_team} vs {prediction.away_team}
+                        </TableCell>
+                        <TableCell>{prediction.league}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{prediction.prediction_type}</Badge>
+                        </TableCell>
+                        <TableCell>{prediction.odds.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <Badge variant={prediction.confidence >= 80 ? 'default' : 'secondary'}>
+                            {prediction.confidence}%
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(prediction.kickoff_time).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </AdminLayout>
   )

@@ -8,7 +8,7 @@ const API_KEY = process.env.API_FOOTBALL_KEY || '1cb32db603edc3ff2e0c13ba21224f6
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { date, planType = 'free', minConfidence = 50 } = body
+    const { date, planType = 'free', minConfidence = 50, preview = false } = body
 
     if (!date) {
       return NextResponse.json({ error: 'Date is required' }, { status: 400 })
@@ -165,6 +165,17 @@ export async function POST(request: NextRequest) {
         console.error(`Error processing fixture ${fixture.match_id}:`, error)
         // Continue with next fixture
       }
+    }
+
+    // If preview mode, return predictions without inserting
+    if (preview) {
+      return NextResponse.json({ 
+        message: 'Predictions fetched successfully', 
+        predictions: predictions,
+        preview: true,
+        filtered: filteredCount,
+        minConfidence: confidenceThreshold
+      })
     }
 
     // Insert predictions into database

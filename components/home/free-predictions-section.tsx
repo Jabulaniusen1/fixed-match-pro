@@ -562,14 +562,23 @@ export function FreePredictionsSection() {
                   </div>
 
                   {/* Header Bar */}
-                  <div className="bg-[#1e40af] text-white px-3 py-2 rounded grid grid-cols-3 gap-2 text-xs font-semibold">
+                  <div className="bg-[#1e40af] text-white px-3 py-2 rounded grid grid-cols-4 gap-2 text-xs font-semibold">
+                    <div>Status</div>
                     <div>Tip</div>
                     <div className="text-center">Odd</div>
                     <div className="text-center">Confidence</div>
                   </div>
 
                   {/* Prediction Row */}
-                  <div className="bg-gray-200 px-3 py-2 rounded grid grid-cols-3 gap-2 items-center">
+                  <div className="bg-gray-200 px-3 py-2 rounded grid grid-cols-4 gap-2 items-center">
+                    <div className="flex items-center">
+                      <Badge
+                        variant={prediction.status === 'finished' ? 'default' : prediction.status === 'live' ? 'destructive' : 'outline'}
+                        className="text-xs"
+                      >
+                        {prediction.status === 'finished' ? 'Finished' : prediction.status === 'live' ? 'Live' : 'Not Started'}
+                      </Badge>
+                    </div>
                     <div className="text-sm font-medium text-gray-900">
                       {prediction.prediction_type === 'Over 1.5' ? 'Ov 1.5' :
                        prediction.prediction_type === 'Over 2.5' ? 'Ov 2.5' :
@@ -593,9 +602,10 @@ export function FreePredictionsSection() {
             <div className="hidden lg:block space-y-0 border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-lg">
             {/* Header */}
             <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
-              <div className="col-span-3 lg:col-span-2">Time & League</div>
-              <div className="col-span-5">Teams</div>
+              <div className="col-span-2 lg:col-span-2">Time & League</div>
+              <div className="col-span-4">Teams</div>
               <div className="col-span-1 text-center hidden sm:block">Score</div>
+              <div className="col-span-1 text-center">Status</div>
               <div className="col-span-1 text-center">Tip</div>
               <div className="col-span-1 text-center hidden md:block">Odd</div>
               <div className="col-span-2 text-center hidden lg:block">Confidence</div>
@@ -616,7 +626,7 @@ export function FreePredictionsSection() {
                       )}
                     >
                       {/* Time & League */}
-                      <div className="col-span-3 lg:col-span-2">
+                      <div className="col-span-2 lg:col-span-2">
                         <div className="text-xs sm:text-sm font-medium text-gray-900">
                           {formatTime(prediction.kickoff_time)}
                         </div>
@@ -624,7 +634,7 @@ export function FreePredictionsSection() {
                       </div>
 
                 {/* Teams */}
-                <div className="col-span-5 flex flex-col gap-2">
+                <div className="col-span-4 flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     {prediction.home_team_logo ? (
                       <div className="relative w-6 h-6 flex-shrink-0">
@@ -692,6 +702,16 @@ export function FreePredictionsSection() {
                   ) : (
                     <div className="text-xs text-gray-400">-</div>
                   )}
+                </div>
+
+                {/* Status */}
+                <div className="col-span-1 text-center">
+                  <Badge
+                    variant={prediction.status === 'finished' ? 'default' : prediction.status === 'live' ? 'destructive' : 'outline'}
+                    className="text-xs"
+                  >
+                    {prediction.status === 'finished' ? 'Finished' : prediction.status === 'live' ? 'Live' : 'Not Started'}
+                  </Badge>
                 </div>
 
                 {/* Tip */}

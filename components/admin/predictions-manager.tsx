@@ -213,7 +213,8 @@ export function PredictionsManager({ plans, predictions, correctScorePredictions
         const planPredictions = getPredictionsForPlan(plan.slug) as Prediction[]
         const isProfitMultiplier = plan.slug === 'profit-multiplier'
         const isDaily2Odds = plan.slug === 'daily-2-odds'
-        const showAddWithAPI = isProfitMultiplier || isDaily2Odds
+        const isStandard = plan.slug === 'standard'
+        const showAddWithAPI = isProfitMultiplier || isDaily2Odds || isStandard
         
         return (
           <TabsContent key={plan.id} value={plan.slug} className="space-y-4">
@@ -526,12 +527,19 @@ export function PredictionsManager({ plans, predictions, correctScorePredictions
                 <div>
                   <CardTitle className="text-base lg:text-lg">Correct Score Predictions</CardTitle>
                   <CardDescription className="text-xs lg:text-sm">
-                    Manually add correct score predictions
+                    Add correct score predictions using API or manually
                   </CardDescription>
                 </div>
-                <Button asChild size="sm" className="text-xs lg:text-sm">
-                  <Link href="/admin/predictions/add-correct-score">Add Correct Score</Link>
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button asChild variant="outline" size="sm" className="text-xs lg:text-sm">
+                    <Link href={`/admin/predictions/add-with-api?plan=correct-score`}>
+                      Add with API
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" className="text-xs lg:text-sm">
+                    <Link href="/admin/predictions/add-correct-score">Add Manually</Link>
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
