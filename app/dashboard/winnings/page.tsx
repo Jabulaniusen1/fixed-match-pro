@@ -30,12 +30,12 @@ export default async function WinningsPage() {
   return (
     <DashboardLayout user={user} userProfile={userProfile}>
       <div className="space-y-6">
-        <div>
+        {/* <div>
           <h1 className="text-3xl font-bold">Previous VIP Winnings</h1>
           <p className="text-muted-foreground">
             View winning records from your subscribed packages
           </p>
-        </div>
+        </div> */}
 
         <VIPWinningsSection planIds={planIds} showAll={planIds.length === 0} />
       </div>
