@@ -447,8 +447,8 @@ export function UsersManager({ users, plans }: UsersManagerProps) {
           </TabsContent>
           
           <TabsContent value="normal" className="mt-0">
-            <div className="overflow-x-auto">
-              <Table>
+        <div className="overflow-x-auto">
+          <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -641,7 +641,7 @@ export function UsersManager({ users, plans }: UsersManagerProps) {
               }))}
             </TableBody>
           </Table>
-            </div>
+        </div>
           </TabsContent>
         </Tabs>
       </CardContent>

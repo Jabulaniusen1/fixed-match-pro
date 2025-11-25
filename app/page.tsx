@@ -45,9 +45,9 @@ export default function HomePage() {
   return (
     <>
       <PredictionSchema />
-      <div className="flex min-h-screen flex-col">
-        <Navbar />
-        <main>
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+      <main>
         <HeroSection />
         <FreePredictionsSection />
         <VIPWinningsSection />

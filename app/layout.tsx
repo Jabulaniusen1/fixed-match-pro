@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PredictSafe - Accurate Football Predictions",
+  title: "PredictSafe - Accurate Football Predictions",
     description: "Get accurate football predictions, betting tips, and expert analysis.",
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://predictsafe.com'),

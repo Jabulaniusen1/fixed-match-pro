@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Combobox } from '@/components/ui/combobox'
 import { toast } from 'sonner'
 import { Database } from '@/types/database'
 import { ArrowLeft } from 'lucide-react'
@@ -56,15 +57,34 @@ export default function AddVIPWinPage() {
     const selectedPlan = plans.find((p) => p.id === planId)
     setForm({
       ...form,
-      plan_id: planId,
-      plan_name: selectedPlan?.name || '',
+      plan_id: planId || '',
+      plan_name: selectedPlan?.name || planId || '',
     })
+  }
+
+  const handlePlanNameChange = (planName: string) => {
+    // If it's a custom name not in the list, set plan_id to empty and use the custom name
+    const matchingPlan = plans.find((p) => p.name.toLowerCase() === planName.toLowerCase())
+    if (matchingPlan) {
+      setForm({
+        ...form,
+        plan_id: matchingPlan.id,
+        plan_name: matchingPlan.name,
+      })
+    } else {
+      // Custom plan name
+      setForm({
+        ...form,
+        plan_id: '',
+        plan_name: planName,
+      })
+    }
   }
 
   const handleLeagueChange = (leagueId: string, leagueName: string) => {
     setForm({
       ...form,
-      league_id: leagueId,
+      league_id: leagueId || '',
       league_name: leagueName,
       // Reset teams when league changes
       home_team: '',
@@ -158,6 +178,15 @@ export default function AddVIPWinPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <Input
+                    value={form.plan_name}
+                    onChange={(e) => handlePlanNameChange(e.target.value)}
+                    placeholder="Or type custom plan name"
+                    className="mt-2"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Select from dropdown above or type a custom plan name below
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="date">
@@ -177,9 +206,16 @@ export default function AddVIPWinPage() {
                   League <span className="text-red-500">*</span>
                 </Label>
                 <LeagueSelector
-                  value={form.league_id}
+                  value={form.league_id || (form.league_name && !form.league_id ? form.league_name : '')}
                   onValueChange={handleLeagueChange}
                   placeholder="Select a league"
+                  allowCustom={true}
+                />
+                <Input
+                  value={form.league_name}
+                  onChange={(e) => setForm({ ...form, league_name: e.target.value, league_id: '' })}
+                  placeholder="Or type custom league name directly"
+                  className="mt-2"
                 />
               </div>
 
@@ -193,6 +229,13 @@ export default function AddVIPWinPage() {
                     onValueChange={(teamName) => setForm({ ...form, home_team: teamName })}
                     placeholder="Select home team"
                     leagueId={form.league_id}
+                    allowCustom={true}
+                  />
+                  <Input
+                    value={form.home_team}
+                    onChange={(e) => setForm({ ...form, home_team: e.target.value })}
+                    placeholder="Or type custom team name directly"
+                    className="mt-2"
                   />
                 </div>
                 <div className="space-y-2">
@@ -204,6 +247,13 @@ export default function AddVIPWinPage() {
                     onValueChange={(teamName) => setForm({ ...form, away_team: teamName })}
                     placeholder="Select away team"
                     leagueId={form.league_id}
+                    allowCustom={true}
+                  />
+                  <Input
+                    value={form.away_team}
+                    onChange={(e) => setForm({ ...form, away_team: e.target.value })}
+                    placeholder="Or type custom team name directly"
+                    className="mt-2"
                   />
                 </div>
               </div>

@@ -31,6 +31,7 @@ interface TeamSelectorProps {
   placeholder?: string
   className?: string
   leagueId?: string // Filter teams by league
+  allowCustom?: boolean // Allow typing custom team names
 }
 
 export function TeamSelector({
@@ -39,6 +40,7 @@ export function TeamSelector({
   placeholder = 'Select team...',
   className,
   leagueId,
+  allowCustom = true,
 }: TeamSelectorProps) {
   const [open, setOpen] = React.useState(false)
   const [teams, setTeams] = React.useState<Team[]>([])
@@ -93,6 +95,7 @@ export function TeamSelector({
   }
 
   const selectedTeam = teams.find((team) => team.team_name === value)
+  const isCustomTeam = value && !selectedTeam
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -119,6 +122,8 @@ export function TeamSelector({
                 )}
                 <span className="truncate">{selectedTeam.team_name}</span>
               </>
+            ) : isCustomTeam ? (
+              <span className="truncate text-blue-600">{value}</span>
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
             )}
@@ -141,11 +146,30 @@ export function TeamSelector({
             ) : (
               <>
                 <CommandEmpty>
-                  {!leagueId 
-                    ? 'Please select a league first' 
-                    : searchQuery 
-                    ? 'No teams found.' 
-                    : 'Start typing to search...'}
+                  {!leagueId ? (
+                    'Please select a league first'
+                  ) : searchQuery ? (
+                    allowCustom ? (
+                      <div className="py-2">
+                        <p className="text-sm text-muted-foreground mb-2">No teams found.</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => {
+                            onValueChange(searchQuery)
+                            setOpen(false)
+                          }}
+                        >
+                          Use &quot;{searchQuery}&quot; as custom team name
+                        </Button>
+                      </div>
+                    ) : (
+                      'No teams found.'
+                    )
+                  ) : (
+                    'Start typing to search...'
+                  )}
                 </CommandEmpty>
                 <CommandGroup>
                   {teams.map((team) => (

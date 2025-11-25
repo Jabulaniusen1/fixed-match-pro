@@ -28,10 +28,11 @@ interface League {
 }
 
 interface LeagueSelectorProps {
-  value?: string // league_id
+  value?: string // league_id or custom league name
   onValueChange: (leagueId: string, leagueName: string) => void
   placeholder?: string
   className?: string
+  allowCustom?: boolean // Allow typing custom league names
 }
 
 export function LeagueSelector({
@@ -39,6 +40,7 @@ export function LeagueSelector({
   onValueChange,
   placeholder = 'Select league...',
   className,
+  allowCustom = true,
 }: LeagueSelectorProps) {
   const [open, setOpen] = React.useState(false)
   const [leagues, setLeagues] = React.useState<League[]>([])
@@ -96,7 +98,10 @@ export function LeagueSelector({
     )
   }, [leagues, searchQuery])
 
+  // Check if value is a custom league name (not a league_id)
+  const isCustomValue = value && !leagues.find((league) => league.league_id === value)
   const selectedLeague = leagues.find((league) => league.league_id === value)
+  const customLeagueName = isCustomValue ? value : null
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -129,6 +134,8 @@ export function LeagueSelector({
                   )}
                 </span>
               </>
+            ) : customLeagueName ? (
+              <span className="truncate text-blue-600">{customLeagueName}</span>
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
             )}
@@ -151,7 +158,28 @@ export function LeagueSelector({
             ) : (
               <>
                 <CommandEmpty>
-                  {searchQuery ? 'No leagues found.' : 'Start typing to search...'}
+                  {searchQuery ? (
+                    allowCustom ? (
+                      <div className="py-2">
+                        <p className="text-sm text-muted-foreground mb-2">No leagues found.</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => {
+                            onValueChange('', searchQuery)
+                            setOpen(false)
+                          }}
+                        >
+                          Use &quot;{searchQuery}&quot; as custom league name
+                        </Button>
+                      </div>
+                    ) : (
+                      'No leagues found.'
+                    )
+                  ) : (
+                    'Start typing to search...'
+                  )}
                 </CommandEmpty>
                 <CommandGroup>
                   {filteredLeagues.map((league) => (
