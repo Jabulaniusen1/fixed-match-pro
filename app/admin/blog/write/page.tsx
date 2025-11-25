@@ -250,8 +250,8 @@ function WriteBlogContent() {
       }
     } else {
       submitData.scheduled_at = null
-      if (formData.published && !isEditMode) {
-        submitData.published_at = new Date().toISOString()
+    if (formData.published && !isEditMode) {
+      submitData.published_at = new Date().toISOString()
       }
     }
 

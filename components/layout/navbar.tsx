@@ -427,7 +427,7 @@ export function Navbar() {
                         {user?.avatar_url ? (
                           <AvatarImage src={user.avatar_url} alt={user.email} />
                         ) : (
-                          <AvatarFallback className="bg-[#1e40af] text-white">{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback className="bg-[#1e40af] text-white">{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                         )}
                       </Avatar>
                       <div className="flex-1 min-w-0">

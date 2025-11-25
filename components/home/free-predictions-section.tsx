@@ -166,10 +166,10 @@ export function FreePredictionsSection() {
           const oddsMap = new Map(oddsResults.map(r => [r.matchId, r.odds]))
           
           for (const fixture of fixturesToProcess) {
-            // Stop if we have enough predictions
+          // Stop if we have enough predictions
             if (allPredictions.length >= maxPredictions) {
-              break
-            }
+            break
+          }
           
           try {
             // Get odds from the map

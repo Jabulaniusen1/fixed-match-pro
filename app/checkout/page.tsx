@@ -841,10 +841,10 @@ function CheckoutContent() {
                             {(method.details as any)?.wallet_address && (
                               <div className="flex items-start gap-2">
                                 <div className="flex-1 min-w-0">
-                                  <span className="text-sm">{method.currency}: </span>
-                                  <span className="font-semibold text-blue-600 font-mono text-xs break-all">
-                                    {(method.details as any).wallet_address}
-                                  </span>
+                                <span className="text-sm">{method.currency}: </span>
+                                <span className="font-semibold text-blue-600 font-mono text-xs break-all">
+                                  {(method.details as any).wallet_address}
+                                </span>
                                 </div>
                                 <Button
                                   type="button"

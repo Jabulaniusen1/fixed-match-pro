@@ -161,12 +161,12 @@ export function BlogManager({ initialPosts }: BlogManagerProps) {
                             )
                           }
                           return (
-                            <Badge 
-                              variant={post.published ? "default" : "secondary"}
-                              className={post.published ? "bg-green-600 hover:bg-green-700" : ""}
-                            >
-                              {post.published ? 'Published' : 'Draft'}
-                            </Badge>
+                        <Badge 
+                          variant={post.published ? "default" : "secondary"}
+                          className={post.published ? "bg-green-600 hover:bg-green-700" : ""}
+                        >
+                          {post.published ? 'Published' : 'Draft'}
+                        </Badge>
                           )
                         })()}
                       </TableCell>
@@ -184,8 +184,8 @@ export function BlogManager({ initialPosts }: BlogManagerProps) {
                             )
                           }
                           return post.published_at 
-                            ? formatDistanceToNow(new Date(post.published_at), { addSuffix: true })
-                            : 'Not published'
+                          ? formatDistanceToNow(new Date(post.published_at), { addSuffix: true })
+                          : 'Not published'
                         })()}
                       </TableCell>
                       <TableCell className="text-sm text-gray-600">

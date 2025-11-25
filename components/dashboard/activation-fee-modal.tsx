@@ -18,6 +18,7 @@ import { Upload, X, Check, Copy } from 'lucide-react'
 import { PaymentMethod, PlanPrice } from '@/types'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import { Combobox } from '@/components/ui/combobox'
 
 interface ActivationFeeModalProps {
   open: boolean
@@ -44,17 +45,74 @@ export function ActivationFeeModal({
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [selectedCountry, setSelectedCountry] = useState<string>(userCountry)
+  const [countries, setCountries] = useState<Array<{ value: string; label: string }>>([])
+  const [loadingCountries, setLoadingCountries] = useState(true)
+
+  // Fetch countries from API
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        setLoadingCountries(true)
+        const response = await fetch('/api/countries')
+        if (!response.ok) throw new Error('Failed to fetch countries')
+        const data = await response.json()
+        
+        const countryOptions = data.map((country: any) => ({
+          value: country.name,
+          label: country.name,
+        }))
+        
+        setCountries(countryOptions)
+      } catch (error) {
+        console.error('Error fetching countries:', error)
+        toast.error('Failed to load countries')
+      } finally {
+        setLoadingCountries(false)
+      }
+    }
+    fetchCountries()
+  }, [])
 
   useEffect(() => {
     if (open) {
+      setSelectedCountry(userCountry)
       fetchData()
     }
   }, [open, planId, userCountry])
 
+  // Fetch payment methods when country changes
+  useEffect(() => {
+    if (open) {
+      fetchPaymentMethods()
+    }
+  }, [selectedCountry, open])
+
+  // Update activation price when country changes
+  useEffect(() => {
+    if (open) {
+      fetchActivationPrice()
+    }
+  }, [selectedCountry, planId, open])
+
+  // Ensure a payment method is selected when payment methods are loaded
+  useEffect(() => {
+    if (paymentMethods.length > 0 && !selectedPaymentMethod) {
+      setSelectedPaymentMethod(paymentMethods[0])
+    }
+  }, [paymentMethods, selectedPaymentMethod])
+
   const fetchData = async () => {
     setLoading(true)
-    const supabase = createClient()
+    try {
+      await Promise.all([fetchPaymentMethods(), fetchActivationPrice()])
+    } finally {
+      setLoading(false)
+    }
+  }
 
+  const fetchPaymentMethods = async () => {
+    const supabase = createClient()
     try {
       // Get active payment methods
       const { data: methodsData } = await supabase
@@ -64,28 +122,68 @@ export function ActivationFeeModal({
         .order('display_order')
 
       if (methodsData) {
-        setPaymentMethods(methodsData)
-        if (methodsData.length > 0) {
-          setSelectedPaymentMethod(methodsData[0])
-        }
-      }
+        // Filter payment methods based on selected country
+        const filteredMethods: PaymentMethod[] = methodsData.filter((method: any) => {
+          const methodData = method as any
+          const methodCountries = methodData.countries 
+            ? (Array.isArray(methodData.countries) ? methodData.countries : [])
+            : (methodData.country ? [methodData.country] : [])
+          
+          // Crypto and Skrill are always available
+          if (method.type === 'crypto' || method.type === 'skrill') {
+            return true
+          }
+          
+          // If no countries specified, available for all
+          if (methodCountries.length === 0) {
+            return true
+          }
+          
+          // Check if selected country is in the list
+          return methodCountries.includes(selectedCountry)
+        }) as PaymentMethod[]
 
-      // Get activation fee price
+        setPaymentMethods(filteredMethods)
+        // Reset selected payment method if it's not in the filtered list
+        setSelectedPaymentMethod((current) => {
+          // If current method is not in filtered list, select first available
+          if (current && !filteredMethods.find((m: PaymentMethod) => m.id === current.id)) {
+            const firstMethod = filteredMethods.length > 0 ? filteredMethods[0] : null
+            return firstMethod
+          }
+          // If no current method, select first available
+          if (!current && filteredMethods.length > 0) {
+            return filteredMethods[0]
+          }
+          // Keep current method if it's still available
+          return current
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching payment methods:', error)
+      toast.error('Failed to load payment methods')
+    }
+  }
+
+  const fetchActivationPrice = async () => {
+    const supabase = createClient()
+    try {
+      // Get activation fee price for selected country
       const { data: priceData } = await supabase
         .from('plan_prices')
         .select('*')
         .eq('plan_id', planId)
-        .eq('country', userCountry)
+        .eq('country', selectedCountry)
         .single()
 
       if (priceData && (priceData as PlanPrice).activation_fee) {
         setActivationPrice(priceData as PlanPrice)
+      } else {
+        setActivationPrice(null)
       }
     } catch (error) {
-      console.error('Error fetching data:', error)
-      toast.error('Failed to load payment information')
-    } finally {
-      setLoading(false)
+      console.error('Error fetching activation price:', error)
+      setActivationPrice(null)
     }
   }
 
@@ -120,11 +218,19 @@ export function ActivationFeeModal({
   }
 
   const handleSubmit = async () => {
-    if (!selectedPaymentMethod || !activationPrice) {
+    // Validate payment method
+    if (!selectedPaymentMethod) {
       toast.error('Please select a payment method')
       return
     }
 
+    // Validate activation price
+    if (!activationPrice) {
+      toast.error('Activation fee not available for the selected country. Please contact support.')
+      return
+    }
+
+    // Validate payment proof
     if (!paymentProof) {
       toast.error('Please upload proof of payment')
       return
@@ -209,10 +315,16 @@ export function ActivationFeeModal({
   }
 
   const getCurrencySymbol = () => {
-    if (userCountry === 'Nigeria' || userCountry === 'Other') return '₦'
-    if (userCountry === 'Ghana') return '₵'
-    if (userCountry === 'Kenya') return 'KSh'
-    return activationPrice?.currency || '₦'
+    // Use currency from activation price if available
+    if (activationPrice?.currency) {
+      return activationPrice.currency
+    }
+    // Fallback to common currencies based on country
+    if (selectedCountry === 'Nigeria' || selectedCountry === 'Other') return '₦'
+    if (selectedCountry === 'Ghana') return '₵'
+    if (selectedCountry === 'Kenya') return 'KSh'
+    // Default to Naira for other countries
+    return '₦'
   }
 
   const currency = getCurrencySymbol()
@@ -232,6 +344,23 @@ export function ActivationFeeModal({
           <div className="py-8 text-center">Loading payment information...</div>
         ) : (
           <div className="space-y-6">
+            {/* Country Selection */}
+            <div className="space-y-2">
+              <Label>Select Country</Label>
+              {loadingCountries ? (
+                <div className="text-center py-4 border rounded-md">Loading countries...</div>
+              ) : (
+                <Combobox
+                  options={countries}
+                  value={selectedCountry}
+                  onValueChange={(value) => setSelectedCountry(value)}
+                  placeholder="Select a country..."
+                  searchPlaceholder="Search countries..."
+                  emptyMessage="No country found."
+                />
+              )}
+            </div>
+
             {/* Amount Display */}
             <div className="bg-blue-50 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-600 mb-1">Activation Fee</p>
@@ -244,12 +373,17 @@ export function ActivationFeeModal({
             {/* Payment Methods */}
             {paymentMethods.length > 0 ? (
               <div className="space-y-3">
-                <Label>Select Payment Method</Label>
+                <Label>Select Payment Method *</Label>
+                {!selectedPaymentMethod && paymentMethods.length > 0 && (
+                  <p className="text-sm text-amber-600">Please select a payment method above</p>
+                )}
                 <RadioGroup
                   value={selectedPaymentMethod?.id || ''}
                   onValueChange={(value) => {
                     const method = paymentMethods.find((m) => m.id === value)
-                    setSelectedPaymentMethod(method || null)
+                    if (method) {
+                      setSelectedPaymentMethod(method)
+                    }
                   }}
                 >
                   {paymentMethods.map((method) => {
@@ -404,7 +538,7 @@ export function ActivationFeeModal({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!selectedPaymentMethod || !paymentProof || submitting || uploading}
+            disabled={!selectedPaymentMethod || !activationPrice || !paymentProof || submitting || uploading}
           >
             {submitting || uploading ? 'Submitting...' : 'Submit Payment Proof'}
           </Button>

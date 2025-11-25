@@ -840,7 +840,7 @@ export function PaymentMethodsManager({ paymentMethods: initialPaymentMethods }:
             {(methodForm.type !== 'crypto' && methodForm.type !== 'skrill') && (
             <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label>Supported Countries</Label>
+                <Label>Supported Countries</Label>
                   <div className="flex items-center space-x-2">
                     <Switch
                       checked={availableForAllCountries}
@@ -858,47 +858,47 @@ export function PaymentMethodsManager({ paymentMethods: initialPaymentMethods }:
                 </div>
                 {!availableForAllCountries && (
                   <>
-                    <div className="border rounded-lg p-3 min-h-[100px]">
-                      {selectedCountries.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-2">
-                          {selectedCountries.map((country) => (
-                            <Badge key={country} variant="secondary" className="flex items-center gap-1">
-                              {country}
-                              <button
-                                type="button"
-                                onClick={() => setSelectedCountries(selectedCountries.filter(c => c !== country))}
-                                className="ml-1 hover:text-destructive"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                      <Select
-                        value=""
-                        onValueChange={(value) => {
-                          if (value && !selectedCountries.includes(value)) {
-                            setSelectedCountries([...selectedCountries, value])
-                          }
-                        }}
-                        disabled={availableForAllCountries}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={loadingCountries ? "Loading countries..." : "Add country"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {countries
-                            .filter(c => !selectedCountries.includes(c.name))
-                            .map((country) => (
-                              <SelectItem key={country.code} value={country.name}>
-                                {country.name}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
+                <div className="border rounded-lg p-3 min-h-[100px]">
+                  {selectedCountries.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {selectedCountries.map((country) => (
+                        <Badge key={country} variant="secondary" className="flex items-center gap-1">
+                          {country}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCountries(selectedCountries.filter(c => c !== country))}
+                            className="ml-1 hover:text-destructive"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                  )}
+              <Select
+                    value=""
+                    onValueChange={(value) => {
+                      if (value && !selectedCountries.includes(value)) {
+                        setSelectedCountries([...selectedCountries, value])
+                      }
+                    }}
+                        disabled={availableForAllCountries}
+              >
+                <SelectTrigger>
+                      <SelectValue placeholder={loadingCountries ? "Loading countries..." : "Add country"} />
+                </SelectTrigger>
+                <SelectContent>
+                      {countries
+                        .filter(c => !selectedCountries.includes(c.name))
+                        .map((country) => (
+                          <SelectItem key={country.code} value={country.name}>
+                            {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+                </div>
+              <p className="text-xs text-muted-foreground">
                       Select countries where this payment method is available. Or enable "Available for all countries" above.
                     </p>
                   </>

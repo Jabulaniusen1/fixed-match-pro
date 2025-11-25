@@ -189,8 +189,8 @@ export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsMana
             </div>
             <Button asChild className="bg-red-600 hover:bg-red-700 text-white">
               <Link href="/admin/vip-wins/add">
-                <Plus className="h-4 w-4 mr-2" />
-                Add VIP Win
+              <Plus className="h-4 w-4 mr-2" />
+              Add VIP Win
               </Link>
             </Button>
           </div>
@@ -201,7 +201,7 @@ export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsMana
               <p className="text-muted-foreground">No VIP winnings records yet.</p>
               <Button asChild className="mt-4 bg-red-600 hover:bg-red-700 text-white">
                 <Link href="/admin/vip-wins/add">
-                  Add First VIP Win
+                Add First VIP Win
                 </Link>
               </Button>
             </div>
