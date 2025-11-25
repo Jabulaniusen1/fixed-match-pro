@@ -12,7 +12,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 const FILTERS = [
-  { id: 'free', label: 'Free Tips' },
+  { id: 'free', label: 'Safe free picks' },
   { id: 'all', label: 'All Tips' },
   { id: 'super_single', label: 'Super Single' },
   { id: 'double_chance', label: 'Double Chance' },
@@ -383,7 +383,7 @@ export function FreePredictionsSection() {
             </div>
           </div>
           
-          <h2 className="text-xl font-bold mb-2 text-gray-900">Safe free picks</h2>
+          <h2 className="text-xl font-bold mb-2 text-gray-900">{getFilterLabel()}</h2>
           <p className="text-sm text-gray-600 mb-4">{getDateLabel()}</p>
           
           {/* Mobile Navigation */}
@@ -447,7 +447,7 @@ export function FreePredictionsSection() {
 
         <div className="mb-4 lg:mb-8 hidden lg:flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 lg:mb-2 text-[#1e40af]">Safe free picks</h2>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 lg:mb-2 text-[#1e40af]">{getFilterLabel()}</h2>
           <p className="text-sm lg:text-base text-gray-600">Get expert predictions for today's matches</p>
           </div>
           <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
