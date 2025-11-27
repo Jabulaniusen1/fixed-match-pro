@@ -28,10 +28,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
+    // Filter out fields that don't exist in the database schema
+    // Only keep valid columns: plan_type, home_team, away_team, league, prediction_type, odds, confidence, kickoff_time, status
+    const validColumns = ['plan_type', 'home_team', 'away_team', 'league', 'prediction_type', 'odds', 'confidence', 'kickoff_time', 'status', 'result', 'admin_notes']
+    const cleanedPredictions = predictions.map((pred: any) => {
+      const cleaned: any = {}
+      validColumns.forEach(col => {
+        if (pred[col] !== undefined && pred[col] !== null) {
+          cleaned[col] = pred[col]
+        }
+      })
+      return cleaned
+    })
+
     // Insert selected predictions into database
     const { data, error } = await supabase
       .from('predictions')
-      .insert(predictions as any)
+      .insert(cleanedPredictions as any)
       .select()
 
     if (error) {

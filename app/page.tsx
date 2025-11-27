@@ -51,6 +51,7 @@ export default function HomePage() {
         <HeroSection />
         <FreePredictionsSection />
         <VIPWinningsSection />
+        <PremiumPredictionsSection />
         <WhatWeOfferSection />
         
         {/* CTA Buttons Section */}
@@ -78,7 +79,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        <PremiumPredictionsSection />
         <BlogSection />
         <LeagueTableSection />
         <AboutSection />
