@@ -9,7 +9,7 @@ const API_KEY = process.env.API_FOOTBALL_KEY || '1cb32db603edc3ff2e0c13ba21224f6
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { date, planType = 'free', minConfidence = 50, preview = false } = body
+    const { date, planType = 'free', minConfidence = 50, minOdds, maxOdds, preview = false } = body
 
     if (!date) {
       return NextResponse.json({ error: 'Date is required' }, { status: 400 })
@@ -17,6 +17,15 @@ export async function POST(request: NextRequest) {
 
     // Validate minConfidence
     const confidenceThreshold = Math.max(50, Math.min(100, parseInt(minConfidence) || 50))
+    
+    // Validate odds filters (optional)
+    const minOddsValue = minOdds !== undefined && minOdds !== null ? parseFloat(minOdds) : null
+    const maxOddsValue = maxOdds !== undefined && maxOdds !== null ? parseFloat(maxOdds) : null
+    
+    // Ensure minOdds < maxOdds if both are provided
+    if (minOddsValue !== null && maxOddsValue !== null && minOddsValue >= maxOddsValue) {
+      return NextResponse.json({ error: 'minOdds must be less than maxOdds' }, { status: 400 })
+    }
 
     const supabase = await createClient()
     
@@ -120,42 +129,29 @@ export async function POST(request: NextRequest) {
           for (const option of twoOddsOptions) {
             const confidence = Math.floor(Math.random() * 30) + 70 // 70-100% confidence
             
-            // Only include predictions that meet the minimum confidence threshold
-            if (confidence >= confidenceThreshold) {
-              predictions.push({
-                plan_type: planType,
-                home_team: fixture.match_hometeam_name || 'Home Team',
-                away_team: fixture.match_awayteam_name || 'Away Team',
-                league: fixture.league_name || 'Unknown League',
-                prediction_type: option.type,
-                odds: option.odds,
-                confidence: confidence,
-                kickoff_time: `${fixture.match_date} ${fixture.match_time || '00:00'}:00`,
-                status: fixture.match_status === 'Finished' ? 'finished' : 
-                        fixture.match_live === '1' ? 'live' : 'not_started',
-                match_id: fixture.match_id,
-                league_id: fixture.league_id,
-                home_team_id: fixture.match_hometeam_id,
-                away_team_id: fixture.match_awayteam_id,
-              })
-            } else {
+            // Check confidence threshold
+            if (confidence < confidenceThreshold) {
               filteredCount++
+              continue
             }
-          }
-        } else {
-          // For other plan types, use all prediction types
-        for (const predictionType of predictionTypes) {
-          const confidence = Math.floor(Math.random() * 30) + 70 // 70-100% confidence
-          
-          // Only include predictions that meet the minimum confidence threshold
-          if (confidence >= confidenceThreshold) {
+            
+            // Check odds filters
+            if (minOddsValue !== null && option.odds < minOddsValue) {
+              filteredCount++
+              continue
+            }
+            if (maxOddsValue !== null && option.odds > maxOddsValue) {
+              filteredCount++
+              continue
+            }
+            
             predictions.push({
               plan_type: planType,
               home_team: fixture.match_hometeam_name || 'Home Team',
               away_team: fixture.match_awayteam_name || 'Away Team',
               league: fixture.league_name || 'Unknown League',
-              prediction_type: predictionType,
-              odds: odds,
+              prediction_type: option.type,
+              odds: option.odds,
               confidence: confidence,
               kickoff_time: `${fixture.match_date} ${fixture.match_time || '00:00'}:00`,
               status: fixture.match_status === 'Finished' ? 'finished' : 
@@ -165,9 +161,48 @@ export async function POST(request: NextRequest) {
               home_team_id: fixture.match_hometeam_id,
               away_team_id: fixture.match_awayteam_id,
             })
-          } else {
-            filteredCount++
+          }
+        } else {
+          // For other plan types, use all prediction types
+          // Find the odds for each prediction type
+          for (const predictionType of predictionTypes) {
+            const confidence = Math.floor(Math.random() * 30) + 70 // 70-100% confidence
+            
+            // Find the odds for this prediction type
+            const typeOdds = foundOdds.find(o => o.type === predictionType)?.odds || odds
+            
+            // Check confidence threshold
+            if (confidence < confidenceThreshold) {
+              filteredCount++
+              continue
             }
+            
+            // Check odds filters
+            if (minOddsValue !== null && typeOdds < minOddsValue) {
+              filteredCount++
+              continue
+            }
+            if (maxOddsValue !== null && typeOdds > maxOddsValue) {
+              filteredCount++
+              continue
+            }
+            
+            predictions.push({
+              plan_type: planType,
+              home_team: fixture.match_hometeam_name || 'Home Team',
+              away_team: fixture.match_awayteam_name || 'Away Team',
+              league: fixture.league_name || 'Unknown League',
+              prediction_type: predictionType,
+              odds: typeOdds,
+              confidence: confidence,
+              kickoff_time: `${fixture.match_date} ${fixture.match_time || '00:00'}:00`,
+              status: fixture.match_status === 'Finished' ? 'finished' : 
+                      fixture.match_live === '1' ? 'live' : 'not_started',
+              match_id: fixture.match_id,
+              league_id: fixture.league_id,
+              home_team_id: fixture.match_hometeam_id,
+              away_team_id: fixture.match_awayteam_id,
+            })
           }
         }
       } catch (error) {
@@ -183,7 +218,9 @@ export async function POST(request: NextRequest) {
         predictions: predictions,
         preview: true,
         filtered: filteredCount,
-        minConfidence: confidenceThreshold
+        minConfidence: confidenceThreshold,
+        minOdds: minOddsValue,
+        maxOdds: maxOddsValue
       })
     }
 
@@ -232,7 +269,9 @@ export async function POST(request: NextRequest) {
       message: 'Predictions synced successfully', 
       synced: data?.length || 0,
       filtered: filteredCount,
-      minConfidence: confidenceThreshold
+      minConfidence: confidenceThreshold,
+      minOdds: minOddsValue,
+      maxOdds: maxOddsValue
     })
   } catch (error: any) {
     console.error('Sync error:', error)

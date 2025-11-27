@@ -49,6 +49,8 @@ function AddPredictionWithAPIContent() {
     return today.toISOString().split('T')[0]
   })
   const [minConfidence, setMinConfidence] = useState([70]) // Default minimum confidence: 70%
+  const [minOdds, setMinOdds] = useState<string>('') // Optional minimum odds
+  const [maxOdds, setMaxOdds] = useState<string>('') // Optional maximum odds
   const [previewPredictions, setPreviewPredictions] = useState<PreviewPrediction[]>([])
   const [selectedPredictions, setSelectedPredictions] = useState<Set<number>>(new Set())
   const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null)
@@ -123,6 +125,8 @@ function AddPredictionWithAPIContent() {
           date,
           planType,
           minConfidence: minConfidence[0],
+          minOdds: minOdds ? parseFloat(minOdds) : undefined,
+          maxOdds: maxOdds ? parseFloat(maxOdds) : undefined,
           preview: true, // Enable preview mode
         }),
       })
@@ -138,10 +142,23 @@ function AddPredictionWithAPIContent() {
         // Select all by default
         setSelectedPredictions(new Set(data.predictions.map((_: any, index: number) => index)))
         
-        const message = data.filtered > 0
-          ? `Found ${data.predictions.length} predictions! ${data.filtered} predictions were filtered out (confidence < ${data.minConfidence}%)`
-          : `Found ${data.predictions.length} predictions!`
+        let filterMessage = ''
+        const filters: string[] = []
+        if (data.minConfidence) {
+          filters.push(`confidence < ${data.minConfidence}%`)
+        }
+        if (data.minOdds !== null && data.minOdds !== undefined) {
+          filters.push(`odds < ${data.minOdds}`)
+        }
+        if (data.maxOdds !== null && data.maxOdds !== undefined) {
+          filters.push(`odds > ${data.maxOdds}`)
+        }
         
+        if (data.filtered > 0 && filters.length > 0) {
+          filterMessage = ` ${data.filtered} predictions were filtered out (${filters.join(', ')})`
+        }
+        
+        const message = `Found ${data.predictions.length} predictions!${filterMessage}`
         toast.success(message)
       } else {
         toast.info('No predictions found for the selected date')
@@ -357,6 +374,45 @@ function AddPredictionWithAPIContent() {
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Only predictions with confidence level of <strong>{minConfidence[0]}%</strong> or higher will be synced
+                  </p>
+                </div>
+
+                <div className="space-y-3 border-t pt-4">
+                  <Label htmlFor="odds">Odds Filter (Optional)</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="minOdds" className="text-xs">Minimum Odds</Label>
+                      <Input
+                        id="minOdds"
+                        type="number"
+                        step="0.01"
+                        min="1.0"
+                        placeholder="e.g., 1.50"
+                        value={minOdds}
+                        onChange={(e) => setMinOdds(e.target.value)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Only include predictions with odds &ge; this value
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="maxOdds" className="text-xs">Maximum Odds</Label>
+                      <Input
+                        id="maxOdds"
+                        type="number"
+                        step="0.01"
+                        min="1.0"
+                        placeholder="e.g., 3.00"
+                        value={maxOdds}
+                        onChange={(e) => setMaxOdds(e.target.value)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Only include predictions with odds &le; this value
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Leave empty to include all odds. Both filters can be used together to set a range.
                   </p>
                 </div>
               </div>
