@@ -81,21 +81,24 @@ export default async function BlogPostPage({
     notFound()
   }
 
+  // Type assertion for the post
+  const typedPost = post as BlogPost
+
   // Check if post is published and available
-  const isPublished = post.published === true
-  const hasPublishedAt = post.published_at !== null
-  const isPublishedInPast = post.published_at 
-    ? new Date(post.published_at) <= new Date()
+  const isPublished = typedPost.published === true
+  const hasPublishedAt = typedPost.published_at !== null
+  const isPublishedInPast = typedPost.published_at 
+    ? new Date(typedPost.published_at) <= new Date()
     : false
 
   // Log the post status for debugging
   console.log('Blog post status:', {
     id,
-    title: post.title,
+    title: typedPost.title,
     published: isPublished,
     hasPublishedAt,
     isPublishedInPast,
-    published_at: post.published_at,
+    published_at: typedPost.published_at,
     current_time: new Date().toISOString()
   })
 
@@ -106,12 +109,12 @@ export default async function BlogPostPage({
       published: isPublished,
       hasPublishedAt,
       isPublishedInPast,
-      published_at: post.published_at
+      published_at: typedPost.published_at
     })
     notFound()
   }
 
-  const blogPost = post as BlogPost
+  const blogPost = typedPost
 
   // Get author information
   let authorName = 'Admin'
