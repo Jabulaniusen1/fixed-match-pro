@@ -11,6 +11,10 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CircularProgress } from '@/components/ui/circular-progress'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { CalendarIcon } from 'lucide-react'
+import { format } from 'date-fns'
 
 const FILTERS = [
   { id: 'free', label: 'Safe free picks', slug: 'safe-free-picks' },
@@ -469,20 +473,35 @@ export function FreePredictionsSection() {
           
           {/* Mobile Navigation */}
           <div className="flex items-center justify-center gap-1 bg-gray-100 p-1 rounded-lg mb-4">
-            <button
-              onClick={() => {
-                setDaysBack(prev => prev + 1)
-                setDateType('previous')
-                setCustomDate('')
-              }}
-              className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
-                dateType === 'previous'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
-              }`}
-            >
-              Previous
-            </button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all justify-start text-left font-normal",
+                    !customDate && dateType !== 'custom' && "text-gray-600 hover:text-[#1e40af] hover:bg-white",
+                    (customDate || dateType === 'custom') && "bg-[#1e40af] text-white shadow-sm"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {customDate ? format(new Date(customDate), 'MMM dd') : 'Select Date'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={customDate ? new Date(customDate) : undefined}
+                  onSelect={(date) => {
+                    if (date) {
+                      setCustomDate(format(date, 'yyyy-MM-dd'))
+                      setDateType('custom')
+                      setDaysBack(0)
+                    }
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
             <button
               onClick={() => {
                 setDateType('today')
@@ -546,20 +565,35 @@ export function FreePredictionsSection() {
           </p>
           </div>
           <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
-            <button
-              onClick={() => {
-                setDaysBack(prev => prev + 1)
-                setDateType('previous')
-                setCustomDate('')
-              }}
-              className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
-                dateType === 'previous'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
-              }`}
-            >
-              Previous
-            </button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all justify-start text-left font-normal",
+                    !customDate && dateType !== 'custom' && "text-gray-600 hover:text-[#1e40af] hover:bg-white",
+                    (customDate || dateType === 'custom') && "bg-[#1e40af] text-white shadow-sm"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {customDate ? format(new Date(customDate), 'MMM dd') : 'Select Date'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={customDate ? new Date(customDate) : undefined}
+                  onSelect={(date) => {
+                    if (date) {
+                      setCustomDate(format(date, 'yyyy-MM-dd'))
+                      setDateType('custom')
+                      setDaysBack(0)
+                    }
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
             <button
               onClick={() => {
                 setDateType('today')

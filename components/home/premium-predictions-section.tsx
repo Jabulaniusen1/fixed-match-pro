@@ -6,12 +6,15 @@ import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Lock } from 'lucide-react'
+import { Lock, CalendarIcon } from 'lucide-react'
 import { Prediction } from '@/types'
 import { formatTime, getDateRange } from '@/lib/utils/date'
 import { CircularProgress } from '@/components/ui/circular-progress'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { format } from 'date-fns'
 
 interface PremiumPrediction {
   id: string
@@ -448,20 +451,35 @@ export function PremiumPredictionsSection() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                 <h3 className="text-xl sm:text-2xl font-bold text-yellow-400">Profit Multiplier</h3>
                 <div className="flex gap-1 bg-gray-800 border border-yellow-600/30 p-1 rounded-lg">
-                  <button
-                    onClick={() => {
-                      setProfitMultiplierDaysBack(prev => prev + 1)
-                      setProfitMultiplierDateType('previous')
-                      setProfitMultiplierCustomDate('')
-                    }}
-                    className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
-                      profitMultiplierDateType === 'previous'
-                        ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/50'
-                        : 'text-gray-400 hover:text-yellow-400 hover:bg-gray-700'
-                    }`}
-                  >
-                    Previous
-                  </button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all justify-start text-left font-normal bg-gray-800 border-gray-700 text-gray-400 hover:text-yellow-400 hover:bg-gray-700",
+                          (profitMultiplierCustomDate || profitMultiplierDateType === 'custom') && "bg-yellow-500 text-black shadow-lg shadow-yellow-500/50 border-yellow-500"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {profitMultiplierCustomDate ? format(new Date(profitMultiplierCustomDate), 'MMM dd') : 'Select Date'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-gray-800 border-yellow-600/30" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={profitMultiplierCustomDate ? new Date(profitMultiplierCustomDate) : undefined}
+                        onSelect={(date) => {
+                          if (date) {
+                            setProfitMultiplierCustomDate(format(date, 'yyyy-MM-dd'))
+                            setProfitMultiplierDateType('custom')
+                            setProfitMultiplierDaysBack(0)
+                          }
+                        }}
+                        initialFocus
+                        className="bg-gray-800 text-white"
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <button
                     onClick={() => {
                       setProfitMultiplierDateType('today')
@@ -790,20 +808,35 @@ export function PremiumPredictionsSection() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                   <h3 className="text-xl sm:text-2xl font-bold text-yellow-400">Correct Score Predictions</h3>
                   <div className="flex gap-1 bg-gray-800 border border-yellow-600/30 p-1 rounded-lg">
-                    <button
-                      onClick={() => {
-                        setCorrectScoreDaysBack(prev => prev + 1)
-                        setCorrectScoreDateType('previous')
-                        setCorrectScoreCustomDate('')
-                    }}
-                      className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
-                        correctScoreDateType === 'previous'
-                          ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/50'
-                          : 'text-gray-400 hover:text-yellow-400 hover:bg-gray-700'
-                      }`}
-                    >
-                      Previous
-                    </button>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all justify-start text-left font-normal bg-gray-800 border-gray-700 text-gray-400 hover:text-yellow-400 hover:bg-gray-700",
+                            (correctScoreCustomDate || correctScoreDateType === 'custom') && "bg-yellow-500 text-black shadow-lg shadow-yellow-500/50 border-yellow-500"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {correctScoreCustomDate ? format(new Date(correctScoreCustomDate), 'MMM dd') : 'Select Date'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-gray-800 border-yellow-600/30" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={correctScoreCustomDate ? new Date(correctScoreCustomDate) : undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              setCorrectScoreCustomDate(format(date, 'yyyy-MM-dd'))
+                              setCorrectScoreDateType('custom')
+                              setCorrectScoreDaysBack(0)
+                            }
+                          }}
+                          initialFocus
+                          className="bg-gray-800 text-white"
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <button
                       onClick={() => {
                         setCorrectScoreDateType('today')
