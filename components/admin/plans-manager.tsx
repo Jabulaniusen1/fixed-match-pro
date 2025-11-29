@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,11 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner'
 import { Database } from '@/types/database'
 import { Plus, Edit, Trash2, X } from 'lucide-react'
+import { getCurrencyFromCountry, getCurrencySymbol } from '@/lib/utils/currency'
 
 type PlanUpdate = Database['public']['Tables']['plans']['Update']
-
-const AVAILABLE_COUNTRIES = ['Nigeria', 'Ghana', 'Other'] as const
-type CountryOption = typeof AVAILABLE_COUNTRIES[number]
 
 interface PlansManagerProps {
   plans: any[]
@@ -33,6 +31,8 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
   const [editingPrice, setEditingPrice] = useState<any>(null)
   const [showPlanDialog, setShowPlanDialog] = useState(false)
   const [showPriceDialog, setShowPriceDialog] = useState(false)
+  const [countries, setCountries] = useState<Array<{ name: string; code: string }>>([])
+  const [loadingCountries, setLoadingCountries] = useState(true)
   const [planForm, setPlanForm] = useState({
     name: '',
     slug: '',
@@ -44,13 +44,38 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
   })
   const [priceForm, setPriceForm] = useState({
     plan_id: '',
-    country: 'Nigeria' as CountryOption,
+    country: 'Nigeria',
     duration_days: 7,
     price: '',
     activation_fee: '',
     currency: 'NGN',
   })
   const [newBenefit, setNewBenefit] = useState('')
+
+  // Fetch countries on mount
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        setLoadingCountries(true)
+        const response = await fetch('/api/countries')
+        if (!response.ok) throw new Error('Failed to fetch countries')
+        const data = await response.json()
+        setCountries(data)
+      } catch (error) {
+        console.error('Error fetching countries:', error)
+        // Fallback to basic countries
+        setCountries([
+          { name: 'Nigeria', code: 'NG' },
+          { name: 'Ghana', code: 'GH' },
+          { name: 'Kenya', code: 'KE' },
+          { name: 'Other', code: 'XX' },
+        ])
+      } finally {
+        setLoadingCountries(false)
+      }
+    }
+    fetchCountries()
+  }, [])
 
   const getSubscriberCount = (planId: string) => {
     return subscriptions.filter((s) => s.plan_id === planId && s.plan_status === 'active').length
@@ -186,13 +211,14 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
   const handleEditPrice = (price: any, planId: string) => {
     setEditingPrice(price)
     const country = price.country || 'Nigeria'
+    const currency = price.currency || getCurrencyFromCountry(country)
     setPriceForm({
       plan_id: planId,
-      country: country as CountryOption,
+      country: country,
       duration_days: price.duration_days,
       price: price.price.toString(),
       activation_fee: price.activation_fee?.toString() || '',
-      currency: price.currency || (country === 'Other' ? 'USD' : country === 'Nigeria' ? 'NGN' : country === 'Ghana' ? 'GHS' : 'USD'),
+      currency: currency,
     })
     setShowPriceDialog(true)
   }
@@ -201,7 +227,7 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
     setEditingPrice(null)
     setPriceForm({
       plan_id: planId,
-      country: 'Nigeria' as CountryOption,
+      country: 'Nigeria',
       duration_days: 7,
       price: '',
       activation_fee: '',
@@ -220,19 +246,8 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
     try {
       const supabase = createClient()
       
-      // Determine currency based on country
-      let currency = priceForm.currency
-      if (!currency || currency === '') {
-        if (priceForm.country === 'Nigeria') {
-          currency = 'NGN'
-        } else if (priceForm.country === 'Ghana') {
-          currency = 'GHS'
-        } else if (priceForm.country === 'Other') {
-          currency = 'USD'
-        } else {
-          currency = 'USD'
-        }
-      }
+      // Automatically determine currency based on country
+      const currency = getCurrencyFromCountry(priceForm.country)
       
       // Check for duplicate price before creating
       if (!editingPrice) {
@@ -480,7 +495,7 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
                                   </TableCell>
                                   <TableCell className="font-semibold">
                                     <div className="flex items-center gap-1">
-                                      <span>{price.currency === 'NGN' || price.currency === 'NG' ? '₦' : price.currency === 'USD' ? '$' : price.currency}</span>
+                                      <span>{getCurrencySymbol(price.currency)}</span>
                                       <span>{price.price}</span>
                                     </div>
                                   </TableCell>
@@ -488,7 +503,7 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
                                     {price.activation_fee
                                       ? (
                                         <div className="flex items-center gap-1">
-                                          <span>{price.currency === 'NGN' || price.currency === 'NG' ? '₦' : price.currency === 'USD' ? '$' : price.currency}</span>
+                                          <span>{getCurrencySymbol(price.currency)}</span>
                                           <span>{price.activation_fee}</span>
                                         </div>
                                       )
@@ -668,31 +683,33 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
               <Select
                 value={priceForm.country}
                 onValueChange={(value) => {
-                  let currency = 'NGN' // Default for Nigeria
-                  if (value === 'Ghana') {
-                    currency = 'GHS'
-                  } else if (value === 'Nigeria') {
-                    currency = 'NGN'
-                  } else if (value === 'Other') {
-                    currency = 'USD'
-                  }
-                  
+                  const currency = getCurrencyFromCountry(value)
                   setPriceForm({
                     ...priceForm,
-                    country: value as CountryOption,
+                    country: value,
                     currency: currency,
                   })
                 }}
+                disabled={loadingCountries}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select country" />
+                  <SelectValue placeholder={loadingCountries ? "Loading countries..." : "Select country"} />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Nigeria">Nigeria (₦)</SelectItem>
-                  <SelectItem value="Ghana">Ghana (₵)</SelectItem>
-                  <SelectItem value="Other">Other ($)</SelectItem>
+                <SelectContent className="max-h-[300px]">
+                  {countries.map((country) => {
+                    const currency = getCurrencyFromCountry(country.name)
+                    const symbol = getCurrencySymbol(currency)
+                    return (
+                      <SelectItem key={country.code} value={country.name}>
+                        {country.name} ({symbol} {currency})
+                      </SelectItem>
+                    )
+                  })}
                 </SelectContent>
               </Select>
+              <p className="text-xs text-gray-500">
+                Currency will be automatically set based on the selected country
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="duration">Duration</Label>
@@ -711,33 +728,22 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="currency">Currency</Label>
-              <Select
+              <Input
+                id="currency"
                 value={priceForm.currency}
-                onValueChange={(value) => setPriceForm({ ...priceForm, currency: value })}
                 disabled={true}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={priceForm.currency}>
-                    {priceForm.currency === 'NGN' && '₦'}
-                    {priceForm.currency === 'GHS' && '₵'}
-                    {priceForm.currency === 'USD' && '$'}
-                    {priceForm.currency} ({priceForm.currency === 'NGN' ? '₦' : priceForm.currency === 'GHS' ? '₵' : '$'})
-                        </SelectItem>
-                </SelectContent>
-              </Select>
-                <p className="text-xs text-blue-600">
-                  Currency automatically set based on selected country
-                </p>
+                className="bg-gray-50"
+              />
+              <p className="text-xs text-gray-500">
+                Currency automatically set based on selected country: {getCurrencySymbol(priceForm.currency)} {priceForm.currency}
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="price">Price *</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                    {priceForm.currency === 'NGN' || priceForm.currency === 'NG' ? '₦' : priceForm.currency === 'USD' ? '$' : priceForm.currency}
+                    {getCurrencySymbol(priceForm.currency)}
                   </span>
                   <Input
                     id="price"
@@ -755,7 +761,7 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
                 <Label htmlFor="activation_fee">Activation Fee (Optional)</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                    {priceForm.currency === 'NGN' || priceForm.currency === 'NG' ? '₦' : priceForm.currency === 'USD' ? '$' : priceForm.currency}
+                    {getCurrencySymbol(priceForm.currency)}
                   </span>
                   <Input
                     id="activation_fee"

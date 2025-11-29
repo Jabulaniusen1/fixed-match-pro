@@ -116,23 +116,8 @@ export default async function BlogPostPage({
 
   const blogPost = typedPost
 
-  // Get author information
-  let authorName = 'Admin'
-  if (blogPost.author_id) {
-    const { data: authorData } = await supabase
-      .from('users')
-      .select('full_name, email')
-      .eq('id', blogPost.author_id)
-      .single()
-    
-    const author = authorData as { full_name: string | null; email: string } | null
-    
-    if (author?.full_name) {
-      authorName = author.full_name
-    } else if (author?.email) {
-      authorName = author.email.split('@')[0]
-    }
-  }
+  // Author is always "Admin"
+  const authorName = 'Admin'
 
   return (
     <PageLayout>

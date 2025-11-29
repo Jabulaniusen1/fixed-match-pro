@@ -1,23 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Oswald, Ubuntu } from "next/font/google";
+import { Skranji } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
-const inter = Inter({
-  variable: "--font-inter",
+const skranji = Skranji({
+  variable: "--font-skranji",
   subsets: ["latin"],
-});
-
-const oswald = Oswald({
-  variable: "--font-oswald",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const ubuntu = Ubuntu({
-  variable: "--font-ubuntu",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -81,7 +70,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${oswald.variable} font-ubuntu antialiased`}
+        className={`${skranji.variable} font-skranji antialiased`}
       >
         {children}
         <Toaster />

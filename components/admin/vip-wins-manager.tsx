@@ -10,13 +10,16 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
 import { Database } from '@/types/database'
-import { Plus, Edit, Trash2 } from 'lucide-react'
+import { Plus, Edit, Trash2, Loader2 } from 'lucide-react'
 import { formatDate } from '@/lib/utils/date'
 import { LeagueSelector } from '@/components/admin/league-selector'
 import { TeamSelector } from '@/components/admin/team-selector'
 import Link from 'next/link'
+import { format } from 'date-fns'
 
 type VIPWinningInsert = Database['public']['Tables']['vip_winnings']['Insert']
 type VIPWinningUpdate = Database['public']['Tables']['vip_winnings']['Update']
@@ -24,10 +27,14 @@ type VIPWinningUpdate = Database['public']['Tables']['vip_winnings']['Update']
 interface VIPWinsManagerProps {
   winnings: any[]
   plans: any[]
+  pastPredictions: any[]
 }
 
-export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsManagerProps) {
+export function VIPWinsManager({ winnings: initialWinnings, plans, pastPredictions: initialPastPredictions }: VIPWinsManagerProps) {
   const [winnings, setWinnings] = useState(initialWinnings)
+  const [pastPredictions, setPastPredictions] = useState(initialPastPredictions)
+  const [selectedPredictions, setSelectedPredictions] = useState<Set<string>>(new Set())
+  const [addingToWinnings, setAddingToWinnings] = useState(false)
   const [loading, setLoading] = useState(false)
   const [editingWinning, setEditingWinning] = useState<any>(null)
   const [showDialog, setShowDialog] = useState(false)
@@ -46,6 +53,10 @@ export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsMana
   useEffect(() => {
     setWinnings(initialWinnings)
   }, [initialWinnings])
+
+  useEffect(() => {
+    setPastPredictions(initialPastPredictions)
+  }, [initialPastPredictions])
 
   const handleEdit = (winning: any) => {
     setEditingWinning(winning)
@@ -176,103 +187,305 @@ export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsMana
     return winning.plan_name
   }
 
+  const getPlanNameFromType = (planType: string) => {
+    const plan = plans.find((p) => {
+      const slug = p.slug || ''
+      if (planType === 'profit_multiplier' && slug === 'profit-multiplier') return true
+      if (planType === 'daily_2_odds' && slug === 'daily-2-odds') return true
+      if (planType === 'standard' && slug === 'standard') return true
+      if (planType === 'correct_score' && slug === 'correct-score') return true
+      return false
+    })
+    return plan?.name || planType
+  }
+
+  const getPlanIdFromType = (planType: string) => {
+    const plan = plans.find((p) => {
+      const slug = p.slug || ''
+      if (planType === 'profit_multiplier' && slug === 'profit-multiplier') return true
+      if (planType === 'daily_2_odds' && slug === 'daily-2-odds') return true
+      if (planType === 'standard' && slug === 'standard') return true
+      if (planType === 'correct_score' && slug === 'correct-score') return true
+      return false
+    })
+    return plan?.id || null
+  }
+
+  const handleTogglePrediction = (predictionId: string) => {
+    const newSelected = new Set(selectedPredictions)
+    if (newSelected.has(predictionId)) {
+      newSelected.delete(predictionId)
+    } else {
+      newSelected.add(predictionId)
+    }
+    setSelectedPredictions(newSelected)
+  }
+
+  const handleSelectAll = () => {
+    if (selectedPredictions.size === pastPredictions.length) {
+      setSelectedPredictions(new Set())
+    } else {
+      setSelectedPredictions(new Set(pastPredictions.map((p) => p.id)))
+    }
+  }
+
+  const handleAddToWinnings = async () => {
+    if (selectedPredictions.size === 0) {
+      toast.error('Please select at least one prediction')
+      return
+    }
+
+    setAddingToWinnings(true)
+    try {
+      const supabase = createClient()
+      const selected = pastPredictions.filter((p) => selectedPredictions.has(p.id))
+      
+      const winningsToInsert: VIPWinningInsert[] = selected.map((pred) => {
+        const planName = getPlanNameFromType(pred.plan_type)
+        const planId = getPlanIdFromType(pred.plan_type)
+        const date = new Date(pred.kickoff_time).toISOString().split('T')[0]
+        
+        return {
+          plan_id: planId,
+          plan_name: planName,
+          league: pred.league || null,
+          home_team: pred.home_team,
+          away_team: pred.away_team,
+          prediction_type: pred.prediction_type || null,
+          result: pred.result === 'win' ? 'win' : 'loss',
+          date: date,
+        }
+      })
+
+      const { error } = await supabase
+        .from('vip_winnings')
+        // @ts-expect-error - Supabase type inference issue
+        .insert(winningsToInsert)
+
+      if (error) throw error
+
+      toast.success(`Successfully added ${winningsToInsert.length} prediction(s) to VIP winnings`)
+      setSelectedPredictions(new Set())
+      window.location.reload()
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to add predictions to VIP winnings')
+    } finally {
+      setAddingToWinnings(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <Card className="border-2 border-gray-200 shadow-sm">
-        <CardHeader className="p-5 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg font-semibold">VIP Previous Wins</CardTitle>
-              <CardDescription className="text-sm mt-1">
-                Manage VIP winning records for each plan type
-              </CardDescription>
-            </div>
-            <Button asChild className="bg-red-600 hover:bg-red-700 text-white">
-              <Link href="/admin/vip-wins/add">
-              <Plus className="h-4 w-4 mr-2" />
-              Add VIP Win
-              </Link>
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-4 lg:p-6">
-          {winnings.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No VIP winnings records yet.</p>
-              <Button asChild className="mt-4 bg-red-600 hover:bg-red-700 text-white">
-                <Link href="/admin/vip-wins/add">
-                Add First VIP Win
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Plan</TableHead>
-                    <TableHead>League</TableHead>
-                    <TableHead>Match</TableHead>
-                    <TableHead>Prediction</TableHead>
-                    <TableHead>Result</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {winnings.map((winning) => (
-                    <TableRow key={winning.id}>
-                      <TableCell className="font-medium">
-                        {formatDate(winning.date)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{getPlanName(winning)}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {winning.league || '-'}
-                      </TableCell>
-                      <TableCell>
-                        {winning.home_team} vs {winning.away_team}
-                      </TableCell>
-                      <TableCell>{winning.prediction_type}</TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            winning.result === 'win'
-                              ? 'bg-[#22c55e] text-white'
-                              : 'bg-red-500 text-white'
-                          }
-                        >
-                          {winning.result === 'win' ? '✓ Win' : '✗ Loss'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(winning)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDelete(winning.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="winnings" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="winnings">VIP Winnings</TabsTrigger>
+          <TabsTrigger value="past-predictions">Past Predictions</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="winnings" className="space-y-6">
+          <Card className="border-2 border-gray-200 shadow-sm">
+            <CardHeader className="p-5 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-semibold">VIP Previous Wins</CardTitle>
+                  <CardDescription className="text-sm mt-1">
+                    Manage VIP winning records for each plan type
+                  </CardDescription>
+                </div>
+                <Button asChild className="bg-red-600 hover:bg-red-700 text-white">
+                  <Link href="/admin/vip-wins/add">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add VIP Win
+                  </Link>
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 lg:p-6">
+              {winnings.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No VIP winnings records yet.</p>
+                  <Button asChild className="mt-4 bg-red-600 hover:bg-red-700 text-white">
+                    <Link href="/admin/vip-wins/add">
+                    Add First VIP Win
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Plan</TableHead>
+                        <TableHead>League</TableHead>
+                        <TableHead>Match</TableHead>
+                        <TableHead>Prediction</TableHead>
+                        <TableHead>Result</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {winnings.map((winning) => (
+                        <TableRow key={winning.id}>
+                          <TableCell className="font-medium">
+                            {formatDate(winning.date)}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{getPlanName(winning)}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            {winning.league || '-'}
+                          </TableCell>
+                          <TableCell>
+                            {winning.home_team} vs {winning.away_team}
+                          </TableCell>
+                          <TableCell>{winning.prediction_type}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                winning.result === 'win'
+                                  ? 'bg-[#22c55e] text-white'
+                                  : 'bg-red-500 text-white'
+                              }
+                            >
+                              {winning.result === 'win' ? '✓ Win' : '✗ Loss'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEdit(winning)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDelete(winning.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="past-predictions" className="space-y-6">
+          <Card className="border-2 border-gray-200 shadow-sm">
+            <CardHeader className="p-5 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-semibold">Past Predictions</CardTitle>
+                  <CardDescription className="text-sm mt-1">
+                    Select finished VIP predictions to add to VIP winnings
+                  </CardDescription>
+                </div>
+                {selectedPredictions.size > 0 && (
+                  <Button
+                    onClick={handleAddToWinnings}
+                    disabled={addingToWinnings}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    {addingToWinnings ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Adding...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add {selectedPredictions.size} to VIP Winnings
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 lg:p-6">
+              {pastPredictions.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No past predictions available.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={selectedPredictions.size === pastPredictions.length && pastPredictions.length > 0}
+                        onCheckedChange={handleSelectAll}
+                      />
+                      <Label className="text-sm font-medium">
+                        Select All ({selectedPredictions.size} selected)
+                      </Label>
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-12"></TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Plan</TableHead>
+                          <TableHead>League</TableHead>
+                          <TableHead>Match</TableHead>
+                          <TableHead>Prediction</TableHead>
+                          <TableHead>Result</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pastPredictions.map((pred) => (
+                          <TableRow key={pred.id}>
+                            <TableCell>
+                              <Checkbox
+                                checked={selectedPredictions.has(pred.id)}
+                                onCheckedChange={() => handleTogglePrediction(pred.id)}
+                              />
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {format(new Date(pred.kickoff_time), 'MMM dd, yyyy')}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{getPlanNameFromType(pred.plan_type)}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              {pred.league || '-'}
+                            </TableCell>
+                            <TableCell>
+                              {pred.home_team} vs {pred.away_team}
+                            </TableCell>
+                            <TableCell>{pred.prediction_type || '-'}</TableCell>
+                            <TableCell>
+                              <Badge
+                                className={
+                                  pred.result === 'win'
+                                    ? 'bg-[#22c55e] text-white'
+                                    : 'bg-red-500 text-white'
+                                }
+                              >
+                                {pred.result === 'win' ? '✓ Win' : '✗ Loss'}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Add/Edit Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>

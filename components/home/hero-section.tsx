@@ -65,7 +65,7 @@ export function HeroSection() {
   }
 
   return (
-    <section className="relative min-h-[300px] sm:min-h-[400px] lg:min-h-[500px] flex items-center overflow-hidden">
+    <section className="relative min-h-[300px] sm:min-h-[400px] flex items-center overflow-hidden">
       {/* Background Images with Fade Transition */}
       <div className="absolute inset-0 z-0">
         {heroImages.map((image, index) => (
@@ -91,14 +91,14 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10 py-8 lg:py-16">
-        <div className="max-w-2xl">
+        <div className="max-w-5xl mx-auto text-center">
           <h1 className="mb-3 lg:mb-4 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white tracking-tight">
             {headline}
           </h1>
-          <p className="mb-6 lg:mb-8 text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-xl">
+          <p className="mb-6 lg:mb-8 text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto">
             {subtext}
           </p>
-          <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row justify-center">
             <Button
               size="lg"
               onClick={handleSubscribe}

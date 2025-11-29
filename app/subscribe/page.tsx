@@ -91,9 +91,8 @@ function SubscribeContent() {
       const userProfile = result.data as UserProfile | null
 
       if (userProfile?.country) {
-        // Map stored country option to full country name for display
-        const countryOption = userProfile.country as CountryOption
-        const countryName = countryOption === 'Other' ? 'Nigeria' : countryOption
+        // Use the actual country name from the user profile
+        const countryName = userProfile.country
         setUserCountry(countryName)
         setSelectedCountry(countryName)
       }
@@ -111,7 +110,7 @@ function SubscribeContent() {
           setPlan(planData)
 
           // Get prices for user's country
-          const countryOption = userProfile?.country ? mapCountryToOption(userProfile.country === 'Other' ? 'Nigeria' : userProfile.country) : 'Nigeria'
+          const userCountry = userProfile?.country || 'Nigeria'
           const { data: pricesData } = await supabase
             .from('plan_prices')
             .select('*')
@@ -121,7 +120,7 @@ function SubscribeContent() {
           if (pricesData && pricesData.length > 0) {
             setPrices(pricesData)
             // Prefer country-specific price, fallback to Nigeria, then any price
-            const countryPrice = pricesData.find((p: any) => p.country === countryOption)
+            const countryPrice = pricesData.find((p: any) => p.country === userCountry)
             if (countryPrice) {
               setSelectedPrice(countryPrice)
             } else {
@@ -196,8 +195,14 @@ function SubscribeContent() {
         if (countryPrice) {
           setSelectedPrice(countryPrice)
         } else {
-          const nigeriaPrice = pricesData.find((p: any) => p.country === 'Nigeria')
-          setSelectedPrice(nigeriaPrice || pricesData[0])
+          // Try to find a price for the user's country
+          const userCountryPrice = pricesData.find((p: any) => p.country === userCountry)
+          if (userCountryPrice) {
+            setSelectedPrice(userCountryPrice)
+          } else {
+            const nigeriaPrice = pricesData.find((p: any) => p.country === 'Nigeria')
+            setSelectedPrice(nigeriaPrice || pricesData[0])
+          }
         }
       }
     }

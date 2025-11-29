@@ -39,6 +39,17 @@ export default async function AdminVIPWinsPage() {
     .select('*')
     .order('created_at')
 
+  // Get past VIP predictions (finished predictions from VIP plans, excluding 'free')
+  const { data: pastPredictions } = await supabase
+    .from('predictions')
+    .select('*')
+    .in('plan_type', ['profit_multiplier', 'daily_2_odds', 'standard', 'correct_score'])
+    .eq('status', 'finished')
+    .not('result', 'is', null)
+    .neq('result', 'pending')
+    .order('kickoff_time', { ascending: false })
+    .limit(500)
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -52,6 +63,7 @@ export default async function AdminVIPWinsPage() {
         <VIPWinsManager
           winnings={winnings || []}
           plans={plans || []}
+          pastPredictions={pastPredictions || []}
         />
       </div>
     </AdminLayout>

@@ -810,7 +810,7 @@ export function PremiumPredictionsSection() {
                   <div className="flex gap-1 bg-gray-800 border border-yellow-600/30 p-1 rounded-lg">
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button
+                  <Button 
                           variant="outline"
                           className={cn(
                             "px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all justify-start text-left font-normal bg-gray-800 border-gray-700 text-gray-400 hover:text-yellow-400 hover:bg-gray-700",
