@@ -5,9 +5,13 @@ import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { VIPWinning } from '@/types'
 import { formatDate } from '@/lib/utils/date'
 import { cn } from '@/lib/utils'
+import { format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
 import Image from 'next/image'
 
 interface VIPWinningsSectionProps {
@@ -20,11 +24,12 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
   const [loading, setLoading] = useState(true)
   const [offset, setOffset] = useState(0)
   const [teamLogos, setTeamLogos] = useState<Record<string, string | null>>({})
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const limit = 6
 
   useEffect(() => {
     fetchWinnings()
-  }, [offset, planIds, showAll])
+  }, [offset, planIds, showAll, selectedDate])
 
   useEffect(() => {
     if (winnings.length > 0) {
@@ -45,6 +50,14 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
     if (!showAll && planIds && planIds.length > 0) {
       query = query.in('plan_id', planIds)
     }
+
+    // Filter by selected date if provided
+    if (selectedDate) {
+      const dateStr = format(selectedDate, 'yyyy-MM-dd')
+      const startOfDay = `${dateStr}T00:00:00.000Z`
+      const endOfDay = `${dateStr}T23:59:59.999Z`
+      query = query.gte('date', startOfDay).lte('date', endOfDay)
+    }
     
     const { data, error } = await query
       .range(offset, offset + limit - 1)
@@ -56,6 +69,21 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
     }
 
     setLoading(false)
+  }
+
+  const handleTodayClick = () => {
+    setSelectedDate(new Date())
+    setOffset(0) // Reset pagination when changing date
+  }
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date)
+    setOffset(0) // Reset pagination when changing date
+  }
+
+  const handleClearDate = () => {
+    setSelectedDate(undefined)
+    setOffset(0) // Reset pagination when clearing date
   }
 
   const handlePrevious = () => {
@@ -156,6 +184,50 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
             <p className="text-sm lg:text-base text-gray-600">Track our successful VIP predictions</p>
           </div>
           <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all justify-start text-left",
+                    !selectedDate && "text-gray-600 hover:text-[#1e40af] hover:bg-white",
+                    selectedDate && "bg-[#1e40af] text-white"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                  {selectedDate ? format(selectedDate, "MMM dd, yyyy") : "Pick date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelect}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <Button
+              variant="outline"
+              onClick={handleTodayClick}
+              className={cn(
+                "px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all",
+                !selectedDate || (selectedDate && format(selectedDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'))
+                  ? "bg-[#1e40af] text-white"
+                  : "text-gray-600 hover:text-[#1e40af] hover:bg-white"
+              )}
+            >
+              Today
+            </Button>
+            {selectedDate && (
+              <Button
+                variant="outline"
+                onClick={handleClearDate}
+                className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all text-gray-600 hover:text-[#1e40af] hover:bg-white"
+              >
+                Clear
+              </Button>
+            )}
             <Button 
               variant="outline" 
               onClick={handlePrevious} 
