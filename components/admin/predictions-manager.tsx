@@ -11,7 +11,18 @@ import { Badge } from '@/components/ui/badge'
 import { Prediction, Plan } from '@/types'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit, Trash2, MoreVertical, Trophy, CalendarIcon } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { getDateRange } from '@/lib/utils/date'
+import { format } from 'date-fns'
 import { CircularProgress } from '@/components/ui/circular-progress'
 import { formatTime } from '@/lib/utils/date'
 import { cn } from '@/lib/utils'
@@ -54,6 +65,15 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
   const [deletingAll, setDeletingAll] = useState(false)
   const [planToDeleteAll, setPlanToDeleteAll] = useState<{ slug: string; name: string } | null>(null)
   const [teamLogos, setTeamLogos] = useState<TeamLogoCache>({})
+  const [addingToVIP, setAddingToVIP] = useState<string | null>(null)
+  
+  // Date filter state - separate for each plan tab
+  const [dateFilters, setDateFilters] = useState<Record<string, {
+    dateType: 'previous' | 'today' | 'tomorrow' | 'custom'
+    customDate: string
+    daysBack: number
+    selectedDate: Date | undefined
+  }>>({})
 
   // Filter out correct-score plan from regular plans
   const regularPlans = plans.filter(plan => plan.slug !== 'correct-score')
@@ -62,22 +82,89 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
   // Get default tab (first regular plan or correct-score)
   const defaultTab = regularPlans.length > 0 ? regularPlans[0].slug : 'correct-score'
 
-  // Filter predictions by plan type for each plan
+  // Initialize date filter for a plan if not exists
+  const getDateFilter = (planSlug: string) => {
+    if (!dateFilters[planSlug]) {
+      return {
+        dateType: 'today' as const,
+        customDate: '',
+        daysBack: 0,
+        selectedDate: undefined as Date | undefined,
+      }
+    }
+    return dateFilters[planSlug]
+  }
+
+  // Filter predictions by plan type and date for each plan
   const getPredictionsForPlan = (planSlug: string) => {
+    let filtered: Prediction[] = []
+    
     if (planSlug === 'correct-score') {
       // Get correct score predictions from predictions table (identified by plan_type === 'correct_score')
-      return predictions.filter(pred => 
+      filtered = predictions.filter(pred => 
         String(pred.plan_type) === 'correct_score'
       )
+    } else {
+      const planType = getPlanTypeFromSlug(planSlug)
+      if (!planType) return []
+      
+      // For regular plans, exclude correct score predictions
+      filtered = predictions.filter(pred => 
+        pred.plan_type === planType && String(pred.plan_type) !== 'correct_score'
+      )
     }
-    
-    const planType = getPlanTypeFromSlug(planSlug)
-    if (!planType) return []
-    
-    // For regular plans, exclude correct score predictions
-    return predictions.filter(pred => 
-      pred.plan_type === planType && String(pred.plan_type) !== 'correct_score'
-    )
+
+    // Apply date filter
+    const dateFilter = getDateFilter(planSlug)
+    if (dateFilter.dateType !== 'today' || dateFilter.customDate || dateFilter.daysBack > 0) {
+      const { from, to } = getDateRange(dateFilter.dateType, dateFilter.customDate || undefined, dateFilter.daysBack)
+      const fromTimestamp = `${from}T00:00:00.000Z`
+      const toTimestamp = `${to}T23:59:59.999Z`
+      
+      filtered = filtered.filter(pred => {
+        const kickoffTime = new Date(pred.kickoff_time)
+        return kickoffTime >= new Date(fromTimestamp) && kickoffTime <= new Date(toTimestamp)
+      })
+    }
+
+    return filtered
+  }
+
+  const handleDateTypeChange = (planSlug: string, type: 'previous' | 'today' | 'tomorrow' | 'custom') => {
+    setDateFilters(prev => ({
+      ...prev,
+      [planSlug]: {
+        ...getDateFilter(planSlug),
+        dateType: type,
+        customDate: type === 'custom' && prev[planSlug]?.selectedDate 
+          ? format(prev[planSlug].selectedDate!, 'yyyy-MM-dd')
+          : '',
+      }
+    }))
+  }
+
+  const handlePreviousDays = (planSlug: string) => {
+    const currentFilter = getDateFilter(planSlug)
+    setDateFilters(prev => ({
+      ...prev,
+      [planSlug]: {
+        ...currentFilter,
+        daysBack: currentFilter.daysBack + 1,
+        dateType: 'previous',
+      }
+    }))
+  }
+
+  const handleDateSelect = (planSlug: string, date: Date | undefined) => {
+    setDateFilters(prev => ({
+      ...prev,
+      [planSlug]: {
+        ...getDateFilter(planSlug),
+        selectedDate: date,
+        customDate: date ? format(date, 'yyyy-MM-dd') : '',
+        dateType: date ? 'custom' : 'today',
+      }
+    }))
   }
 
   // Fetch team logos for predictions using fixtures API (same as home page)
@@ -283,6 +370,41 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
     }
   }
 
+  const handleAddToVIPWins = async (prediction: Prediction, planName: string) => {
+    setAddingToVIP(prediction.id)
+    try {
+      const supabase = createClient()
+      
+      // Get the date from kickoff_time
+      const kickoffDate = new Date(prediction.kickoff_time)
+      const dateStr = kickoffDate.toISOString().split('T')[0]
+      
+      // Determine result - if status is finished and result exists, use it, otherwise default to 'win'
+      const result = prediction.result === 'loss' ? 'loss' : 'win'
+      
+      // Insert into vip_winnings
+      const { error } = await supabase
+        .from('vip_winnings')
+        .insert({
+          plan_name: planName,
+          home_team: prediction.home_team,
+          away_team: prediction.away_team,
+          prediction_type: prediction.prediction_type || null,
+          result: result,
+          date: dateStr,
+        } as any)
+
+      if (error) throw error
+
+      toast.success('Prediction added to VIP wins successfully!')
+      router.refresh()
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to add to VIP wins')
+    } finally {
+      setAddingToVIP(null)
+    }
+  }
+
   return (
     <Tabs defaultValue={defaultTab} className="space-y-4" onValueChange={setActiveTab}>
       <div className="overflow-x-auto">
@@ -312,39 +434,110 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
           <TabsContent key={plan.id} value={plan.slug} className="space-y-4">
             <Card>
               <CardHeader>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div>
-                    <CardTitle className="text-base lg:text-lg">{plan.name} Predictions</CardTitle>
-                    <CardDescription className="text-xs lg:text-sm">
-                      {showAddWithAPI 
-                        ? 'Add predictions using API or manually' 
-                        : 'Manually add predictions for this plan'}
-                    </CardDescription>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {showAddWithAPI && (
-                      <Button asChild variant="outline" size="sm" className="text-xs lg:text-sm">
-                        <Link href={`/admin/predictions/add-with-api?plan=${plan.slug}`}>
-                          Add with API
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-base lg:text-lg">{plan.name} Predictions</CardTitle>
+                      <CardDescription className="text-xs lg:text-sm">
+                        {showAddWithAPI 
+                          ? 'Add predictions using API or manually' 
+                          : 'Manually add predictions for this plan'}
+                      </CardDescription>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {showAddWithAPI && (
+                        <Button asChild variant="outline" size="sm" className="text-xs lg:text-sm">
+                          <Link href={`/admin/predictions/add-with-api?plan=${plan.slug}`}>
+                            Add with API
+                          </Link>
+                        </Button>
+                      )}
+                      <Button asChild size="sm" className="text-xs lg:text-sm">
+                        <Link href={`/admin/predictions/add?plan=${plan.slug}`}>
+                          Add Manually
                         </Link>
                       </Button>
-                    )}
-                    <Button asChild size="sm" className="text-xs lg:text-sm">
-                      <Link href={`/admin/predictions/add?plan=${plan.slug}`}>
-                        Add Manually
-                      </Link>
-                    </Button>
-                    {planPredictions.length > 0 && (
+                      {planPredictions.length > 0 && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="text-xs lg:text-sm"
+                          onClick={() => handleDeleteAllClick(plan.slug, plan.name)}
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Delete All
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Date Filters */}
+                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
+                    <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
                       <Button
-                        variant="destructive"
+                        variant={getDateFilter(plan.slug).dateType === 'previous' ? 'default' : 'ghost'}
                         size="sm"
-                        className="text-xs lg:text-sm"
-                        onClick={() => handleDeleteAllClick(plan.slug, plan.name)}
+                        onClick={() => handlePreviousDays(plan.slug)}
+                        className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
+                          getDateFilter(plan.slug).dateType === 'previous'
+                            ? 'bg-[#1e40af] text-white'
+                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                        }`}
                       >
-                        <Trash2 className="h-3 w-3 mr-1" />
-                        Delete All
+                        Previous
                       </Button>
-                    )}
+                      <Button
+                        variant={getDateFilter(plan.slug).dateType === 'today' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => handleDateTypeChange(plan.slug, 'today')}
+                        className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
+                          getDateFilter(plan.slug).dateType === 'today'
+                            ? 'bg-[#1e40af] text-white'
+                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                        }`}
+                      >
+                        Today
+                      </Button>
+                      <Button
+                        variant={getDateFilter(plan.slug).dateType === 'tomorrow' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => handleDateTypeChange(plan.slug, 'tomorrow')}
+                        className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
+                          getDateFilter(plan.slug).dateType === 'tomorrow'
+                            ? 'bg-[#1e40af] text-white'
+                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                        }`}
+                      >
+                        Tomorrow
+                      </Button>
+                    </div>
+                    {/* Custom Date Picker */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={getDateFilter(plan.slug).dateType === 'custom' ? 'default' : 'outline'}
+                          size="sm"
+                          className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium ${
+                            getDateFilter(plan.slug).dateType === 'custom'
+                              ? 'bg-[#1e40af] text-white'
+                              : ''
+                          }`}
+                        >
+                          <CalendarIcon className="h-4 w-4 mr-2" />
+                          {getDateFilter(plan.slug).selectedDate 
+                            ? format(getDateFilter(plan.slug).selectedDate!, 'MMM dd') 
+                            : 'Pick Date'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={getDateFilter(plan.slug).selectedDate}
+                          onSelect={(date) => handleDateSelect(plan.slug, date)}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </CardHeader>
@@ -476,26 +669,42 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                           </div>
 
                           {/* Actions */}
-                          <div className="col-span-1 flex items-center justify-end gap-2">
+                          <div className="col-span-1 flex items-center justify-end">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
                             <Button
-                              asChild
                               variant="ghost"
                               size="sm"
                               className="h-8 w-8 p-0"
                             >
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
                               <Link href={`/admin/predictions/add?plan=${plan.slug}&edit=${pred.id}`}>
-                                <Edit className="h-4 w-4" />
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit
                               </Link>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleAddToVIPWins(pred, plan.name)}
+                                  disabled={addingToVIP === pred.id}
+                                >
+                                  <Trophy className="h-4 w-4 mr-2" />
+                                  {addingToVIP === pred.id ? 'Adding...' : 'Add to VIP Wins'}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
                               onClick={() => handleDeleteClick(pred.id, 'regular')}
                               disabled={deletingId === pred.id}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                                  variant="destructive"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       ))}
@@ -586,27 +795,42 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                               </div>
                             </div>
                             <div className="flex gap-2 pt-2 border-t">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
                               <Button
-                                asChild
                                 variant="outline"
                                 size="sm"
                                 className="flex-1 text-xs"
                               >
+                                    <MoreVertical className="h-3 w-3 mr-1" />
+                                    Actions
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem asChild>
                                 <Link href={`/admin/predictions/add?plan=${plan.slug}&edit=${pred.id}`}>
-                                  <Edit className="h-3 w-3 mr-1" />
+                                      <Edit className="h-4 w-4 mr-2" />
                                   Edit
                                 </Link>
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="flex-1 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleAddToVIPWins(pred, plan.name)}
+                                    disabled={addingToVIP === pred.id}
+                                  >
+                                    <Trophy className="h-4 w-4 mr-2" />
+                                    {addingToVIP === pred.id ? 'Adding...' : 'Add to VIP Wins'}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
                                 onClick={() => handleDeleteClick(pred.id, 'regular')}
                                 disabled={deletingId === pred.id}
+                                    variant="destructive"
                               >
-                                <Trash2 className="h-3 w-3 mr-1" />
+                                    <Trash2 className="h-4 w-4 mr-2" />
                                 Delete
-                              </Button>
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </div>
                           </div>
                         </Card>
@@ -628,33 +852,104 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
           <TabsContent value="correct-score" className="space-y-4">
             <Card>
               <CardHeader>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div>
-                    <CardTitle className="text-base lg:text-lg">Correct Score Predictions</CardTitle>
-                    <CardDescription className="text-xs lg:text-sm">
-                      Add correct score predictions using API or manually
-                    </CardDescription>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Button asChild variant="outline" size="sm" className="text-xs lg:text-sm">
-                      <Link href={`/admin/predictions/add-with-api?plan=correct-score`}>
-                        Add with API
-                      </Link>
-                    </Button>
-                    <Button asChild size="sm" className="text-xs lg:text-sm">
-                      <Link href="/admin/predictions/add-correct-score">Add Manually</Link>
-                    </Button>
-                    {correctScorePreds.length > 0 && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="text-xs lg:text-sm"
-                        onClick={() => handleDeleteAllClick('correct-score', correctScorePlan.name)}
-                      >
-                        <Trash2 className="h-3 w-3 mr-1" />
-                        Delete All
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-base lg:text-lg">Correct Score Predictions</CardTitle>
+                      <CardDescription className="text-xs lg:text-sm">
+                        Add correct score predictions using API or manually
+                      </CardDescription>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button asChild variant="outline" size="sm" className="text-xs lg:text-sm">
+                        <Link href={`/admin/predictions/add-with-api?plan=correct-score`}>
+                          Add with API
+                        </Link>
                       </Button>
-                    )}
+                      <Button asChild size="sm" className="text-xs lg:text-sm">
+                        <Link href="/admin/predictions/add-correct-score">Add Manually</Link>
+                      </Button>
+                      {correctScorePreds.length > 0 && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="text-xs lg:text-sm"
+                          onClick={() => handleDeleteAllClick('correct-score', correctScorePlan.name)}
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Delete All
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Date Filters */}
+                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
+                    <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
+                      <Button
+                        variant={getDateFilter('correct-score').dateType === 'previous' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => handlePreviousDays('correct-score')}
+                        className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
+                          getDateFilter('correct-score').dateType === 'previous'
+                            ? 'bg-[#1e40af] text-white'
+                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                        }`}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        variant={getDateFilter('correct-score').dateType === 'today' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => handleDateTypeChange('correct-score', 'today')}
+                        className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
+                          getDateFilter('correct-score').dateType === 'today'
+                            ? 'bg-[#1e40af] text-white'
+                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                        }`}
+                      >
+                        Today
+                      </Button>
+                      <Button
+                        variant={getDateFilter('correct-score').dateType === 'tomorrow' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => handleDateTypeChange('correct-score', 'tomorrow')}
+                        className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
+                          getDateFilter('correct-score').dateType === 'tomorrow'
+                            ? 'bg-[#1e40af] text-white'
+                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                        }`}
+                      >
+                        Tomorrow
+                      </Button>
+                    </div>
+                    {/* Custom Date Picker */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={getDateFilter('correct-score').dateType === 'custom' ? 'default' : 'outline'}
+                          size="sm"
+                          className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium ${
+                            getDateFilter('correct-score').dateType === 'custom'
+                              ? 'bg-[#1e40af] text-white'
+                              : ''
+                          }`}
+                        >
+                          <CalendarIcon className="h-4 w-4 mr-2" />
+                          {getDateFilter('correct-score').selectedDate 
+                            ? format(getDateFilter('correct-score').selectedDate!, 'MMM dd') 
+                            : 'Pick Date'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={getDateFilter('correct-score').selectedDate}
+                          onSelect={(date) => handleDateSelect('correct-score', date)}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </CardHeader>
@@ -790,26 +1085,42 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                         </div>
 
                         {/* Actions */}
-                        <div className="col-span-1 flex items-center justify-end gap-2">
+                        <div className="col-span-1 flex items-center justify-end">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
                           <Button
-                            asChild
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0"
                           >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
                             <Link href={`/admin/predictions/add-correct-score?edit=${pred.id}`}>
-                              <Edit className="h-4 w-4" />
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Edit
                             </Link>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleAddToVIPWins(pred, correctScorePlan.name)}
+                                disabled={addingToVIP === pred.id}
+                              >
+                                <Trophy className="h-4 w-4 mr-2" />
+                                {addingToVIP === pred.id ? 'Adding...' : 'Add to VIP Wins'}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
                             onClick={() => handleDeleteClick(pred.id, 'correct-score')}
                             disabled={deletingId === pred.id}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                                variant="destructive"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </div>
                         )
@@ -905,27 +1216,42 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                             )}
                           </div>
                           <div className="flex gap-2 pt-2 border-t">
-                            <Button
-                              asChild
-                              variant="outline"
-                              size="sm"
-                              className="flex-1 text-xs"
-                            >
-                              <Link href={`/admin/predictions/add-correct-score?edit=${pred.id}`}>
-                                <Edit className="h-3 w-3 mr-1" />
-                                Edit
-                              </Link>
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex-1 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                              onClick={() => handleDeleteClick(pred.id, 'correct-score')}
-                              disabled={deletingId === pred.id}
-                            >
-                              <Trash2 className="h-3 w-3 mr-1" />
-                              Delete
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex-1 text-xs"
+                                >
+                                  <MoreVertical className="h-3 w-3 mr-1" />
+                                  Actions
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
+                                  <Link href={`/admin/predictions/add-correct-score?edit=${pred.id}`}>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleAddToVIPWins(pred, correctScorePlan.name)}
+                                  disabled={addingToVIP === pred.id}
+                                >
+                                  <Trophy className="h-4 w-4 mr-2" />
+                                  {addingToVIP === pred.id ? 'Adding...' : 'Add to VIP Wins'}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onClick={() => handleDeleteClick(pred.id, 'correct-score')}
+                                  disabled={deletingId === pred.id}
+                                  variant="destructive"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       </Card>
