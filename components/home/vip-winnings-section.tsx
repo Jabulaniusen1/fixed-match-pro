@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { VIPWinning } from '@/types'
 import { formatDate } from '@/lib/utils/date'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
 interface VIPWinningsSectionProps {
   planIds?: string[] // Optional: filter by plan IDs
@@ -18,11 +19,18 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
   const [winnings, setWinnings] = useState<VIPWinning[]>([])
   const [loading, setLoading] = useState(true)
   const [offset, setOffset] = useState(0)
+  const [teamLogos, setTeamLogos] = useState<Record<string, string | null>>({})
   const limit = 6
 
   useEffect(() => {
     fetchWinnings()
   }, [offset, planIds, showAll])
+
+  useEffect(() => {
+    if (winnings.length > 0) {
+      fetchTeamLogos()
+    }
+  }, [winnings])
 
   const fetchWinnings = async () => {
     setLoading(true)
@@ -54,6 +62,88 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
     if (offset > 0) {
       setOffset((prev) => Math.max(0, prev - limit))
     }
+  }
+
+  const fetchTeamLogos = async () => {
+    if (winnings.length === 0) return
+
+    // Group winnings by date
+    const winningsByDate = new Map<string, VIPWinning[]>()
+    winnings.forEach((winning) => {
+      const date = new Date(winning.date).toISOString().split('T')[0]
+      if (!winningsByDate.has(date)) {
+        winningsByDate.set(date, [])
+      }
+      winningsByDate.get(date)!.push(winning)
+    })
+
+    try {
+      const newLogos: Record<string, string | null> = {}
+      
+      // Fetch fixtures for each date
+      const fixturePromises = Array.from(winningsByDate.keys()).map(async (date) => {
+        try {
+          const response = await fetch(`/api/football/fixtures?from=${date}&to=${date}`)
+          if (!response.ok) return { date, fixtures: [] }
+          
+          const fixturesData = await response.json()
+          const fixtures = Array.isArray(fixturesData) 
+            ? fixturesData 
+            : (Array.isArray(fixturesData?.data) ? fixturesData.data : [])
+          return { date, fixtures }
+        } catch (err) {
+          console.error(`Error fetching fixtures for date ${date}:`, err)
+          return { date, fixtures: [] }
+        }
+      })
+      
+      const fixtureResults = await Promise.all(fixturePromises)
+      const fixturesByDate = new Map<string, any[]>()
+      fixtureResults.forEach(({ date, fixtures }) => {
+        fixturesByDate.set(date, fixtures)
+      })
+      
+      // Match winnings to fixtures and extract logos
+      for (const [date, dateWinnings] of winningsByDate.entries()) {
+        const fixtures = fixturesByDate.get(date) || []
+        
+        dateWinnings.forEach((winning) => {
+          // Find matching fixture by team names
+          const fixture = fixtures.find((f: any) => {
+            const homeMatch = f.match_hometeam_name?.toLowerCase() === winning.home_team.toLowerCase() ||
+                             f.match_hometeam_name?.toLowerCase().includes(winning.home_team.toLowerCase()) ||
+                             winning.home_team.toLowerCase().includes(f.match_hometeam_name?.toLowerCase() || '')
+            
+            const awayMatch = f.match_awayteam_name?.toLowerCase() === winning.away_team.toLowerCase() ||
+                             f.match_awayteam_name?.toLowerCase().includes(winning.away_team.toLowerCase()) ||
+                             winning.away_team.toLowerCase().includes(f.match_awayteam_name?.toLowerCase() || '')
+            
+            return homeMatch && awayMatch
+          })
+          
+          // Extract team logos from fixture
+          if (fixture) {
+            if (fixture.team_home_badge && !teamLogos[winning.home_team]) {
+              newLogos[winning.home_team] = fixture.team_home_badge
+            }
+            if (fixture.team_away_badge && !teamLogos[winning.away_team]) {
+              newLogos[winning.away_team] = fixture.team_away_badge
+            }
+          }
+        })
+      }
+      
+      // Update state with new logos
+      if (Object.keys(newLogos).length > 0) {
+        setTeamLogos((prev) => ({ ...prev, ...newLogos }))
+      }
+    } catch (error) {
+      console.error('Error fetching team logos:', error)
+    }
+  }
+
+  const getTeamLogo = (teamName: string): string | null => {
+    return teamLogos[teamName] || null
   }
 
   return (
@@ -177,8 +267,48 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                         {winning.result === 'win' ? '✓ Win' : '✗ Loss'}
                       </Badge>
                     </div>
-                    <div className="text-sm font-medium text-gray-900 truncate">
-                      {winning.home_team} vs {winning.away_team}
+                    <div className="flex items-center gap-2">
+                      {getTeamLogo(winning.home_team) ? (
+                        <div className="relative w-5 h-5 flex-shrink-0">
+                          <Image
+                            src={getTeamLogo(winning.home_team)!}
+                            alt={winning.home_team}
+                            width={20}
+                            height={20}
+                            className="object-contain rounded-full"
+                            unoptimized
+                            onError={(e) => { e.currentTarget.style.display = 'none' }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                          {winning.home_team.charAt(0)}
+                        </div>
+                      )}
+                      <span className="text-sm font-medium text-gray-900 truncate">
+                        {winning.home_team}
+                      </span>
+                      <span className="text-xs text-gray-500">vs</span>
+                      {getTeamLogo(winning.away_team) ? (
+                        <div className="relative w-5 h-5 flex-shrink-0">
+                          <Image
+                            src={getTeamLogo(winning.away_team)!}
+                            alt={winning.away_team}
+                            width={20}
+                            height={20}
+                            className="object-contain rounded-full"
+                            unoptimized
+                            onError={(e) => { e.currentTarget.style.display = 'none' }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                          {winning.away_team.charAt(0)}
+                        </div>
+                      )}
+                      <span className="text-sm font-medium text-gray-900 truncate">
+                        {winning.away_team}
+                      </span>
                     </div>
                     <div className="text-xs font-semibold text-[#1e40af] truncate">
                       {winning.prediction_type}
@@ -224,8 +354,60 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
 
                   {/* Teams */}
                   <div className="col-span-5">
-                    <div className="text-sm font-medium text-gray-900">
-                      {winning.home_team} vs {winning.away_team}
+                    <div className="flex items-center gap-2">
+                      {getTeamLogo(winning.home_team) ? (
+                        <div className="relative w-6 h-6 flex-shrink-0">
+                          <Image
+                            src={getTeamLogo(winning.home_team)!}
+                            alt={winning.home_team}
+                            width={24}
+                            height={24}
+                            className="object-contain"
+                            unoptimized
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none'
+                              const parent = e.currentTarget.parentElement
+                              if (parent) {
+                                parent.innerHTML = `<div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">${winning.home_team.charAt(0)}</div>`
+                              }
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                          {winning.home_team.charAt(0)}
+                        </div>
+                      )}
+                      <span className="text-sm font-medium text-gray-900 truncate">
+                        {winning.home_team}
+                      </span>
+                      <span className="text-xs text-gray-500">vs</span>
+                      {getTeamLogo(winning.away_team) ? (
+                        <div className="relative w-6 h-6 flex-shrink-0">
+                          <Image
+                            src={getTeamLogo(winning.away_team)!}
+                            alt={winning.away_team}
+                            width={24}
+                            height={24}
+                            className="object-contain"
+                            unoptimized
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none'
+                              const parent = e.currentTarget.parentElement
+                              if (parent) {
+                                parent.innerHTML = `<div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">${winning.away_team.charAt(0)}</div>`
+                              }
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                          {winning.away_team.charAt(0)}
+                        </div>
+                      )}
+                      <span className="text-sm font-medium text-gray-900 truncate">
+                        {winning.away_team}
+                      </span>
                     </div>
                   </div>
 

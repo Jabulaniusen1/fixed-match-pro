@@ -296,15 +296,16 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
       </div>
 
       {/* Editor Content */}
-      <div className="bg-white">
+      <div className="bg-white h-[500px] overflow-y-auto overflow-x-hidden">
         <EditorContent editor={editor} />
       </div>
 
       <style jsx global>{`
         .rich-text-editor .ProseMirror {
           outline: none;
-          min-height: 400px;
+          min-height: calc(100% - 2rem);
           padding: 1rem;
+          height: auto;
         }
         .rich-text-editor .ProseMirror p.is-editor-empty:first-child::before {
           content: attr(data-placeholder);
