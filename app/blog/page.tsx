@@ -76,15 +76,29 @@ export default async function BlogPage() {
           </div>
         ) : (
           <div className="grid gap-6 lg:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {blogPosts.map((post) => (
+            {blogPosts.map((post) => {
+              // Parse featured_image if it's JSON, otherwise use as URL
+              let imageUrl = post.featured_image || ''
+              if (imageUrl) {
+                try {
+                  const parsed = JSON.parse(imageUrl)
+                  if (parsed.url) {
+                    imageUrl = parsed.url
+                  }
+                } catch {
+                  // Not JSON, use as-is
+                }
+              }
+              
+              return (
               <Card
                 key={post.id}
                 className="overflow-hidden border-2 border-gray-200 hover:border-[#22c55e] hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex flex-col"
               >
-                {post.featured_image && (
+                {imageUrl && (
                   <div className="relative h-48 w-full">
                     <Image
-                      src={post.featured_image}
+                      src={imageUrl}
                       alt={post.title}
                       fill
                       className="object-cover"
@@ -113,7 +127,8 @@ export default async function BlogPage() {
                   </Button>
                 </CardContent>
               </Card>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

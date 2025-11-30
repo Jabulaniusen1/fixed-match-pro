@@ -48,6 +48,8 @@ function WriteBlogContent() {
     excerpt: '',
     content: '',
     featured_image: '',
+    featured_image_width: 800,
+    featured_image_height: 600,
     published: false,
     scheduled_at: '',
     meta_keywords: '',
@@ -106,12 +108,32 @@ function WriteBlogContent() {
 
         const post = data as BlogPost
 
+        // Parse featured_image if it's JSON, otherwise use as URL
+        let imageUrl = post.featured_image || ''
+        let imageWidth = 800
+        let imageHeight = 600
+        
+        if (imageUrl) {
+          try {
+            const parsed = JSON.parse(imageUrl)
+            if (parsed.url) {
+              imageUrl = parsed.url
+              imageWidth = parsed.width || 800
+              imageHeight = parsed.height || 600
+            }
+          } catch {
+            // Not JSON, use as-is
+          }
+        }
+
         setFormData({
           title: post.title || '',
           slug: post.slug || '',
           excerpt: post.excerpt || '',
           content: post.content || '',
-          featured_image: post.featured_image || '',
+          featured_image: imageUrl,
+          featured_image_width: imageWidth,
+          featured_image_height: imageHeight,
           published: post.published || false,
           scheduled_at: post.scheduled_at ? new Date(post.scheduled_at).toISOString().slice(0, 16) : '',
           meta_keywords: post.meta_keywords || '',
@@ -165,7 +187,12 @@ function WriteBlogContent() {
       }
 
       const data = await response.json()
-      setFormData({ ...formData, featured_image: data.url })
+      setFormData({ 
+        ...formData, 
+        featured_image: data.url,
+        featured_image_width: 800,
+        featured_image_height: 600,
+      })
       toast.success('Image uploaded successfully')
     } catch (error: any) {
       console.error('Error uploading image:', error)
@@ -218,12 +245,22 @@ function WriteBlogContent() {
     // Ensure slug is set (fallback to title if empty)
     const finalSlug = formData.slug.trim() || generateSlug(formData.title.trim())
     
+    // Store featured image with dimensions as JSON
+    let featuredImageData = null
+    if (formData.featured_image) {
+      featuredImageData = JSON.stringify({
+        url: formData.featured_image,
+        width: formData.featured_image_width,
+        height: formData.featured_image_height,
+      })
+    }
+    
     const submitData: any = {
       title: formData.title.trim(),
       slug: finalSlug,
       excerpt: formData.excerpt.trim() || null,
       content: formData.content, // Don't trim HTML content
-      featured_image: formData.featured_image || null,
+      featured_image: featuredImageData,
       published: formData.published,
       author_id: user.id,
       meta_keywords: formData.meta_keywords.trim() || null,
@@ -383,21 +420,162 @@ function WriteBlogContent() {
             </CardHeader>
             <CardContent className="space-y-4">
               {formData.featured_image ? (
-                <div className="relative">
-                  <div className="relative w-full h-64 rounded-lg overflow-hidden border-2 border-gray-200">
-                    <Image
-                      src={formData.featured_image}
-                      alt="Featured image"
-                      fill
-                      className="object-cover"
-                    />
+                <div className="space-y-4">
+                  <div className="relative flex justify-center">
+                    <div 
+                      className="relative rounded-lg overflow-hidden border-2 border-gray-200"
+                      style={{
+                        width: `${Math.min(formData.featured_image_width, 600)}px`,
+                        height: `${Math.min(formData.featured_image_height, (formData.featured_image_height / formData.featured_image_width) * 600)}px`,
+                        maxWidth: '100%',
+                      }}
+                    >
+                      <Image
+                        src={formData.featured_image}
+                        alt="Featured image"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   </div>
+                  
+                  {/* Dimension Controls */}
+                  <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    {/* Quick Presets */}
+                    <div className="space-y-2">
+                      <Label>Quick Presets</Label>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setFormData({ 
+                            ...formData, 
+                            featured_image_width: 1920, 
+                            featured_image_height: 1080 
+                          })}
+                          className="text-xs"
+                        >
+                          Landscape (16:9)
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setFormData({ 
+                            ...formData, 
+                            featured_image_width: 1080, 
+                            featured_image_height: 1920 
+                          })}
+                          className="text-xs"
+                        >
+                          Portrait (9:16)
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setFormData({ 
+                            ...formData, 
+                            featured_image_width: 1200, 
+                            featured_image_height: 630 
+                          })}
+                          className="text-xs"
+                        >
+                          Facebook
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setFormData({ 
+                            ...formData, 
+                            featured_image_width: 1280, 
+                            featured_image_height: 720 
+                          })}
+                          className="text-xs"
+                        >
+                          YouTube
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setFormData({ 
+                            ...formData, 
+                            featured_image_width: 1080, 
+                            featured_image_height: 1080 
+                          })}
+                          className="text-xs"
+                        >
+                          Instagram
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setFormData({ 
+                            ...formData, 
+                            featured_image_width: 1200, 
+                            featured_image_height: 675 
+                          })}
+                          className="text-xs"
+                        >
+                          Twitter/X
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Custom Dimensions */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="image-width">Width (px)</Label>
+                        <Input
+                          id="image-width"
+                          type="number"
+                          min="100"
+                          max="2000"
+                          value={formData.featured_image_width}
+                          onChange={(e) => setFormData({ 
+                            ...formData, 
+                            featured_image_width: parseInt(e.target.value) || 800 
+                          })}
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="image-height">Height (px)</Label>
+                        <Input
+                          id="image-height"
+                          type="number"
+                          min="100"
+                          max="2000"
+                          value={formData.featured_image_height}
+                          onChange={(e) => setFormData({ 
+                            ...formData, 
+                            featured_image_height: parseInt(e.target.value) || 600 
+                          })}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">
+                        Adjust the display dimensions of the cover image. Use presets above or enter custom dimensions.
+                      </p>
+                    </div>
+                  </div>
+                  
                   <Button
                     type="button"
                     variant="destructive"
                     size="sm"
-                    onClick={() => setFormData({ ...formData, featured_image: '' })}
-                    className="mt-2"
+                    onClick={() => setFormData({ 
+                      ...formData, 
+                      featured_image: '',
+                      featured_image_width: 800,
+                      featured_image_height: 600,
+                    })}
                   >
                     <X className="h-4 w-4 mr-2" />
                     Remove Image

@@ -35,6 +35,19 @@ export async function generateMetadata({
     ? stripHtmlTags(blogPost.excerpt) 
     : stripHtmlTags(blogPost.content).substring(0, 160)
 
+  // Parse featured_image if it's JSON, otherwise use as URL
+  let imageUrl = blogPost.featured_image || ''
+  if (imageUrl) {
+    try {
+      const parsed = JSON.parse(imageUrl)
+      if (parsed.url) {
+        imageUrl = parsed.url
+      }
+    } catch {
+      // Not JSON, use as-is
+    }
+  }
+
   return {
     title: `${blogPost.title} | PredictSafe Blog`,
     description: description,
@@ -46,13 +59,13 @@ export async function generateMetadata({
       description: description,
       type: 'article',
       publishedTime: blogPost.published_at || undefined,
-      images: blogPost.featured_image ? [blogPost.featured_image] : [],
+      images: imageUrl ? [imageUrl] : [],
     },
     twitter: {
       card: 'summary_large_image',
       title: blogPost.title,
       description: description,
-      images: blogPost.featured_image ? [blogPost.featured_image] : [],
+      images: imageUrl ? [imageUrl] : [],
     },
     robots: {
       index: true,
@@ -116,6 +129,24 @@ export default async function BlogPostPage({
 
   const blogPost = typedPost
 
+  // Parse featured_image if it's JSON, otherwise use as URL
+  let imageUrl = blogPost.featured_image || ''
+  let imageWidth: number | undefined = undefined
+  let imageHeight: number | undefined = undefined
+  
+  if (imageUrl) {
+    try {
+      const parsed = JSON.parse(imageUrl)
+      if (parsed.url) {
+        imageUrl = parsed.url
+        imageWidth = parsed.width
+        imageHeight = parsed.height
+      }
+    } catch {
+      // Not JSON, use as-is
+    }
+  }
+
   // Author is always "Admin"
   const authorName = 'Admin'
 
@@ -151,15 +182,34 @@ export default async function BlogPostPage({
               <span>By {authorName}</span>
             </div>
 
-            {blogPost.featured_image && (
-              <div className="relative w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden mb-8 border-2 border-gray-200">
-                <Image
-                  src={blogPost.featured_image}
-                  alt={blogPost.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
+            {imageUrl && (
+              <div 
+                className="relative rounded-lg overflow-hidden mb-8 border-2 border-gray-200 mx-auto"
+                style={{
+                  width: imageWidth ? `${imageWidth}px` : '100%',
+                  height: imageHeight ? `${imageHeight}px` : undefined,
+                  maxWidth: '100%',
+                  ...(imageHeight ? {} : { aspectRatio: '16/9' }),
+                }}
+              >
+                {imageWidth && imageHeight ? (
+                  <Image
+                    src={imageUrl}
+                    alt={blogPost.title}
+                    width={imageWidth}
+                    height={imageHeight}
+                    className="object-cover w-full h-full"
+                    priority
+                  />
+                ) : (
+                  <Image
+                    src={imageUrl}
+                    alt={blogPost.title}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                )}
               </div>
             )}
           </header>
