@@ -654,7 +654,7 @@ export function PremiumPredictionsSection() {
                         <div className="flex items-center justify-center">
                           <Badge
                             variant={prediction.status === 'finished' ? 'default' : prediction.status === 'live' ? 'destructive' : 'outline'}
-                            className="text-[10px] px-1.5 py-0.5"
+                            className="text-[10px] px-1.5 py-0.5 text-white"
                           >
                             {prediction.status === 'finished' ? 'FT' : prediction.status === 'live' ? 'Live' : 'NS'}
                           </Badge>
@@ -1022,7 +1022,7 @@ export function PremiumPredictionsSection() {
                         <div className="flex items-center justify-center">
                           <Badge
                             variant={prediction.status === 'finished' ? 'default' : prediction.status === 'live' ? 'destructive' : 'outline'}
-                            className="text-[10px] px-1.5 py-0.5 "
+                            className="text-[10px] px-1.5 py-0.5 text-white"
                           >
                             {prediction.status === 'finished' ? 'FT' : prediction.status === 'live' ? 'Live' : 'NS'}
                           </Badge>
