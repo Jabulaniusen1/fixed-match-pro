@@ -312,81 +312,87 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                   key={winning.id}
                   className="bg-gray-100 rounded-lg p-3 space-y-2"
                 >
-                  {/* Date and League */}
+                  {/* Top Row: Date and Home Team */}
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700">
                       {formatDate(winning.date)}
                     </span>
-                    {winning.league && (
-                      <span className="text-xs text-gray-600">{winning.league}</span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-900">{winning.home_team}</span>
+                      {getTeamLogo(winning.home_team) ? (
+                        <div className="relative w-6 h-6 flex-shrink-0">
+                          <Image
+                            src={getTeamLogo(winning.home_team)!}
+                            alt={winning.home_team}
+                            width={24}
+                            height={24}
+                            className="object-contain rounded-full"
+                            unoptimized
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none'
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold">
+                          {winning.home_team.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Second Row: League and Away Team */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-600">{winning.league || 'League'}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-900">{winning.away_team}</span>
+                      {getTeamLogo(winning.away_team) ? (
+                        <div className="relative w-6 h-6 flex-shrink-0">
+                          <Image
+                            src={getTeamLogo(winning.away_team)!}
+                            alt={winning.away_team}
+                            width={24}
+                            height={24}
+                            className="object-contain rounded-full"
+                            unoptimized
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none'
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold">
+                          {winning.away_team.charAt(0)}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Header Bar */}
-                  <div className="bg-[#1e40af] text-white px-3 py-2 rounded grid grid-cols-4 gap-2 text-xs font-semibold">
-                    <div>Result</div>
-                    <div>Teams</div>
-                    <div>Tip</div>
-                    <div>Plan</div>
+                  <div className="bg-[#1e40af] text-white px-2 py-2 rounded grid grid-cols-4 gap-1 text-[10px] sm:text-xs font-semibold">
+                    <div className="text-center">Result</div>
+                    <div className="text-center">Tip</div>
+                    <div className="text-center">Plan</div>
+                    <div className="text-center">Status</div>
                   </div>
 
                   {/* Data Row */}
-                  <div className="bg-gray-200 px-3 py-2 rounded grid grid-cols-4 gap-2 items-center">
-                    <div className="flex items-center">
+                  <div className="bg-gray-200 px-2 py-2 rounded grid grid-cols-4 gap-1 items-center">
+                    <div className="flex items-center justify-center">
                       <Badge
-                        className={`text-xs ${winning.result === 'win' ? 'bg-[#22c55e] text-white font-bold' : 'bg-red-500 text-white font-bold'}`}
+                        className={`text-[10px] sm:text-xs px-1.5 py-0.5 ${winning.result === 'win' ? 'bg-[#22c55e] text-white font-bold' : 'bg-red-500 text-white font-bold'}`}
                       >
                         {winning.result === 'win' ? '✓ Win' : '✗ Loss'}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {getTeamLogo(winning.home_team) ? (
-                        <div className="relative w-5 h-5 flex-shrink-0">
-                          <Image
-                            src={getTeamLogo(winning.home_team)!}
-                            alt={winning.home_team}
-                            width={20}
-                            height={20}
-                            className="object-contain rounded-full"
-                            unoptimized
-                            onError={(e) => { e.currentTarget.style.display = 'none' }}
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                          {winning.home_team.charAt(0)}
-                        </div>
-                      )}
-                      <span className="text-sm font-medium text-gray-900 truncate">
-                        {winning.home_team}
-                      </span>
-                      <span className="text-xs text-gray-500">vs</span>
-                      {getTeamLogo(winning.away_team) ? (
-                        <div className="relative w-5 h-5 flex-shrink-0">
-                          <Image
-                            src={getTeamLogo(winning.away_team)!}
-                            alt={winning.away_team}
-                            width={20}
-                            height={20}
-                            className="object-contain rounded-full"
-                            unoptimized
-                            onError={(e) => { e.currentTarget.style.display = 'none' }}
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                          {winning.away_team.charAt(0)}
-                        </div>
-                      )}
-                      <span className="text-sm font-medium text-gray-900 truncate">
-                        {winning.away_team}
-                      </span>
-                    </div>
-                    <div className="text-xs font-semibold text-[#1e40af] truncate">
+                    <div className="text-[10px] sm:text-xs font-semibold text-[#1e40af] text-center truncate">
                       {winning.prediction_type}
                     </div>
-                    <div className="text-xs font-medium text-gray-600 truncate">
+                    <div className="text-[10px] sm:text-xs font-medium text-gray-600 text-center truncate">
                       {winning.plan_name}
+                    </div>
+                    <div className="text-[10px] sm:text-xs font-medium text-gray-700 text-center">
+                      {winning.result === 'win' ? '✓' : '✗'}
                     </div>
                   </div>
                 </div>
@@ -426,58 +432,58 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
 
                   {/* Teams */}
                   <div className="col-span-5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {getTeamLogo(winning.home_team) ? (
-                        <div className="relative w-6 h-6 flex-shrink-0">
+                        <div className="relative w-8 h-8 flex-shrink-0">
                           <Image
                             src={getTeamLogo(winning.home_team)!}
                             alt={winning.home_team}
-                            width={24}
-                            height={24}
+                            width={32}
+                            height={32}
                             className="object-contain"
                             unoptimized
                             onError={(e) => {
                               e.currentTarget.style.display = 'none'
                               const parent = e.currentTarget.parentElement
                               if (parent) {
-                                parent.innerHTML = `<div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">${winning.home_team.charAt(0)}</div>`
+                                parent.innerHTML = `<div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">${winning.home_team.charAt(0)}</div>`
                               }
                             }}
                           />
                         </div>
                       ) : (
-                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
                           {winning.home_team.charAt(0)}
                         </div>
                       )}
-                      <span className="text-sm font-medium text-gray-900 truncate">
+                      <span className="text-sm font-semibold text-gray-900 truncate min-w-0">
                         {winning.home_team}
                       </span>
-                      <span className="text-xs text-gray-500">vs</span>
+                      <span className="text-xs text-gray-500 flex-shrink-0">vs</span>
                       {getTeamLogo(winning.away_team) ? (
-                        <div className="relative w-6 h-6 flex-shrink-0">
+                        <div className="relative w-8 h-8 flex-shrink-0">
                           <Image
                             src={getTeamLogo(winning.away_team)!}
                             alt={winning.away_team}
-                            width={24}
-                            height={24}
+                            width={32}
+                            height={32}
                             className="object-contain"
                             unoptimized
                             onError={(e) => {
                               e.currentTarget.style.display = 'none'
                               const parent = e.currentTarget.parentElement
                               if (parent) {
-                                parent.innerHTML = `<div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">${winning.away_team.charAt(0)}</div>`
+                                parent.innerHTML = `<div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">${winning.away_team.charAt(0)}</div>`
                               }
                             }}
                           />
                         </div>
                       ) : (
-                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
                           {winning.away_team.charAt(0)}
                         </div>
                       )}
-                      <span className="text-sm font-medium text-gray-900 truncate">
+                      <span className="text-sm font-semibold text-gray-900 truncate min-w-0">
                         {winning.away_team}
                       </span>
                     </div>
