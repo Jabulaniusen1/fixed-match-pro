@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Add empty turbopack config to silence the warning
+  // next-pwa requires webpack, so we're explicitly using webpack
+  turbopack: {},
 };
 
 const pwaConfig = withPWA({
