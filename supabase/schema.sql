@@ -161,6 +161,18 @@ CREATE TABLE IF NOT EXISTS notifications (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Messages table (for user-admin chat)
+-- NOTE: To enable real-time updates, go to Supabase Dashboard > Database > Replication
+-- and enable replication for the 'messages' table
+CREATE TABLE IF NOT EXISTS messages (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  sender_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  read BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_user_subscriptions_user_id ON user_subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_subscriptions_plan_id ON user_subscriptions(plan_id);
@@ -172,6 +184,9 @@ CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read);
+CREATE INDEX IF NOT EXISTS idx_messages_user_id ON messages(user_id);
+CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
 
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -226,6 +241,7 @@ ALTER TABLE user_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vip_winnings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
 -- Plans policies
 DROP POLICY IF EXISTS "Active plans are viewable by everyone" ON plans;
@@ -359,6 +375,47 @@ CREATE POLICY "Users can view their own notifications" ON notifications
 DROP POLICY IF EXISTS "Users can update their own notifications" ON notifications;
 CREATE POLICY "Users can update their own notifications" ON notifications
   FOR UPDATE USING (auth.uid() = user_id);
+
+-- Messages policies
+DROP POLICY IF EXISTS "Users can view their own messages" ON messages;
+CREATE POLICY "Users can view their own messages" ON messages
+  FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert their own messages" ON messages;
+CREATE POLICY "Users can insert their own messages" ON messages
+  FOR INSERT WITH CHECK (auth.uid() = user_id AND auth.uid() = sender_id);
+
+DROP POLICY IF EXISTS "Users can update their own messages" ON messages;
+CREATE POLICY "Users can update their own messages" ON messages
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Admin policies for messages
+DROP POLICY IF EXISTS "Admins can view all messages" ON messages;
+CREATE POLICY "Admins can view all messages" ON messages
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE users.id = auth.uid() AND users.is_admin = true
+    )
+  );
+
+DROP POLICY IF EXISTS "Admins can insert messages" ON messages;
+CREATE POLICY "Admins can insert messages" ON messages
+  FOR INSERT WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE users.id = auth.uid() AND users.is_admin = true
+    )
+  );
+
+DROP POLICY IF EXISTS "Admins can update all messages" ON messages;
+CREATE POLICY "Admins can update all messages" ON messages
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE users.id = auth.uid() AND users.is_admin = true
+    )
+  );
 
 -- Insert default plans
 INSERT INTO plans (name, slug, description, requires_activation, max_predictions_per_day) VALUES

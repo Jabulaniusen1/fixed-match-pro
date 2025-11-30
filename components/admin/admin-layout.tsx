@@ -19,7 +19,8 @@ import {
   Menu,
   X,
   BookOpen,
-  Trophy
+  Trophy,
+  MessageCircle
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
@@ -77,6 +78,11 @@ const navItems: NavItem[] = [
     icon: <Trophy className="h-5 w-5 lg:h-6 lg:w-6" />
   },
   {
+    href: '/admin/chat',
+    label: 'Chat',
+    icon: <MessageCircle className="h-5 w-5 lg:h-6 lg:w-6" />
+  },
+  {
     href: '/admin/config',
     label: 'Config',
     icon: <Settings className="h-5 w-5 lg:h-6 lg:w-6" />
@@ -93,6 +99,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [unreadCount, setUnreadCount] = useState(0)
   const [pendingTransactionsCount, setPendingTransactionsCount] = useState(0)
   const [pendingActivationsCount, setPendingActivationsCount] = useState(0)
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0)
 
   useEffect(() => {
     const loadUser = async () => {
@@ -129,6 +136,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           .select('*', { count: 'exact', head: true })
           .eq('plan_status', 'pending_activation')
         setPendingActivationsCount(pendingActivationCount || 0)
+
+        // Fetch unread messages count (messages from users that admins haven't read)
+        const { count: unreadMessages } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('read', false)
+          .neq('sender_id', authUser.id)
+        setUnreadMessagesCount(unreadMessages || 0)
       }
 
       setLoading(false)
@@ -162,6 +177,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           .select('*', { count: 'exact', head: true })
           .eq('plan_status', 'pending_activation')
         setPendingActivationsCount(pendingActivationCount || 0)
+
+        // Refresh unread messages count
+        const { count: unreadMessages } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('read', false)
+          .neq('sender_id', authUser.id)
+        setUnreadMessagesCount(unreadMessages || 0)
       }
     }, 30000)
 
@@ -231,6 +254,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             if (item.href === '/admin/transactions') {
               // Show combined count of pending transactions and pending activations
               badgeCount = pendingTransactionsCount + pendingActivationsCount
+            } else if (item.href === '/admin/chat') {
+              // Show unread messages count
+              badgeCount = unreadMessagesCount
             }
             
             return (

@@ -12,7 +12,8 @@ import {
   LogOut,
   Home,
   Menu,
-  X
+  X,
+  MessageCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
@@ -28,6 +29,7 @@ interface NavItem {
   href: string
   label: string
   icon: React.ReactNode
+  badgeCount?: number
 }
 
 const navItems: NavItem[] = [
@@ -46,6 +48,11 @@ const navItems: NavItem[] = [
     label: 'Winnings',
     icon: <Trophy className="h-5 w-5 lg:h-6 lg:w-6" />
   },
+  {
+    href: '/dashboard/chat',
+    label: 'Chat',
+    icon: <MessageCircle className="h-5 w-5 lg:h-6 lg:w-6" />
+  },
   // {
   //   href: '/dashboard/settings',
   //   label: 'Settings',
@@ -58,6 +65,7 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0)
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -86,9 +94,26 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
       setUnreadCount(count || 0)
     }
 
+    const fetchUnreadMessages = async () => {
+      if (!user) return
+      const supabase = createClient()
+      // Count messages where sender is not the user (i.e., from admin) and not read
+      const { count } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('read', false)
+        .neq('sender_id', user.id)
+      setUnreadMessagesCount(count || 0)
+    }
+
     fetchUnreadCount()
-    // Refresh count every 30 seconds
-    const interval = setInterval(fetchUnreadCount, 30000)
+    fetchUnreadMessages()
+    // Refresh counts every 30 seconds
+    const interval = setInterval(() => {
+      fetchUnreadCount()
+      fetchUnreadMessages()
+    }, 30000)
     return () => clearInterval(interval)
   }, [user])
 
@@ -135,19 +160,35 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
             <p className="px-3 lg:px-4 text-xs lg:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 lg:mb-3">Menu</p>
           {navItems.map((item) => {
             const isActive = pathname === item.href
+            // Get badge count for chat item
+            let badgeCount = 0
+            if (item.href === '/dashboard/chat') {
+              badgeCount = unreadMessagesCount
+            }
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={handleNavClick}
-                  className={`flex items-center gap-3 lg:gap-4 px-3 lg:px-4 py-2.5 lg:py-3.5 rounded-lg text-sm lg:text-base font-medium transition-colors ${
+                  className={`flex items-center justify-between gap-3 lg:gap-4 px-3 lg:px-4 py-2.5 lg:py-3.5 rounded-lg text-sm lg:text-base font-medium transition-colors ${
                   isActive
                       ? 'bg-[#1e40af] text-white shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                {item.icon}
-                <span>{item.label}</span>
+                <div className="flex items-center gap-3 lg:gap-4">
+                  {item.icon}
+                  <span>{item.label}</span>
+                </div>
+                {badgeCount > 0 && (
+                  <span className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold ${
+                    isActive
+                      ? 'bg-white text-[#1e40af]'
+                      : 'bg-[#1e40af] text-white'
+                  }`}>
+                    {badgeCount > 99 ? '99+' : badgeCount}
+                  </span>
+                )}
               </Link>
             )
           })}
