@@ -30,22 +30,35 @@
 
 If messages are not updating in real-time:
 
-1. **Check if replication is enabled:**
+1. **Check if replication is enabled (REQUIRED):**
    - Go to Supabase Dashboard → Database → Replication
    - Ensure `messages` table has replication enabled
+   - **This is the most common issue - real-time won't work without replication enabled**
 
 2. **Check browser console:**
    - Open browser DevTools (F12)
    - Look for subscription status messages
    - Should see "Successfully subscribed to messages" when connected
+   - If you see "CHANNEL_ERROR" or "TIMED_OUT", check your Supabase connection
 
 3. **Check network tab:**
    - Look for WebSocket connections to Supabase
-   - Should see a persistent connection
+   - Should see a persistent WebSocket connection
+   - Connection should be to `wss://[your-project].supabase.co/realtime/v1/websocket`
 
 4. **Verify RLS policies:**
    - Ensure Row Level Security policies allow users to read their own messages
    - Ensure admins can read all messages
+
+5. **Test real-time subscription:**
+   - Open two browser windows (one as user, one as admin)
+   - Send a message from one window
+   - Check console logs in both windows
+   - Message should appear automatically in the other window within 1-2 seconds
+
+6. **Fallback behavior:**
+   - If real-time fails, the app will automatically retry loading messages
+   - Messages are also added optimistically when you send them (appear immediately)
 
 ## Testing
 

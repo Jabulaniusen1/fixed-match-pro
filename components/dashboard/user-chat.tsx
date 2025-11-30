@@ -111,40 +111,76 @@ export function UserChat() {
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
             try {
-              // Fetch the new/updated message with sender info
-              const { data: messageData, error: fetchError } = await supabase
-                .from('messages')
-                .select(`
-                  *,
-                  sender:users!sender_id(id, full_name, email, avatar_url, is_admin)
-                `)
-                .eq('id', payload.new.id)
-                .single()
+              const newMessage = payload.new as any
+              
+              // For INSERT, try to use payload data directly first, then fetch if needed
+              if (payload.eventType === 'INSERT' && newMessage) {
+                // Fetch sender info for the new message
+                const { data: senderData } = await supabase
+                  .from('users')
+                  .select('id, full_name, email, avatar_url, is_admin')
+                  .eq('id', newMessage.sender_id)
+                  .single()
 
-              if (fetchError) {
-                console.error('Error fetching message:', fetchError)
-                return
-              }
+                const messageWithSender = {
+                  ...newMessage,
+                  sender: senderData || null
+                }
 
-              if (messageData) {
                 setMessages((prev) => {
-                  const exists = prev.find(m => m.id === messageData.id)
+                  const exists = prev.find((m: any) => m.id === (messageWithSender as any).id)
                   if (exists) {
-                    return prev.map(m => m.id === messageData.id ? messageData : m)
+                    return prev.map((m: any) => m.id === (messageWithSender as any).id ? messageWithSender : m)
                   }
-                  return [...prev, messageData].sort((a, b) => 
+                  return [...prev, messageWithSender].sort((a: any, b: any) => 
                     new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                   )
                 })
 
-              // Mark as read if it's from admin
-              if (messageData.sender_id !== user.id && !messageData.read) {
-                await supabase
+                // Mark as read if it's from admin
+                if (messageWithSender.sender_id !== user.id && !messageWithSender.read) {
+                  await supabase
+                    .from('messages')
+                    // @ts-expect-error - Supabase type inference issue
+                    .update({ read: true })
+                    .eq('id', messageWithSender.id)
+                }
+              } else {
+                // For UPDATE or if INSERT payload is incomplete, fetch full message
+                const { data: messageData, error: fetchError } = await supabase
                   .from('messages')
-                  // @ts-expect-error - Supabase type inference issue
-                  .update({ read: true })
-                  .eq('id', messageData.id)
-              }
+                  .select(`
+                    *,
+                    sender:users!sender_id(id, full_name, email, avatar_url, is_admin)
+                  `)
+                  .eq('id', newMessage.id)
+                  .single()
+
+                if (fetchError) {
+                  console.error('Error fetching message:', fetchError)
+                  return
+                }
+
+                if (messageData) {
+                  setMessages((prev) => {
+                    const exists = prev.find((m: any) => m.id === (messageData as any).id)
+                    if (exists) {
+                      return prev.map((m: any) => m.id === (messageData as any).id ? messageData : m)
+                    }
+                    return [...prev, messageData].sort((a: any, b: any) => 
+                      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    )
+                  })
+
+                  // Mark as read if it's from admin
+                  if ((messageData as any).sender_id !== user.id && !(messageData as any).read) {
+                    await supabase
+                      .from('messages')
+                      // @ts-expect-error - Supabase type inference issue
+                      .update({ read: true })
+                      .eq('id', (messageData as any).id)
+                  }
+                }
               }
             } catch (error) {
               console.error('Error processing real-time message:', error)
@@ -158,6 +194,16 @@ export function UserChat() {
           console.log('Successfully subscribed to messages')
         } else if (status === 'CHANNEL_ERROR') {
           console.error('Channel error occurred')
+          // Try to reload messages as fallback
+          setTimeout(() => {
+            loadUserAndMessages()
+          }, 1000)
+        } else if (status === 'TIMED_OUT') {
+          console.warn('Subscription timed out, reconnecting...')
+          // Reconnect after a delay
+          setTimeout(() => {
+            loadUserAndMessages()
+          }, 2000)
         }
       })
 
