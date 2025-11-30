@@ -29,4 +29,4 @@ const pwaConfig = withPWA({
   buildExcludes: [/app-manifest\.json$/],
 });
 
-export default pwaConfig(nextConfig);
+export default pwaConfig(nextConfig as any);
