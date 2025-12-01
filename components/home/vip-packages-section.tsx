@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PlanWithPrice } from '@/types'
 import { Check } from 'lucide-react'
+import { getCurrencyFromCountry, getCurrencySymbol as getCurrencySymbolUtil } from '@/lib/utils/currency'
 
 type CountryOption = 'Nigeria' | 'Ghana' | 'Kenya' | 'Other'
 
@@ -14,7 +15,7 @@ export function VIPPackagesSection() {
   const router = useRouter()
   const [plans, setPlans] = useState<PlanWithPrice[]>([])
   const [user, setUser] = useState<any>(null)
-  const [userCountry, setUserCountry] = useState<CountryOption>('Nigeria')
+  const [userCountry, setUserCountry] = useState<string>('Nigeria')
   const [loading, setLoading] = useState(true)
   const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly'>('monthly')
 
@@ -34,8 +35,9 @@ export function VIPPackagesSection() {
           .eq('id', user.id)
           .maybeSingle() as { data: { country: string } | null }
 
-        if (userData?.country && ['Nigeria', 'Ghana', 'Kenya', 'Other'].includes(userData.country)) {
-          setUserCountry(userData.country as CountryOption)
+        if (userData?.country) {
+          // Store the actual country name, not limited to CountryOption
+          setUserCountry(userData.country as any)
         }
       }
 
@@ -56,6 +58,16 @@ export function VIPPackagesSection() {
           // Handle both plan_prices (from query) and prices (already mapped)
           // Filter out any null prices and ensure we have an array
           const prices = (plan.plan_prices || plan.prices || []).filter((p: any) => p !== null)
+          
+          // Debug: Log prices to see currency field
+          if (prices.length > 0) {
+            console.log('Plan:', plan.name, 'Prices:', prices.map((p: any) => ({
+              country: p.country,
+              currency: p.currency,
+              price: p.price
+            })))
+          }
+          
           return {
             ...plan,
             prices: prices
@@ -81,21 +93,31 @@ export function VIPPackagesSection() {
   const getPriceForCountry = (plan: PlanWithPrice, durationDays: number) => {
     if (!plan.prices || plan.prices.length === 0) return null
 
-    // If Nigeria, look for Nigeria-specific price
+    // First priority: Find exact country match (handles Ghana, Canada, etc.)
+    if (userCountry) {
+      const exactCountryPrice = plan.prices.find(
+        (p: any) => p.duration_days === durationDays && p.country === userCountry
+      )
+      if (exactCountryPrice) {
+        return exactCountryPrice
+      }
+    }
+
+    // Second priority: If Nigeria, look for Nigeria-specific price
     if (userCountry === 'Nigeria') {
       const nigeriaPrice = plan.prices.find(
         (p: any) => p.duration_days === durationDays && p.country === 'Nigeria'
       )
       if (nigeriaPrice) return nigeriaPrice
-    } else {
-      // For all other countries, look for USD prices (country = 'Other' or currency = 'USD')
-      const usdPrice = plan.prices.find(
-        (p: any) => p.duration_days === durationDays && (p.currency === 'USD' || p.country === 'Other' || p.country !== 'Nigeria')
-      )
-      if (usdPrice) return usdPrice
     }
 
-    // Fallback to Nigeria price if available
+    // Third priority: Look for USD prices (country = 'Other' or currency = 'USD')
+    const usdPrice = plan.prices.find(
+      (p: any) => p.duration_days === durationDays && (p.currency === 'USD' || p.country === 'Other')
+    )
+    if (usdPrice) return usdPrice
+
+    // Fourth priority: Fallback to Nigeria price if available
     const nigeriaPrice = plan.prices.find(
       (p: any) => p.duration_days === durationDays && p.country === 'Nigeria'
     )
@@ -107,15 +129,43 @@ export function VIPPackagesSection() {
     )
   }
 
-  // Determine currency symbol based on country
-  const getCurrencySymbol = () => {
-    if (userCountry === 'Nigeria') {
-      return '₦'
-    } else {
-      return '$' // All other countries use USD
+  // Helper function to convert currency code to symbol
+  const getCurrencySymbol = (currencyCode?: string | null, priceCountry?: string | null) => {
+    // First priority: Use currency code from database if available
+    if (currencyCode && typeof currencyCode === 'string' && currencyCode.trim()) {
+      const symbol = getCurrencySymbolUtil(currencyCode.trim())
+      if (symbol && symbol !== currencyCode) {
+        return symbol
+      }
+      // If utility returns the code itself, it means it's not in the map, return it as-is
+      return symbol
     }
+
+    // Second priority: Infer currency from country name if currency not set
+    // This is critical - when a price exists for a specific country, use that country's currency
+    if (priceCountry && typeof priceCountry === 'string' && priceCountry.trim()) {
+      const countryCurrencyCode = getCurrencyFromCountry(priceCountry.trim())
+      if (countryCurrencyCode) {
+        const symbol = getCurrencySymbolUtil(countryCurrencyCode)
+        // Always use the country-based currency, even if it's USD
+        // This ensures Ghana shows GHS, Canada shows CAD, etc.
+        return symbol
+      }
+    }
+
+    // Third priority: Use user country to infer currency
+    if (userCountry && typeof userCountry === 'string' && userCountry.trim() && userCountry !== 'Nigeria') {
+      const userCountryCurrencyCode = getCurrencyFromCountry(userCountry.trim())
+      if (userCountryCurrencyCode) {
+        const symbol = getCurrencySymbolUtil(userCountryCurrencyCode)
+        return symbol
+      }
+    }
+
+    // Final fallback: Default to USD
+    console.warn('Currency fallback to USD - currencyCode:', currencyCode, 'priceCountry:', priceCountry, 'userCountry:', userCountry)
+    return '$'
   }
-  const currency = getCurrencySymbol()
 
   if (loading) {
     return (
@@ -187,6 +237,14 @@ export function VIPPackagesSection() {
                 ? getPriceForCountry(plan, 7)
                 : getPriceForCountry(plan, 30)
               const isPopular = plan.slug === popularPlanSlug
+              
+              // Get currency from selected price - ensure we access it correctly
+              const priceCurrency = selectedPrice ? (selectedPrice as any).currency : null
+              const priceCountry = selectedPrice ? (selectedPrice as any).country : null
+              
+              // Always use the country from the selected price to determine currency
+              // This ensures we show the correct currency even if currency field is null
+              const currency = getCurrencySymbol(priceCurrency, priceCountry || userCountry)
 
               return (
                 <div

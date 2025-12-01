@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Lock, CalendarIcon } from 'lucide-react'
-import { Prediction } from '@/types'
+import { Prediction, CorrectScorePrediction } from '@/types'
 import { formatTime, getDateRange } from '@/lib/utils/date'
 import { CircularProgress } from '@/components/ui/circular-progress'
 import { cn } from '@/lib/utils'
@@ -72,6 +72,23 @@ export function PremiumPredictionsSection() {
       const correctScoreFromTimestamp = `${correctScoreDateRange.from}T00:00:00.000Z`
       const correctScoreToTimestamp = `${correctScoreDateRange.to}T23:59:59.999Z`
       
+      console.log('🔍 Premium Predictions - Fetching data:', {
+        profitMultiplierDateRange: {
+          from: profitMultiplierFromTimestamp,
+          to: profitMultiplierToTimestamp,
+          dateType: profitMultiplierDateType,
+          customDate: profitMultiplierCustomDate,
+          daysBack: profitMultiplierDaysBack
+        },
+        correctScoreDateRange: {
+          from: correctScoreFromTimestamp,
+          to: correctScoreToTimestamp,
+          dateType: correctScoreDateType,
+          customDate: correctScoreCustomDate,
+          daysBack: correctScoreDaysBack
+        }
+      })
+
       const [profitMultiplierResult, correctScoreResult] = await Promise.all([
         supabase
           .from('predictions')
@@ -84,20 +101,41 @@ export function PremiumPredictionsSection() {
           .order('kickoff_time', { ascending: true })
           .limit(5),
         supabase
-          .from('predictions')
+          .from('correct_score_predictions')
           .select('*')
-          .eq('plan_type', 'correct_score') // Fetch correct score predictions by plan_type
           .gte('kickoff_time', correctScoreFromTimestamp)
           .lte('kickoff_time', correctScoreToTimestamp)
           .order('kickoff_time', { ascending: true })
           .limit(5)
       ])
 
+      console.log('📊 Premium Predictions - Query Results:', {
+        profitMultiplier: {
+          data: profitMultiplierResult.data,
+          error: profitMultiplierResult.error,
+          count: profitMultiplierResult.data?.length || 0
+        },
+        correctScore: {
+          data: correctScoreResult.data,
+          error: correctScoreResult.error,
+          count: correctScoreResult.data?.length || 0
+        }
+      })
+
+      if (profitMultiplierResult.error) {
+        console.error('❌ Profit Multiplier Query Error:', profitMultiplierResult.error)
+      }
+
+      if (correctScoreResult.error) {
+        console.error('❌ Correct Score Query Error:', correctScoreResult.error)
+      }
+
       const profitMultiplier: PremiumPrediction[] = []
       const correctScore: PremiumPrediction[] = []
 
       // Process profit multiplier predictions
       if (profitMultiplierResult.data) {
+        console.log('✅ Processing Profit Multiplier Predictions:', profitMultiplierResult.data.length, 'items')
         profitMultiplierResult.data.forEach((pred: Prediction) => {
           profitMultiplier.push({
             id: pred.id,
@@ -112,13 +150,17 @@ export function PremiumPredictionsSection() {
             type: 'profit_multiplier'
           })
         })
+        console.log('📦 Processed Profit Multiplier:', profitMultiplier)
+      } else {
+        console.warn('⚠️ No Profit Multiplier data returned')
       }
 
       // Process correct score predictions
       if (correctScoreResult.data) {
-        correctScoreResult.data.forEach((pred: Prediction) => {
-          // Score is stored directly in prediction_type (e.g., "2-1")
-          const score = pred.prediction_type || '0-0'
+        console.log('✅ Processing Correct Score Predictions:', correctScoreResult.data.length, 'items')
+        correctScoreResult.data.forEach((pred: CorrectScorePrediction) => {
+          // Score is stored in score_prediction field for correct_score_predictions table
+          const score = pred.score_prediction || '0-0'
           
           correctScore.push({
             id: pred.id,
@@ -127,12 +169,15 @@ export function PremiumPredictionsSection() {
             league: pred.league,
             score_prediction: score,
             odds: pred.odds || 0,
-            confidence: pred.confidence || undefined,
+            confidence: undefined, // correct_score_predictions table doesn't have confidence field
             kickoff_time: pred.kickoff_time,
-            status: pred.status,
+            status: pred.status || 'not_started',
             type: 'correct_score'
           })
         })
+        console.log('📦 Processed Correct Score:', correctScore)
+      } else {
+        console.warn('⚠️ No Correct Score data returned')
       }
 
       // Sort by kickoff time
@@ -146,6 +191,19 @@ export function PremiumPredictionsSection() {
       // Take first 2 of each for display
       const displayProfitMultiplier = profitMultiplier.slice(0, 2)
       const displayCorrectScore = correctScore.slice(0, 2)
+
+      console.log('🎯 Premium Predictions - Final Display Data:', {
+        profitMultiplier: {
+          total: profitMultiplier.length,
+          display: displayProfitMultiplier.length,
+          items: displayProfitMultiplier
+        },
+        correctScore: {
+          total: correctScore.length,
+          display: displayCorrectScore.length,
+          items: displayCorrectScore
+        }
+      })
 
       // Fetch team logos and match scores for all predictions
       const allPredictions = [...displayProfitMultiplier, ...displayCorrectScore]
@@ -251,12 +309,31 @@ export function PremiumPredictionsSection() {
           }
           
           // Update predictions with scores
+          console.log('🎨 Premium Predictions - Final State After Logo/Score Fetch:', {
+            profitMultiplier: updatedProfitMultiplier,
+            correctScore: updatedCorrectScore,
+            logos: Object.keys(newLogos).length
+          })
           setProfitMultiplierPredictions(updatedProfitMultiplier)
           setCorrectScorePredictions(updatedCorrectScore)
         } catch (error) {
-          console.error('Error fetching team logos and scores:', error)
+          console.error('❌ Error fetching team logos and scores:', error)
+          // Still set predictions even if logo fetch fails
+          setProfitMultiplierPredictions(displayProfitMultiplier)
+          setCorrectScorePredictions(displayCorrectScore)
         }
+      } else {
+        console.log('⚠️ Premium Predictions - No predictions to display, setting empty arrays')
+        setProfitMultiplierPredictions([])
+        setCorrectScorePredictions([])
       }
+
+      console.log('✅ Premium Predictions - Fetch Complete:', {
+        profitMultiplierCount: profitMultiplier.length,
+        correctScoreCount: correctScore.length,
+        displayProfitMultiplierCount: displayProfitMultiplier.length,
+        displayCorrectScoreCount: displayCorrectScore.length
+      })
 
       setLoading(false)
     }

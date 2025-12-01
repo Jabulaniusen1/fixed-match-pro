@@ -177,8 +177,8 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
                 }`}
               >
                 <div className="flex items-center gap-3 lg:gap-4">
-                  {item.icon}
-                  <span>{item.label}</span>
+                {item.icon}
+                <span>{item.label}</span>
                 </div>
                 {badgeCount > 0 && (
                   <span className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold ${

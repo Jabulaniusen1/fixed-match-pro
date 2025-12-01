@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Check } from 'lucide-react'
 import { PlanWithPrice } from '@/types'
 import { Combobox } from '@/components/ui/combobox'
+import { getCurrencySymbol as getCurrencySymbolUtil, getCurrencyFromCountry } from '@/lib/utils/currency'
 
 interface Country {
   name: string
@@ -148,15 +149,39 @@ export default function SubscriptionsPage() {
     )
   }
 
-  // Determine currency symbol based on selected country
-  const getCurrencySymbol = () => {
-    if (selectedCountry === 'Nigeria') {
-      return '₦'
+  // Get currency symbol from the selected price's currency field in the database
+  const getCurrencySymbol = (selectedPrice: any) => {
+    // First priority: Use currency code from database if available
+    if (selectedPrice?.currency && typeof selectedPrice.currency === 'string' && selectedPrice.currency.trim()) {
+      const symbol = getCurrencySymbolUtil(selectedPrice.currency.trim())
+      if (symbol && symbol !== selectedPrice.currency) {
+        return symbol
+      }
+      // If utility returns the code itself, it means it's not in the map, return it as-is
+      return symbol
     }
-    return '$' // USD for all other countries
-  }
 
-  const currency = getCurrencySymbol()
+    // Second priority: Infer currency from country name if currency not set
+    if (selectedPrice?.country && typeof selectedPrice.country === 'string' && selectedPrice.country.trim()) {
+      const countryCurrencyCode = getCurrencyFromCountry(selectedPrice.country.trim())
+      if (countryCurrencyCode) {
+        const symbol = getCurrencySymbolUtil(countryCurrencyCode)
+        return symbol
+      }
+    }
+
+    // Third priority: Use selected country to infer currency
+    if (selectedCountry && typeof selectedCountry === 'string' && selectedCountry.trim()) {
+      const userCountryCurrencyCode = getCurrencyFromCountry(selectedCountry.trim())
+      if (userCountryCurrencyCode) {
+        const symbol = getCurrencySymbolUtil(userCountryCurrencyCode)
+        return symbol
+      }
+    }
+
+    // Final fallback: Default to USD
+    return '$'
+  }
   const popularPlanSlug = 'daily-2-odds'
 
   if (loading || loadingCountries) {
@@ -274,7 +299,7 @@ export default function SubscriptionsPage() {
                         {selectedPrice ? (
                           <div>
                             <div className="flex items-baseline gap-1 mb-1">
-                              <span className="text-4xl font-bold text-gray-900">{currency}</span>
+                              <span className="text-4xl font-bold text-gray-900">{getCurrencySymbol(selectedPrice)}</span>
                               <span className="text-5xl font-bold text-gray-900">
                                 {(() => {
                                   const priceValue = typeof selectedPrice.price === 'number' 
@@ -362,7 +387,7 @@ export default function SubscriptionsPage() {
                         {selectedPrice ? (
                           <div>
                             <div className="flex items-baseline gap-1 mb-1">
-                              <span className="text-3xl font-bold text-gray-900">{currency}</span>
+                              <span className="text-3xl font-bold text-gray-900">{getCurrencySymbol(selectedPrice)}</span>
                               <span className="text-4xl font-bold text-gray-900">
                                 {(() => {
                                   const priceValue = typeof selectedPrice.price === 'number' 

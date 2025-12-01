@@ -11,7 +11,7 @@ export function getCurrencyFromCountry(countryName: string): string {
     'South Africa': 'ZAR',
     'Tanzania': 'TZS',
     'Uganda': 'UGX',
-    'Zimbabwe': 'USD', // Uses USD
+    'Zimbabwe': 'USD',
     'Zambia': 'ZMW',
     'Botswana': 'BWP',
     'Namibia': 'NAD',
@@ -163,7 +163,7 @@ export function getCurrencyFromCountry(countryName: string): string {
     'Suriname': 'SRD',
     
     // Default fallback
-    'Other': 'USD',
+    'Other': 'CAD',
   }
 
   // Normalize country name (trim, capitalize first letter of each word)

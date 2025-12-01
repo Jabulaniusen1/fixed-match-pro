@@ -242,19 +242,43 @@ function SubscribeContent() {
     )
   }
 
-  // Determine currency - Naira for Nigeria/Other, others based on selected country
-  const getCurrencySymbol = () => {
-    const countryOption = mapCountryToOption(selectedCountry)
-    if (countryOption === 'Nigeria' || countryOption === 'Other') {
-      return '₦'
-    } else if (countryOption === 'Ghana') {
-      return '₵'
-    } else if (countryOption === 'Kenya') {
-      return 'KSh'
+  // Helper function to convert currency code to symbol
+  const getCurrencySymbol = (currencyCode?: string | null) => {
+    if (!currencyCode) {
+      // Fallback to hardcoded mapping if currency not available
+      const countryOption = mapCountryToOption(selectedCountry)
+      if (countryOption === 'Nigeria' || countryOption === 'Other') {
+        return '₦'
+      } else if (countryOption === 'Ghana') {
+        return '₵'
+      } else if (countryOption === 'Kenya') {
+        return 'KSh'
+      }
+      return '₦' // Default to Naira
     }
-    return '₦' // Default to Naira
+
+    // Map currency codes to symbols
+    const currencyMap: Record<string, string> = {
+      'NGN': '₦',
+      'GHS': '₵',
+      'KES': 'KSh',
+      'USD': '$',
+      'CAD': 'C$',
+      'GBP': '£',
+      'EUR': '€',
+      'ZAR': 'R',
+      'UGX': 'USh',
+      'TZS': 'TSh',
+      'XOF': 'CFA',
+      'XAF': 'FCFA',
+    }
+
+    // Return symbol if found, otherwise return the currency code itself
+    return currencyMap[currencyCode.toUpperCase()] || currencyCode
   }
-  const currency = getCurrencySymbol()
+
+  // Use currency from selected price, fallback to country-based mapping
+  const currency = getCurrencySymbol(selectedPrice?.currency)
 
   return (
     <div className="container mx-auto px-4 py-12">

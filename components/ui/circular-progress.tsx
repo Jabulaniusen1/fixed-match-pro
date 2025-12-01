@@ -47,7 +47,7 @@ export function CircularProgress({ value, size = 40, strokeWidth = 4, className 
         />
       </svg>
       <span className={cn('absolute text-xs font-semibold', getColor())}>
-        {value}%
+        {Math.round(value)}%
       </span>
     </div>
   )

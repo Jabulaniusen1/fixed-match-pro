@@ -194,7 +194,7 @@ export function ProfitMultiplierSection() {
                     </div>
                     <div className="flex items-center justify-between p-2 bg-white rounded">
                       <span className="text-sm font-semibold text-gray-700">Confidence:</span>
-                      <span className="text-sm font-medium text-gray-600 opacity-50">{prediction.confidence}%</span>
+                      <span className="text-sm font-medium text-gray-600 opacity-50">{Math.round(prediction.confidence)}%</span>
                     </div>
                     <div className="flex items-center justify-between p-2 bg-white rounded">
                       <span className="text-sm font-semibold text-gray-700">Kickoff:</span>
