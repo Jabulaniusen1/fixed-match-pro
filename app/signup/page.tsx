@@ -157,6 +157,25 @@ export default function SignupPage() {
           country: countryName,
           avatar_url: randomAvatarUrl,
         }
+
+        // Send welcome email (non-blocking)
+        try {
+          await fetch('/api/notifications/send-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              type: 'user_welcome',
+              userId: authData.user.id,
+              userEmail: email,
+              userName: fullName,
+            }),
+          })
+        } catch (emailError) {
+          console.error('Error sending welcome email:', emailError)
+          // Do not block signup on email failure
+        }
         const result: any = await supabase
           .from('users')
           // @ts-expect-error - Supabase type inference issue

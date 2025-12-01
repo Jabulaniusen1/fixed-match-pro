@@ -46,6 +46,68 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions) {
 
 // Email templates
 export const emailTemplates = {
+  userWelcome: (fullName?: string | null) => ({
+    subject: 'Welcome to PredictSafe!',
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+            .button { display: inline-block; padding: 12px 30px; background: #1e40af; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>👋 Welcome to PredictSafe${fullName ? `, ${fullName}` : ''}!</h1>
+            </div>
+            <div class="content">
+              <p>Hello${fullName ? ` ${fullName}` : ''},</p>
+              <p>Thank you for signing up to <strong>PredictSafe</strong>.</p>
+              <p>You're all set to start exploring premium predictions, VIP plans, and tools to help you win more consistently.</p>
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/dashboard" class="button">Go to your dashboard</a>
+              <p style="margin-top: 30px; color: #666; font-size: 14px;">Best regards,<br>The PredictSafe Team</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }),
+
+  subscriptionCreated: (planName: string) => ({
+    subject: `Subscription Created - ${planName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>📦 Subscription Created</h1>
+            </div>
+            <div class="content">
+              <p>Hello,</p>
+              <p>Your subscription request for <strong>${planName}</strong> has been received.</p>
+              <p>Your payment proof has been submitted and is <strong>pending admin approval</strong>. You'll receive another email once your payment is approved and your plan is active.</p>
+              <p style="margin-top: 30px; color: #666; font-size: 14px;">Best regards,<br>The PredictSafe Team</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }),
+
   predictionDropped: (planName: string) => ({
     subject: `New Predictions Available for ${planName}!`,
     html: `

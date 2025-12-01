@@ -100,9 +100,11 @@ export function PremiumPredictionsSection() {
           .lte('odds', 4.3)
           .order('kickoff_time', { ascending: true })
           .limit(5),
+        // Correct score predictions are stored in the main predictions table with plan_type = 'correct_score'
         supabase
-          .from('correct_score_predictions')
+          .from('predictions')
           .select('*')
+          .eq('plan_type', 'correct_score')
           .gte('kickoff_time', correctScoreFromTimestamp)
           .lte('kickoff_time', correctScoreToTimestamp)
           .order('kickoff_time', { ascending: true })
@@ -158,9 +160,10 @@ export function PremiumPredictionsSection() {
       // Process correct score predictions
       if (correctScoreResult.data) {
         console.log('✅ Processing Correct Score Predictions:', correctScoreResult.data.length, 'items')
-        correctScoreResult.data.forEach((pred: CorrectScorePrediction) => {
-          // Score is stored in score_prediction field for correct_score_predictions table
-          const score = pred.score_prediction || '0-0'
+        correctScoreResult.data.forEach((pred: any) => {
+          // For correct_score predictions in the main predictions table,
+          // the score is stored in prediction_type (see insert-predictions route)
+          const score = (pred as any).prediction_type || (pred as any).score_prediction || '0-0'
           
           correctScore.push({
             id: pred.id,
@@ -168,10 +171,10 @@ export function PremiumPredictionsSection() {
             away_team: pred.away_team,
             league: pred.league,
             score_prediction: score,
-            odds: pred.odds || 0,
-            confidence: undefined, // correct_score_predictions table doesn't have confidence field
+            odds: Number(pred.odds) || 0,
+            confidence: undefined, // correct_score predictions do not use confidence
             kickoff_time: pred.kickoff_time,
-            status: pred.status || 'not_started',
+            status: (pred as any).status || 'not_started',
             type: 'correct_score'
           })
         })

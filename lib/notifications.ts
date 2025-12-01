@@ -9,6 +9,8 @@ export type NotificationType =
   | 'payment_rejected'
   | 'payment_approved'
   | 'admin_new_payment'
+  | 'user_welcome'
+  | 'subscription_created'
 
 interface CreateNotificationParams {
   userId: string

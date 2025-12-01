@@ -35,6 +35,15 @@ export async function POST(request: NextRequest) {
 
     let emailData
     switch (type) {
+      case 'user_welcome':
+        emailData = emailTemplates.userWelcome(userName)
+        break
+      case 'subscription_created':
+        if (!planName) {
+          return NextResponse.json({ error: 'Plan name required' }, { status: 400 })
+        }
+        emailData = emailTemplates.subscriptionCreated(planName)
+        break
       case 'prediction_dropped':
         if (!planName) {
           return NextResponse.json({ error: 'Plan name required' }, { status: 400 })

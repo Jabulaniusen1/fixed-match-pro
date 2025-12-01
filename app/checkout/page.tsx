@@ -426,6 +426,25 @@ function CheckoutContent() {
           .eq('id', transaction.id)
       }
 
+      // Send email to user that subscription has been created / submitted (non-blocking)
+      try {
+        await fetch('/api/notifications/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'subscription_created',
+            userId: user.id,
+            planName: plan.name,
+            userEmail: user.email,
+          }),
+        })
+      } catch (emailError) {
+        console.error('Error sending subscription created email:', emailError)
+        // Don't throw - payment and subscription are already created
+      }
+
       // Notify admin about new payment
       try {
         // Get admin user
