@@ -154,6 +154,20 @@ function AddCorrectScoreContent() {
 
         if (error) throw error
         toast.success('Correct score prediction updated successfully!')
+        
+        // Notify users subscribed to this plan (non-blocking)
+        try {
+          await fetch('/api/notifications/notify-prediction-update', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ planType: predictionData.plan_type }),
+          })
+        } catch (notifyError) {
+          console.error('Error notifying users:', notifyError)
+          // Don't fail the request if notification fails
+        }
       } else {
         const { error } = await supabase
           .from('predictions')
@@ -161,6 +175,20 @@ function AddCorrectScoreContent() {
           .insert(predictionData)
         if (error) throw error
         toast.success('Correct score prediction added successfully!')
+        
+        // Notify users subscribed to this plan (non-blocking)
+        try {
+          await fetch('/api/notifications/notify-prediction-update', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ planType: predictionData.plan_type }),
+          })
+        } catch (notifyError) {
+          console.error('Error notifying users:', notifyError)
+          // Don't fail the request if notification fails
+        }
       }
 
       router.push('/admin/predictions')

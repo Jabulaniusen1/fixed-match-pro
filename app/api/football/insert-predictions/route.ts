@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { notifyPredictionDropped } from '@/lib/notifications'
 
 export async function POST(request: NextRequest) {
   try {
@@ -85,6 +86,48 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error inserting predictions:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    // Notify users subscribed to plans for which predictions were added
+    if (data && data.length > 0) {
+      try {
+        // Group predictions by plan_type
+        const planTypes = new Set<string>()
+        data.forEach((pred: any) => {
+          if (pred.plan_type) {
+            planTypes.add(pred.plan_type)
+          }
+        })
+
+        // Map plan_type to plan slug to get plan ID
+        const planTypeToSlug: Record<string, string> = {
+          'profit_multiplier': 'profit-multiplier',
+          'daily_2_odds': 'daily-2-odds',
+          'standard': 'standard',
+          'free': 'free',
+          'correct_score': 'correct-score'
+        }
+
+        // Notify for each unique plan type
+        for (const planType of planTypes) {
+          const planSlug = planTypeToSlug[planType]
+          if (planSlug) {
+            const planResult: any = await supabase
+              .from('plans')
+              .select('id, name')
+              .eq('slug', planSlug)
+              .single()
+            const planData = planResult.data as { id: string; name: string } | null
+
+            if (planData) {
+              await notifyPredictionDropped(planData.id, planData.name)
+            }
+          }
+        }
+      } catch (notifyError) {
+        console.error('Error notifying users:', notifyError)
+        // Don't fail the request if notification fails
+      }
     }
 
     return NextResponse.json({ 
