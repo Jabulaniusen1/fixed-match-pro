@@ -124,8 +124,9 @@ export function FreePredictionsSection() {
         const allPredictions: FreePrediction[] = []
 
         // Determine max predictions based on filter
-        // "free" (Safe Picks) should have minimum 5 games
+        // "free" (Safe Picks) should have minimum 5 games, but we'll collect more to ensure we have enough after filtering
         const maxPredictions = selectedFilter === 'free' ? 5 : 15
+        const minPredictions = selectedFilter === 'free' ? 5 : 0 // Minimum required for free filter
 
         // Track which prediction types we've used to ensure variety
         // Safe free picks only use: Super Single, Double Chance, Home Win, Away Win, 1.5 Goals
@@ -218,7 +219,8 @@ export function FreePredictionsSection() {
           // For other filters, process fixtures until we have enough predictions
           // Increase buffer to find enough matches with the odds criteria
           // For safe free picks, use larger buffer to ensure we get minimum 5 games
-          const buffer = selectedFilter === 'free' ? 30 : 10
+          // Process more fixtures to account for filtering (odds range, prediction types)
+          const buffer = selectedFilter === 'free' ? 50 : 10
           const fixturesToProcess = fixtures.slice(0, maxPredictions + buffer)
 
           // Fetch all odds in parallel for the fixtures we need
@@ -236,10 +238,13 @@ export function FreePredictionsSection() {
           const oddsMap = new Map(oddsResults.map(r => [r.matchId, r.odds]))
 
           for (const fixture of fixturesToProcess) {
-            // Stop if we have enough predictions
-            if (allPredictions.length >= maxPredictions) {
+            // For free filter, continue collecting until we have enough valid predictions
+            // For other filters, stop when we reach maxPredictions
+            if (selectedFilter !== 'free' && allPredictions.length >= maxPredictions) {
               break
             }
+            // For free filter, we'll continue processing all fixtures in the buffer
+            // and filter later to ensure we get at least 5 valid predictions
 
             try {
               // Get odds from the map
@@ -252,11 +257,11 @@ export function FreePredictionsSection() {
               if (selectedFilter === 'free') {
                 // Safe free picks: Only include specific categories
                 // Categories: Super Single, Double Chance, Home Win, Away Win, 1.5 Goals
-                // Filter by odds range 1.15 - 1.60
+                // Filter by odds range 1.2 - 1.7
                 const isInRange = (odd: string | undefined) => {
                   if (!odd) return false
                   const val = parseFloat(odd)
-                  return val >= 1.15 && val <= 1.60
+                  return val >= 1.2 && val <= 1.7
                 }
 
                 if (oddsData) {
@@ -392,10 +397,14 @@ export function FreePredictionsSection() {
           }
         }
 
-        // Filter predictions based on odds range for all filters (1.15 to 1.60)
+        // Filter predictions based on odds range
+        // For free filter: 1.2 to 1.7, for others: 1.15 to 1.60
         // Note: We already filtered during generation, but this is a safety check
         let filteredPredictions = allPredictions.filter(pred => {
           const odds = pred.odds
+          if (selectedFilter === 'free') {
+            return odds >= 1.2 && odds <= 1.7
+          }
           return odds >= 1.15 && odds <= 1.60
         })
 
@@ -407,10 +416,21 @@ export function FreePredictionsSection() {
           )
         }
 
-        // For "free" filter, limit to 5. For others, use all collected predictions
-        const finalPredictions = selectedFilter === 'free'
-          ? filteredPredictions.slice(0, 5)
-          : filteredPredictions
+        // For "free" filter, ensure we have at least 5 games, then limit to 5
+        // For others, use all collected predictions
+        let finalPredictions: FreePrediction[]
+        if (selectedFilter === 'free') {
+          // Ensure we have at least 5 predictions for free filter
+          if (filteredPredictions.length >= minPredictions) {
+            finalPredictions = filteredPredictions.slice(0, 5)
+          } else {
+            // If we don't have enough, use what we have (but log a warning)
+            console.warn(`Only found ${filteredPredictions.length} valid free predictions, minimum is ${minPredictions}`)
+            finalPredictions = filteredPredictions
+          }
+        } else {
+          finalPredictions = filteredPredictions
+        }
         setPredictions(finalPredictions)
       } catch (error) {
         console.error('Error fetching predictions:', error)
