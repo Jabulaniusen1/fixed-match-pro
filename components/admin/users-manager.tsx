@@ -136,9 +136,10 @@ export function UsersManager({ users, plans }: UsersManagerProps) {
 
       // Send rejection email to user
       if (subscriptionData) {
-        const planName = (subscriptionData.plans as any)?.name || 'Subscription'
-        const userEmail = (subscriptionData.users as any)?.email
-        const userName = (subscriptionData.users as any)?.full_name
+        const subscription = subscriptionData as any
+        const planName = subscription.plans?.name || 'Subscription'
+        const userEmail = subscription.users?.email
+        const userName = subscription.users?.full_name
 
         try {
           await fetch('/api/notifications/send-email', {
@@ -148,7 +149,7 @@ export function UsersManager({ users, plans }: UsersManagerProps) {
             },
             body: JSON.stringify({
               type: 'payment_rejected',
-              userId: subscriptionData.user_id,
+              userId: subscription.user_id,
               planName,
               userEmail,
               userName,
@@ -166,7 +167,7 @@ export function UsersManager({ users, plans }: UsersManagerProps) {
             .from('notifications')
             // @ts-expect-error - Supabase type inference issue
             .insert({
-              user_id: subscriptionData.user_id,
+              user_id: subscription.user_id,
               type: 'payment_rejected',
               title: 'Subscription Rejected',
               message: `Your subscription for ${planName} has been rejected and deactivated. Please contact support if you have any questions.`,
