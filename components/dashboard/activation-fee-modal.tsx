@@ -425,7 +425,7 @@ export function ActivationFeeModal({
       const symbol = getCurrencySymbolUtil(selectedPrice.currency.trim())
       if (symbol && symbol !== selectedPrice.currency) {
         return symbol
-      }
+    }
       // If utility returns the code itself, it means it's not in the map, return it as-is
       return symbol
     }

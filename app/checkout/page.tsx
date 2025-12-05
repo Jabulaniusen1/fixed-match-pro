@@ -1078,9 +1078,9 @@ function CheckoutContent() {
 
         {/* Support Link */}
         {whatsappNumber && (
-          <div className="text-center mt-8 text-sm text-gray-600">
+        <div className="text-center mt-8 text-sm text-gray-600">
             <p className="flex items-center justify-center gap-2">
-              Can't find your suitable payment method? Contact support team on{' '}
+            Can't find your suitable payment method? Contact support team on{' '}
               <a 
                 href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`} 
                 target="_blank" 
@@ -1088,10 +1088,10 @@ function CheckoutContent() {
                 className="text-blue-600 hover:underline inline-flex items-center gap-1"
               >
                 <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </a>
-            </p>
-          </div>
+              WhatsApp
+            </a>
+          </p>
+        </div>
         )}
       </div>
     </PageLayout>
