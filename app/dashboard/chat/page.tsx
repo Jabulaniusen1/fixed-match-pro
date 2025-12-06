@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   },
 }
 
+// Force dynamic rendering - this page requires user authentication
+export const dynamic = 'force-dynamic'
+
 export default async function ChatPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

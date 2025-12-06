@@ -3,6 +3,9 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { NotificationsList } from '@/components/dashboard/notifications-list'
 import { redirect } from 'next/navigation'
 
+// Force dynamic rendering - this page requires user authentication
+export const dynamic = 'force-dynamic'
+
 export default async function NotificationsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

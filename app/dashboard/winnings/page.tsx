@@ -3,6 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { VIPWinningsSection } from '@/components/home/vip-winnings-section'
 
+// Force dynamic rendering - this page requires user authentication
+export const dynamic = 'force-dynamic'
+
 export default async function WinningsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

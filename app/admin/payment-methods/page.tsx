@@ -4,6 +4,9 @@ import { AdminLayout } from '@/components/admin/admin-layout'
 import { PaymentMethodsManager } from '@/components/admin/payment-methods-manager'
 import { Database } from '@/types/database'
 
+// Force dynamic rendering - this page requires admin authentication
+export const dynamic = 'force-dynamic'
+
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'is_admin'>
 
 export default async function AdminPaymentMethodsPage() {

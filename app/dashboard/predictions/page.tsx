@@ -4,6 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { PredictionsList } from '@/components/dashboard/predictions-list'
 
+// Force dynamic rendering - this page requires user authentication
+export const dynamic = 'force-dynamic'
+
 export default async function PredictionsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

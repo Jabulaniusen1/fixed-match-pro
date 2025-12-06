@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   title: 'Chat Management',
 }
 
+// Force dynamic rendering - this page requires admin authentication
+export const dynamic = 'force-dynamic'
+
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'is_admin'>
 
 export default async function AdminChatPage() {

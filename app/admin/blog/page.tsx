@@ -4,6 +4,9 @@ import { AdminLayout } from '@/components/admin/admin-layout'
 import { BlogManager } from '@/components/admin/blog-manager'
 import { Database } from '@/types/database'
 
+// Force dynamic rendering - this page requires admin authentication
+export const dynamic = 'force-dynamic'
+
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'is_admin'>
 type BlogPost = Database['public']['Tables']['blog_posts']['Row']
 

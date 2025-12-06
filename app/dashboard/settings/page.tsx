@@ -3,6 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { SettingsForm } from '@/components/dashboard/settings-form'
 
+// Force dynamic rendering - this page requires user authentication
+export const dynamic = 'force-dynamic'
+
 export default async function SettingsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

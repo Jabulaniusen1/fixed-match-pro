@@ -4,6 +4,9 @@ import { NotificationsList } from '@/components/dashboard/notifications-list'
 import { redirect } from 'next/navigation'
 import { Database } from '@/types/database'
 
+// Force dynamic rendering - this page requires admin authentication
+export const dynamic = 'force-dynamic'
+
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'is_admin'>
 
 export default async function AdminNotificationsPage() {

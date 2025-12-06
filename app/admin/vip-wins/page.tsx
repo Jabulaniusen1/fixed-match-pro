@@ -4,6 +4,9 @@ import { AdminLayout } from '@/components/admin/admin-layout'
 import { VIPWinsManager } from '@/components/admin/vip-wins-manager'
 import { Database } from '@/types/database'
 
+// Force dynamic rendering - this page requires admin authentication
+export const dynamic = 'force-dynamic'
+
 type UserProfile = Pick<Database['public']['Tables']['users']['Row'], 'is_admin'>
 
 export default async function AdminVIPWinsPage() {
