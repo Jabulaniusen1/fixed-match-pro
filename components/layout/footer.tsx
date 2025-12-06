@@ -203,6 +203,11 @@ export function Footer() {
                   <span>Advertise With Us</span>
                 </Link>
               </li>
+              <li>
+                <Link href="/download-app" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                  <span>Download App</span>
+                </Link>
+              </li>
             </ul>
           </div>
 
