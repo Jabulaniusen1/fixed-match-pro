@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   },
 }
 
+// Force dynamic rendering - this page requires user authentication
+export const dynamic = 'force-dynamic'
+
 type UserProfile = Database['public']['Tables']['users']['Row'] & {
   country: string | null
 }
@@ -48,31 +51,37 @@ export default async function DashboardPage() {
   const subscriptions = subscriptionsRaw as UserSubscriptionWithPlan[] | null
 
   // Check for expired subscriptions and notify
-  if (subscriptions) {
-    const now = new Date()
-    for (const sub of subscriptions) {
-      if (sub.plan_status === 'active' && sub.expiry_date) {
-        const expiryDate = new Date(sub.expiry_date)
-        if (expiryDate < now) {
-          // Update to expired
-          await supabase
-            .from('user_subscriptions')
-            // @ts-expect-error - Supabase type inference issue
-            .update({ plan_status: 'expired' })
-            .eq('id', sub.id)
+  // Wrapped in try-catch to prevent build failures
+  try {
+    if (subscriptions) {
+      const now = new Date()
+      for (const sub of subscriptions) {
+        if (sub.plan_status === 'active' && sub.expiry_date) {
+          const expiryDate = new Date(sub.expiry_date)
+          if (expiryDate < now) {
+            // Update to expired
+            await supabase
+              .from('user_subscriptions')
+              // @ts-expect-error - Supabase type inference issue
+              .update({ plan_status: 'expired' })
+              .eq('id', sub.id)
 
-          // Notify user
-          const plan = sub.plan as any
-          await notifySubscriptionEvent(
-            user.id,
-            plan?.name || 'Unknown Plan',
-            'expired',
-            userProfile?.email,
-            userProfile?.full_name || undefined
-          )
+            // Notify user (non-blocking)
+            const plan = sub.plan as any
+            notifySubscriptionEvent(
+              user.id,
+              plan?.name || 'Unknown Plan',
+              'expired',
+              userProfile?.email,
+              userProfile?.full_name || undefined
+            ).catch((err) => console.error('Error notifying expired subscription:', err))
+          }
         }
       }
     }
+  } catch (error) {
+    // Silently fail - this is a background task and shouldn't block page rendering
+    console.error('Error checking expired subscriptions:', error)
   }
 
   // Re-fetch subscriptions after potential updates
