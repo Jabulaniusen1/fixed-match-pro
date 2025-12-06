@@ -2,6 +2,9 @@ import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
 import { Database } from '@/types/database'
 
+// Allow dynamic generation but prefer static
+export const revalidate = 3600 // Revalidate every hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://predictsafe.com'
   
@@ -88,17 +91,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Create a simple Supabase client without cookies for static generation
     const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
     
-    // Get published blog posts
-    const { data: blogPosts, error } = await supabase
+    // Get published blog posts with timeout protection
+    const blogPostsPromise = supabase
       .from('blog_posts')
       .select('id, updated_at, published_at')
       .eq('published', true)
       .not('published_at', 'is', null)
 
-    if (error) {
-      console.error('Error fetching blog posts for sitemap:', error)
+    // Add timeout to prevent build hanging
+    const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((resolve) =>
+      setTimeout(() => resolve({ data: null, error: { message: 'Timeout' } }), 10000)
+    )
+
+    const result = await Promise.race([blogPostsPromise, timeoutPromise]) as { data: any[] | null; error: any }
+
+    if (result.error) {
+      console.error('Error fetching blog posts for sitemap:', result.error)
       return staticPages
     }
+
+    const blogPosts = result.data
 
     const blogPages: MetadataRoute.Sitemap = (blogPosts || []).map((post: { id: string; updated_at: string | null; published_at: string | null }) => ({
       url: `${baseUrl}/blog/${post.id}`,
