@@ -25,7 +25,8 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
   const [teamLogos, setTeamLogos] = useState<Record<string, string | null>>({})
   const [leagueNames, setLeagueNames] = useState<Record<string, string>>({}) // winning.id -> league_name
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-  const limitPerPlan = 6 // Number of winnings to show per plan
+  const [expandedPlans, setExpandedPlans] = useState<Set<string>>(new Set())
+  const initialLimitPerPlan = 2 // Number of winnings to show per plan initially
 
   useEffect(() => {
     fetchWinnings()
@@ -41,34 +42,102 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
     setLoading(true)
     const supabase = createClient()
     
-    let query = supabase
+    // Filter by plan IDs if provided and not showing all
+    let baseQuery = supabase
       .from('vip_winnings')
       .select('*')
       .order('date', { ascending: false })
 
-    // Filter by plan IDs if provided and not showing all
     if (!showAll && planIds && planIds.length > 0) {
-      query = query.in('plan_id', planIds)
+      baseQuery = baseQuery.in('plan_id', planIds)
     }
 
-    // Filter by selected date if provided
+    // If a specific date is selected, filter by that date
     if (selectedDate) {
       const dateStr = format(selectedDate, 'yyyy-MM-dd')
       const startOfDay = `${dateStr}T00:00:00.000Z`
       const endOfDay = `${dateStr}T23:59:59.999Z`
-      query = query.gte('date', startOfDay).lte('date', endOfDay)
+      const { data, error } = await baseQuery
+        .gte('date', startOfDay)
+        .lte('date', endOfDay)
+        .limit(100)
+
+      if (error) {
+        console.error('Error fetching winnings:', error)
+        setWinnings([])
+      } else {
+        setWinnings(data || [])
+      }
+      setLoading(false)
+      return
     }
-    
-    // Fetch more winnings to ensure we have enough for each plan
-    const { data, error } = await query.limit(100)
+
+    // If no date is selected, try to get today's winnings first
+    const today = new Date()
+    const todayStr = format(today, 'yyyy-MM-dd')
+    const startOfToday = `${todayStr}T00:00:00.000Z`
+    const endOfToday = `${todayStr}T23:59:59.999Z`
+
+    // Try to fetch today's winnings
+    const todayQuery = baseQuery
+      .gte('date', startOfToday)
+      .lte('date', endOfToday)
+      .limit(100)
+
+    const { data: todayData, error: todayError } = await todayQuery
+
+    if (todayError) {
+      console.error('Error fetching today\'s winnings:', todayError)
+    }
+
+    // If there are winnings for today, use them
+    if (todayData && todayData.length > 0) {
+      setWinnings(todayData)
+      setLoading(false)
+      return
+    }
+
+    // If no winnings for today, fetch the most recent day's winnings (persist previous games)
+    // Get enough records to find the most recent day
+    const { data, error } = await baseQuery.limit(100)
 
     if (error) {
       console.error('Error fetching winnings:', error)
       setWinnings([])
-    } else {
-      setWinnings(data || [])
+      setLoading(false)
+      return
     }
 
+    if (!data || data.length === 0) {
+      setWinnings([])
+      setLoading(false)
+      return
+    }
+
+    // Type assertion to help TypeScript understand the data structure
+    const winningsData = data as VIPWinning[]
+
+    // Find the most recent date from the fetched winnings
+    // Since data is ordered by date descending, the first item has the most recent date
+    const firstWinning = winningsData[0]
+    if (!firstWinning) {
+      setWinnings([])
+      setLoading(false)
+      return
+    }
+
+    const mostRecentDate = firstWinning.date
+    const mostRecentDateStr = new Date(mostRecentDate).toISOString().split('T')[0]
+    const startOfMostRecentDay = `${mostRecentDateStr}T00:00:00.000Z`
+    const endOfMostRecentDay = `${mostRecentDateStr}T23:59:59.999Z`
+
+    // Filter to show only winnings from the most recent day
+    const previousDayWinnings = winningsData.filter((winning) => {
+      const winningDate = new Date(winning.date).toISOString()
+      return winningDate >= startOfMostRecentDay && winningDate <= endOfMostRecentDay
+    })
+
+    setWinnings(previousDayWinnings)
     setLoading(false)
   }
 
@@ -82,6 +151,18 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
 
   const handleClearDate = () => {
     setSelectedDate(undefined)
+  }
+
+  const togglePlanExpansion = (planName: string) => {
+    setExpandedPlans(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(planName)) {
+        newSet.delete(planName)
+      } else {
+        newSet.add(planName)
+      }
+      return newSet
+    })
   }
 
   // Group winnings by plan name
@@ -286,36 +367,36 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                 <div key={planIndex} className="space-y-4">
                   <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
                   <div className="space-y-0 border rounded-lg overflow-hidden bg-white">
-                    <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-6 py-3 grid grid-cols-12 gap-4 items-center font-semibold text-sm">
-                      <div className="col-span-2">Date</div>
-                      <div className="col-span-5">Teams</div>
-                      <div className="col-span-1 text-center">Result</div>
-                      <div className="col-span-2 text-center">Tip</div>
+              <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-6 py-3 grid grid-cols-12 gap-4 items-center font-semibold text-sm">
+                <div className="col-span-2">Date</div>
+                <div className="col-span-5">Teams</div>
+                <div className="col-span-1 text-center">Result</div>
+                <div className="col-span-2 text-center">Tip</div>
                       <div className="col-span-2 text-center">League</div>
-                    </div>
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="px-6 py-4 grid grid-cols-12 gap-4 items-center border-t animate-pulse">
-                        <div className="col-span-2">
-                          <div className="h-4 w-20 bg-gray-200 rounded" />
-                        </div>
-                        <div className="col-span-5">
-                          <div className="h-4 w-32 bg-gray-200 rounded" />
-                        </div>
-                        <div className="col-span-1">
-                          <div className="h-6 w-12 bg-gray-200 rounded mx-auto" />
-                        </div>
-                        <div className="col-span-2">
-                          <div className="h-4 w-16 bg-gray-200 rounded mx-auto" />
-                        </div>
-                        <div className="col-span-2">
-                          <div className="h-4 w-20 bg-gray-200 rounded mx-auto" />
+              </div>
+            {[1, 2, 3].map((i) => (
+                <div key={i} className="px-6 py-4 grid grid-cols-12 gap-4 items-center border-t animate-pulse">
+                  <div className="col-span-2">
+                    <div className="h-4 w-20 bg-gray-200 rounded" />
+                  </div>
+                  <div className="col-span-5">
+                    <div className="h-4 w-32 bg-gray-200 rounded" />
+                  </div>
+                  <div className="col-span-1">
+                    <div className="h-6 w-12 bg-gray-200 rounded mx-auto" />
+                  </div>
+                  <div className="col-span-2">
+                    <div className="h-4 w-16 bg-gray-200 rounded mx-auto" />
+                  </div>
+                  <div className="col-span-2">
+                    <div className="h-4 w-20 bg-gray-200 rounded mx-auto" />
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-              ))}
-            </div>
+            ))}
+          </div>
           </>
         ) : planNames.length === 0 ? (
           <Card className="border-2 border-gray-200">
@@ -326,7 +407,12 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
         ) : (
           <div className="space-y-8">
             {planNames.map((planName) => {
-              const planWinnings = groupedWinnings[planName].slice(0, limitPerPlan)
+              const allPlanWinnings = groupedWinnings[planName]
+              const isExpanded = expandedPlans.has(planName)
+              const hasMore = allPlanWinnings.length > initialLimitPerPlan
+              const planWinnings = isExpanded 
+                ? allPlanWinnings 
+                : allPlanWinnings.slice(0, initialLimitPerPlan)
               
               return (
                 <div key={planName} className="space-y-4">
@@ -335,10 +421,20 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                     <div>
                       <h3 className="text-xl sm:text-2xl font-bold text-[#1e40af]">{planName}</h3>
                     </div>
+                    {hasMore && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => togglePlanExpansion(planName)}
+                        className="text-[#1e40af] border-[#1e40af] hover:bg-[#1e40af] hover:text-white"
+                      >
+                        {isExpanded ? 'Show Less' : 'See All'}
+                      </Button>
+                    )}
                   </div>
 
-                  {/* Mobile View */}
-                  <div className="lg:hidden space-y-3">
+            {/* Mobile View */}
+            <div className="lg:hidden space-y-3">
                     {planWinnings.map((winning) => (
                 <div
                   key={winning.id}
@@ -423,28 +519,28 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                       {getLeagueName(winning)}
                     </div>
                   </div>
-                    </div>
-                    ))}
-                  </div>
+                </div>
+              ))}
+            </div>
 
-                  {/* Desktop View */}
-                  <div className="hidden lg:block space-y-0 border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-lg">
-                    {/* Header */}
-                    <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-6 py-4 grid grid-cols-12 gap-4 items-center font-bold text-sm shadow-md">
-                      <div className="col-span-2">Date</div>
-                      <div className="col-span-5">Teams</div>
-                      <div className="col-span-1 text-center">Result</div>
-                      <div className="col-span-2 text-center">Tip</div>
+            {/* Desktop View */}
+            <div className="hidden lg:block space-y-0 border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-lg">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-6 py-4 grid grid-cols-12 gap-4 items-center font-bold text-sm shadow-md">
+                <div className="col-span-2">Date</div>
+                <div className="col-span-5">Teams</div>
+                <div className="col-span-1 text-center">Result</div>
+                <div className="col-span-2 text-center">Tip</div>
                       <div className="col-span-2 text-center">League</div>
-                    </div>
+              </div>
 
-                    {/* Winnings */}
+              {/* Winnings */}
                     {planWinnings.map((winning, index) => (
                 <div
                   key={winning.id}
                   className={cn(
                     'px-6 py-5 grid grid-cols-12 gap-4 items-center border-b border-gray-100 bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 hover:shadow-md transition-all duration-300',
-                    index === winnings.length - 1 && 'border-b-0',
+                    index === planWinnings.length - 1 && 'border-b-0',
                     index % 2 === 0 && 'bg-gray-50/50'
                   )}
                 >
@@ -540,8 +636,8 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                     </span>
                   </div>
                 </div>
-                    ))}
-                  </div>
+              ))}
+            </div>
                 </div>
               )
             })}

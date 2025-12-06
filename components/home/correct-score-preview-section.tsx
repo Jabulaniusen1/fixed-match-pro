@@ -26,20 +26,40 @@ export function CorrectScorePreviewSection() {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
 
-      // Fetch correct score predictions (limited preview)
+      // Fetch correct score predictions from predictions table (limited preview)
       const { from, to } = getDateRange(dateType)
+      const fromTimestamp = `${from}T00:00:00.000Z`
+      const toTimestamp = `${to}T23:59:59.999Z`
       const { data, error } = await supabase
-        .from('correct_score_predictions')
+        .from('predictions')
         .select('*')
-        .gte('kickoff_time', from)
-        .lte('kickoff_time', to)
+        .eq('plan_type', 'correct_score')
+        .gte('kickoff_time', fromTimestamp)
+        .lte('kickoff_time', toTimestamp)
         .order('kickoff_time', { ascending: true })
         .limit(3)
 
       if (error) {
         console.error('Error fetching predictions:', error)
       } else {
-        setPredictions(data || [])
+        // Transform predictions table data to match CorrectScorePrediction format
+        const transformedData = (data || []).map((pred: any) => ({
+          id: pred.id,
+          home_team: pred.home_team,
+          away_team: pred.away_team,
+          league: pred.league,
+          score_prediction: pred.prediction_type, // prediction_type contains the score
+          odds: pred.odds,
+          kickoff_time: pred.kickoff_time,
+          status: pred.status || 'not_started',
+          result: pred.result || null,
+          home_score: pred.home_score || null,
+          away_score: pred.away_score || null,
+          admin_notes: pred.admin_notes || null,
+          created_at: pred.created_at,
+          updated_at: pred.updated_at,
+        }))
+        setPredictions(transformedData)
       }
 
       setLoading(false)

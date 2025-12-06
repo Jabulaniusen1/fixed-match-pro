@@ -254,10 +254,11 @@ export function PredictionsList({ allPlans, subscriptions: initialSubscriptions 
     })
 
     if (selectedPlan.slug === 'correct-score') {
-      // Fetch correct score predictions
+      // Fetch correct score predictions from predictions table where plan_type = 'correct_score'
       let query = supabase
-        .from('correct_score_predictions')
+        .from('predictions')
         .select('*')
+        .eq('plan_type', 'correct_score')
         .gte('kickoff_time', fromTimestamp)
         .lte('kickoff_time', toTimestamp)
         .order('kickoff_time', { ascending: true })
@@ -278,7 +279,24 @@ export function PredictionsList({ allPlans, subscriptions: initialSubscriptions 
         if (data && data.length > 0) {
           console.log('📋 First Prediction Sample:', data[0])
         }
-        setCorrectScorePredictions(data || [])
+        // Transform predictions table data to match CorrectScorePrediction format
+        const transformedData = (data || []).map((pred: any) => ({
+          id: pred.id,
+          home_team: pred.home_team,
+          away_team: pred.away_team,
+          league: pred.league,
+          score_prediction: pred.prediction_type, // prediction_type contains the score
+          odds: pred.odds,
+          kickoff_time: pred.kickoff_time,
+          status: pred.status || 'not_started',
+          result: pred.result || null,
+          home_score: pred.home_score || null,
+          away_score: pred.away_score || null,
+          admin_notes: pred.admin_notes || null,
+          created_at: pred.created_at,
+          updated_at: pred.updated_at,
+        }))
+        setCorrectScorePredictions(transformedData)
         setPredictions([])
       }
     } else {
@@ -296,14 +314,20 @@ export function PredictionsList({ allPlans, subscriptions: initialSubscriptions 
         .lte('kickoff_time', toTimestamp)
         .order('kickoff_time', { ascending: true })
 
-      // Apply plan-specific filters
-      if (planType === 'profit_multiplier') {
-        query = query.gte('odds', 2.8).lte('odds', 4.3)
-      } else if (planType === 'daily_2_odds') {
-        query = query.gte('odds', 2.0)
+      // Apply plan-specific filters ONLY for preview/locked plans
+      // For subscribed users, show ALL predictions added by admin regardless of filters
+      if (!isUnlockedForFetch) {
+        // Only apply filters for locked/preview content
+        if (planType === 'profit_multiplier') {
+          query = query.gte('odds', 2.8).lte('odds', 4.3)
+        } else if (planType === 'daily_2_odds') {
+          query = query.gte('odds', 2.0)
+        } else {
+          // Apply confidence filter for standard plan preview
+          query = query.gte('confidence', 60).lte('confidence', 100)
+        }
       }
-
-      query = query.gte('confidence', 60).lte('confidence', 100)
+      // For unlocked/subscribed users, no filters applied - show all admin-added predictions
 
       // Apply daily limit if set and unlocked, or limit to 3 for preview if locked
       if (isUnlockedForFetch && selectedPlan.max_predictions_per_day) {
