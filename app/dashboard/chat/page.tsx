@@ -35,7 +35,7 @@ export default async function ChatPage() {
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold">Chat with Admin</h1>
           <p className="text-sm lg:text-base text-muted-foreground mt-1">
-            Send messages to the admin team and get support
+            Send messages to the admin team
           </p>
         </div>
         <UserChat />
