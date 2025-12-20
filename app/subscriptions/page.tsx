@@ -25,7 +25,6 @@ export default function SubscriptionsPage() {
   const [countries, setCountries] = useState<{ value: string; label: string }[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingCountries, setLoadingCountries] = useState(true)
-  const [billingPeriod, setBillingPeriod] = useState<'weekly' | 'monthly'>('monthly')
 
   // Fetch countries from API
   useEffect(() => {
@@ -235,39 +234,12 @@ export default function SubscriptionsPage() {
           </Card>
         ) : (
           <>
-            {/* Billing Toggle */}
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-3 bg-white p-1 rounded-lg border-2 border-gray-200 shadow-sm">
-                <button
-                  onClick={() => setBillingPeriod('weekly')}
-                  className={`px-6 py-2 rounded-md font-semibold transition-all ${
-                    billingPeriod === 'weekly'
-                      ? 'bg-[#1e40af] text-white shadow-md'
-                      : 'text-gray-600 hover:text-[#1e40af]'
-                  }`}
-                >
-                  Weekly
-                </button>
-                <button
-                  onClick={() => setBillingPeriod('monthly')}
-                  className={`px-6 py-2 rounded-md font-semibold transition-all ${
-                    billingPeriod === 'monthly'
-                      ? 'bg-[#1e40af] text-white shadow-md'
-                      : 'text-gray-600 hover:text-[#1e40af]'
-                  }`}
-                >
-                  Monthly
-                </button>
-              </div>
-            </div>
-
-            {/* Pricing Cards - Reference Style */}
+            {/* Pricing Cards - Weekly and Monthly Side by Side */}
             <div className="bg-gray-50 py-12 px-4 rounded-lg">
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
                 {plans.slice(0, 4).map((plan, index) => {
-              const selectedPrice = billingPeriod === 'weekly' 
-                ? getPriceForCountry(plan, 7)
-                : getPriceForCountry(plan, 30)
+              const weeklyPrice = getPriceForCountry(plan, 7)
+              const monthlyPrice = getPriceForCountry(plan, 30)
               const isPopular = plan.slug === popularPlanSlug
 
               return (
@@ -294,30 +266,57 @@ export default function SubscriptionsPage() {
                     </CardHeader>
                     
                     <CardContent className="flex-1 flex flex-col px-6 pb-6 bg-white">
-                      {/* Pricing */}
+                      {/* Pricing - Weekly and Monthly Side by Side */}
                       <div className="mb-4">
-                        {selectedPrice ? (
-                          <div>
-                            <div className="flex items-baseline gap-1 mb-1">
-                              <span className="text-4xl font-bold text-gray-900">{getCurrencySymbol(selectedPrice)}</span>
-                              <span className="text-5xl font-bold text-gray-900">
-                                {(() => {
-                                  const priceValue = typeof selectedPrice.price === 'number' 
-                                    ? selectedPrice.price 
-                                    : parseFloat(String(selectedPrice.price || '0'))
-                                  return priceValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
-                                })()}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-600 mb-1">
-                              /{billingPeriod === 'weekly' ? 'week' : 'mo'}
-                            </p>
-                            {plan.requires_activation && (
-                              <p className="text-xs text-gray-500">+ Activation Fee</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Weekly Pricing */}
+                          <div className="border-r border-gray-200 pr-4">
+                            <p className="text-xs text-gray-500 mb-1 uppercase">Weekly</p>
+                            {weeklyPrice ? (
+                              <div>
+                                <div className="flex items-baseline gap-1 mb-1">
+                                  <span className="text-2xl font-bold text-gray-900">{getCurrencySymbol(weeklyPrice)}</span>
+                                  <span className="text-2xl font-bold text-gray-900">
+                                    {(() => {
+                                      const priceValue = typeof weeklyPrice.price === 'number' 
+                                        ? weeklyPrice.price 
+                                        : parseFloat(String(weeklyPrice.price || '0'))
+                                      return priceValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                                    })()}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-600">/week</p>
+                              </div>
+                            ) : (
+                              <div className="text-xs text-gray-400">N/A</div>
                             )}
                           </div>
-                        ) : (
-                          <div className="text-gray-400">Price not available</div>
+
+                          {/* Monthly Pricing */}
+                          <div className="pl-4">
+                            <p className="text-xs text-gray-500 mb-1 uppercase">Monthly</p>
+                            {monthlyPrice ? (
+                              <div>
+                                <div className="flex items-baseline gap-1 mb-1">
+                                  <span className="text-2xl font-bold text-gray-900">{getCurrencySymbol(monthlyPrice)}</span>
+                                  <span className="text-2xl font-bold text-gray-900">
+                                    {(() => {
+                                      const priceValue = typeof monthlyPrice.price === 'number' 
+                                        ? monthlyPrice.price 
+                                        : parseFloat(String(monthlyPrice.price || '0'))
+                                      return priceValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                                    })()}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-600">/mo</p>
+                              </div>
+                            ) : (
+                              <div className="text-xs text-gray-400">N/A</div>
+                            )}
+                          </div>
+                        </div>
+                        {plan.requires_activation && (
+                          <p className="text-xs text-gray-500 mt-2 text-center">+ Activation Fee</p>
                         )}
                       </div>
 
@@ -349,13 +348,33 @@ export default function SubscriptionsPage() {
                         )}
                       </div>
 
-                      {/* CTA Button */}
-                      <Button
-                        className="w-full font-semibold py-3 bg-gray-800 hover:bg-gray-900 text-white rounded transition-all duration-300"
-                        onClick={() => handlePlanClick(plan.slug, billingPeriod === 'weekly' ? 7 : 30)}
-                      >
-                        ► {selectedPrice ? 'GET STARTED' : 'START FOR FREE'}
-                      </Button>
+                      {/* CTA Buttons - Weekly and Monthly */}
+                      <div className="space-y-2">
+                        {weeklyPrice && (
+                          <Button
+                            className="w-full font-semibold py-2 bg-gray-800 hover:bg-gray-900 text-white rounded transition-all duration-300 text-sm"
+                            onClick={() => handlePlanClick(plan.slug, 7)}
+                          >
+                            ► GET WEEKLY PLAN
+                          </Button>
+                        )}
+                        {monthlyPrice && (
+                          <Button
+                            className="w-full font-semibold py-2 bg-[#1e40af] hover:bg-[#1e3a8a] text-white rounded transition-all duration-300 text-sm"
+                            onClick={() => handlePlanClick(plan.slug, 30)}
+                          >
+                            ► GET MONTHLY PLAN
+                          </Button>
+                        )}
+                        {!weeklyPrice && !monthlyPrice && (
+                          <Button
+                            className="w-full font-semibold py-2 bg-gray-800 hover:bg-gray-900 text-white rounded transition-all duration-300 text-sm"
+                            onClick={() => handlePlanClick(plan.slug, 30)}
+                          >
+                            ► START FOR FREE
+                          </Button>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
@@ -370,9 +389,8 @@ export default function SubscriptionsPage() {
             <h3 className="text-2xl font-bold text-center mb-8 text-[#1e40af]">Additional Plans</h3>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {plans.slice(4).map((plan) => {
-                const selectedPrice = billingPeriod === 'weekly' 
-                  ? getPriceForCountry(plan, 7)
-                  : getPriceForCountry(plan, 30)
+                const weeklyPrice = getPriceForCountry(plan, 7)
+                const monthlyPrice = getPriceForCountry(plan, 30)
 
                 return (
                   <Card key={plan.id} className="h-full flex flex-col bg-white border border-gray-200 shadow-sm">
@@ -383,26 +401,57 @@ export default function SubscriptionsPage() {
                     </CardHeader>
                     
                     <CardContent className="flex-1 flex flex-col px-6 pb-6 bg-white">
+                      {/* Pricing - Weekly and Monthly Side by Side */}
                       <div className="mb-4">
-                        {selectedPrice ? (
-                          <div>
-                            <div className="flex items-baseline gap-1 mb-1">
-                              <span className="text-3xl font-bold text-gray-900">{getCurrencySymbol(selectedPrice)}</span>
-                              <span className="text-4xl font-bold text-gray-900">
-                                {(() => {
-                                  const priceValue = typeof selectedPrice.price === 'number' 
-                                    ? selectedPrice.price 
-                                    : parseFloat(String(selectedPrice.price || '0'))
-                                  return priceValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
-                                })()}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-600">
-                              /{billingPeriod === 'weekly' ? 'week' : 'mo'}
-                            </p>
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Weekly Pricing */}
+                          <div className="border-r border-gray-200 pr-4">
+                            <p className="text-xs text-gray-500 mb-1 uppercase">Weekly</p>
+                            {weeklyPrice ? (
+                              <div>
+                                <div className="flex items-baseline gap-1 mb-1">
+                                  <span className="text-2xl font-bold text-gray-900">{getCurrencySymbol(weeklyPrice)}</span>
+                                  <span className="text-2xl font-bold text-gray-900">
+                                    {(() => {
+                                      const priceValue = typeof weeklyPrice.price === 'number' 
+                                        ? weeklyPrice.price 
+                                        : parseFloat(String(weeklyPrice.price || '0'))
+                                      return priceValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                                    })()}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-600">/week</p>
+                              </div>
+                            ) : (
+                              <div className="text-xs text-gray-400">N/A</div>
+                            )}
                           </div>
-                        ) : (
-                          <div className="text-gray-400">Price not available</div>
+
+                          {/* Monthly Pricing */}
+                          <div className="pl-4">
+                            <p className="text-xs text-gray-500 mb-1 uppercase">Monthly</p>
+                            {monthlyPrice ? (
+                              <div>
+                                <div className="flex items-baseline gap-1 mb-1">
+                                  <span className="text-2xl font-bold text-gray-900">{getCurrencySymbol(monthlyPrice)}</span>
+                                  <span className="text-2xl font-bold text-gray-900">
+                                    {(() => {
+                                      const priceValue = typeof monthlyPrice.price === 'number' 
+                                        ? monthlyPrice.price 
+                                        : parseFloat(String(monthlyPrice.price || '0'))
+                                      return priceValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                                    })()}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-600">/mo</p>
+                              </div>
+                            ) : (
+                              <div className="text-xs text-gray-400">N/A</div>
+                            )}
+                          </div>
+                        </div>
+                        {plan.requires_activation && (
+                          <p className="text-xs text-gray-500 mt-2 text-center">+ Activation Fee</p>
                         )}
                       </div>
 
@@ -419,12 +468,33 @@ export default function SubscriptionsPage() {
                         </ul>
                       )}
 
-                      <Button
-                        className="w-full font-semibold py-3 bg-gray-800 hover:bg-gray-900 text-white rounded"
-                        onClick={() => handlePlanClick(plan.slug, billingPeriod === 'weekly' ? 7 : 30)}
-                      >
-                        ► GET STARTED
-                      </Button>
+                      {/* CTA Buttons - Weekly and Monthly */}
+                      <div className="space-y-2">
+                        {weeklyPrice && (
+                          <Button
+                            className="w-full font-semibold py-2 bg-gray-800 hover:bg-gray-900 text-white rounded transition-all duration-300 text-sm"
+                            onClick={() => handlePlanClick(plan.slug, 7)}
+                          >
+                            ► GET WEEKLY PLAN
+                          </Button>
+                        )}
+                        {monthlyPrice && (
+                          <Button
+                            className="w-full font-semibold py-2 bg-[#1e40af] hover:bg-[#1e3a8a] text-white rounded transition-all duration-300 text-sm"
+                            onClick={() => handlePlanClick(plan.slug, 30)}
+                          >
+                            ► GET MONTHLY PLAN
+                          </Button>
+                        )}
+                        {!weeklyPrice && !monthlyPrice && (
+                          <Button
+                            className="w-full font-semibold py-2 bg-gray-800 hover:bg-gray-900 text-white rounded transition-all duration-300 text-sm"
+                            onClick={() => handlePlanClick(plan.slug, 30)}
+                          >
+                            ► GET STARTED
+                          </Button>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 )
