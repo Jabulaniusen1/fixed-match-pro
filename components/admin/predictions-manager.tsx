@@ -606,7 +606,7 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                           variant="outline"
                           size="sm"
                           onClick={() => updateScoresForDate(from, plan.slug)}
-                          disabled={isUpdating || !isPastDate}
+                          disabled={isUpdating}
                           className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium"
                         >
                           {isUpdating ? (

@@ -52,8 +52,17 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
       baseQuery = baseQuery.in('plan_id', planIds)
     }
 
-    // If a specific date is selected, filter by that date
-    if (selectedDate) {
+    // Check if we should look for today's winnings
+    const today = new Date()
+    const todayStr = format(today, 'yyyy-MM-dd')
+    const startOfToday = `${todayStr}T00:00:00.000Z`
+    const endOfToday = `${todayStr}T23:59:59.999Z`
+
+    // Determine if we're looking for today's date
+    const isLookingForToday = !selectedDate || format(selectedDate, 'yyyy-MM-dd') === todayStr
+
+    // If a specific date other than today is selected, filter by that date
+    if (selectedDate && !isLookingForToday) {
       const dateStr = format(selectedDate, 'yyyy-MM-dd')
       const startOfDay = `${dateStr}T00:00:00.000Z`
       const endOfDay = `${dateStr}T23:59:59.999Z`
@@ -72,13 +81,8 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
       return
     }
 
-    // If no date is selected, try to get today's winnings first
-    const today = new Date()
-    const todayStr = format(today, 'yyyy-MM-dd')
-    const startOfToday = `${todayStr}T00:00:00.000Z`
-    const endOfToday = `${todayStr}T23:59:59.999Z`
-
-    // Try to fetch today's winnings
+    // If looking for today's winnings (either no date selected or today is selected)
+    // Try to fetch today's winnings first
     const todayQuery = baseQuery
       .gte('date', startOfToday)
       .lte('date', endOfToday)
@@ -97,47 +101,65 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
       return
     }
 
-    // If no winnings for today, fetch the most recent day's winnings (persist previous games)
-    // Get enough records to find the most recent day
-    const { data, error } = await baseQuery.limit(100)
+    // If no winnings for today, fetch the most recent day's winnings
+    // First, get the most recent winning to find the date
+    let recentQuery = supabase
+      .from('vip_winnings')
+      .select('*')
+      .order('date', { ascending: false })
+      .limit(1)
 
-    if (error) {
-      console.error('Error fetching winnings:', error)
+    if (!showAll && planIds && planIds.length > 0) {
+      recentQuery = recentQuery.in('plan_id', planIds)
+    }
+
+    const { data: recentData, error: recentError } = await recentQuery
+
+    if (recentError) {
+      console.error('Error fetching most recent winnings:', recentError)
       setWinnings([])
       setLoading(false)
       return
     }
 
-    if (!data || data.length === 0) {
+    if (!recentData || recentData.length === 0) {
+      // No winnings at all
       setWinnings([])
       setLoading(false)
       return
     }
 
-    // Type assertion to help TypeScript understand the data structure
-    const winningsData = data as VIPWinning[]
-
-    // Find the most recent date from the fetched winnings
-    // Since data is ordered by date descending, the first item has the most recent date
-    const firstWinning = winningsData[0]
-    if (!firstWinning) {
-      setWinnings([])
-      setLoading(false)
-      return
-    }
-
-    const mostRecentDate = firstWinning.date
-    const mostRecentDateStr = new Date(mostRecentDate).toISOString().split('T')[0]
+    // Get the most recent date
+    const mostRecentWinning = recentData[0] as VIPWinning
+    const mostRecentDate = new Date(mostRecentWinning.date)
+    const mostRecentDateStr = format(mostRecentDate, 'yyyy-MM-dd')
     const startOfMostRecentDay = `${mostRecentDateStr}T00:00:00.000Z`
     const endOfMostRecentDay = `${mostRecentDateStr}T23:59:59.999Z`
 
-    // Filter to show only winnings from the most recent day
-    const previousDayWinnings = winningsData.filter((winning) => {
-      const winningDate = new Date(winning.date).toISOString()
-      return winningDate >= startOfMostRecentDay && winningDate <= endOfMostRecentDay
-    })
+    // Now fetch all winnings from that most recent day
+    let mostRecentDayQuery = supabase
+      .from('vip_winnings')
+      .select('*')
+      .order('date', { ascending: false })
+      .gte('date', startOfMostRecentDay)
+      .lte('date', endOfMostRecentDay)
+      .limit(100)
 
-    setWinnings(previousDayWinnings)
+    if (!showAll && planIds && planIds.length > 0) {
+      mostRecentDayQuery = mostRecentDayQuery.in('plan_id', planIds)
+    }
+
+    const { data: previousDayData, error: previousDayError } = await mostRecentDayQuery
+
+    if (previousDayError) {
+      console.error('Error fetching previous day winnings:', previousDayError)
+      setWinnings([])
+      setLoading(false)
+      return
+    }
+
+    // Show the most recent day's winnings (persist until admin updates with new winnings)
+    setWinnings(previousDayData || [])
     setLoading(false)
   }
 
