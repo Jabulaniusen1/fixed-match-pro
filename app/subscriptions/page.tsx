@@ -105,8 +105,12 @@ export default function SubscriptionsPage() {
   // We'll filter by country in getPriceForCountry function
 
   const handlePlanClick = (planSlug: string, durationDays: number) => {
+    // Users can view the subscriptions page without login
+    // But need to login to subscribe
     if (!user) {
-      router.push('/login')
+      // Redirect to login with return URL to checkout
+      const checkoutUrl = `/checkout?plan=${planSlug}&duration=${durationDays}`
+      router.push(`/login?returnUrl=${encodeURIComponent(checkoutUrl)}`)
     } else {
       router.push(`/checkout?plan=${planSlug}&duration=${durationDays}`)
     }

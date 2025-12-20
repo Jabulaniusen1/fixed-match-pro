@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Eye, EyeOff } from 'lucide-react'
@@ -14,6 +14,7 @@ import { Navbar } from '@/components/layout/navbar'
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -33,8 +34,10 @@ export default function LoginPage() {
       if (error) throw error
 
       toast.success('Logged in successfully!')
-      // Redirect to dashboard after successful login
-      window.location.href = '/dashboard'
+      
+      // Redirect to returnUrl if provided, otherwise to dashboard
+      const returnUrl = searchParams.get('returnUrl')
+      window.location.href = returnUrl || '/dashboard'
     } catch (error: any) {
       toast.error(error.message || 'Failed to login')
     } finally {
