@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { PWAHead } from "@/components/pwa/pwa-head";
+import { CustomerCareChatButton } from "@/components/layout/customer-care-chat-button";
 
 const skranji = Skranji({
   variable: "--font-skranji",
@@ -91,10 +92,11 @@ export default function RootLayout({
         {children}
         <Toaster />
         <InstallPrompt />
+        <CustomerCareChatButton />
         {/* Tawk.to Chat Widget */}
-        <Script
+        {/* <Script
           id="tawk-to-script"
-          strategy="afterInteractive"
+          strategy="afterInteractive" 
           dangerouslySetInnerHTML={{
             __html: `
               var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
@@ -108,7 +110,7 @@ export default function RootLayout({
               })();
             `,
           }}
-        />
+        /> */}
       </body>
     </html>
   );

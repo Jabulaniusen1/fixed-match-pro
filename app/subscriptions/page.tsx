@@ -81,11 +81,7 @@ export default function SubscriptionsPage() {
         .order('created_at')
 
       if (plansData) {
-        // Map plan_prices to prices property and ensure we handle the data structure correctly
-        // This ensures all prices added by admin are available for display
         const plansWithPrices: PlanWithPrice[] = plansData.map((plan: any) => {
-          // Handle both plan_prices (from query) and prices (already mapped)
-          // Filter out any null prices and ensure we have an array
           const prices = (plan.plan_prices || plan.prices || []).filter((p: any) => p !== null)
           return {
             ...plan,
@@ -101,14 +97,9 @@ export default function SubscriptionsPage() {
     fetchData()
   }, [])
 
-  // No need to refetch prices when country changes - prices are already loaded
-  // We'll filter by country in getPriceForCountry function
 
   const handlePlanClick = (planSlug: string, durationDays: number) => {
-    // Users can view the subscriptions page without login
-    // But need to login to subscribe
     if (!user) {
-      // Redirect to login with return URL to checkout
       const checkoutUrl = `/checkout?plan=${planSlug}&duration=${durationDays}`
       router.push(`/login?returnUrl=${encodeURIComponent(checkoutUrl)}`)
     } else {
