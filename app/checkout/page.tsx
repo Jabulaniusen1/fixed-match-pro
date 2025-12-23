@@ -1082,13 +1082,13 @@ function CheckoutContent() {
             <p className="flex items-center justify-center gap-2">
             Can't find your suitable payment method? Contact support team on{' '}
               <a 
-                href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`} 
+                href={`https://leenk-pink.vercel.app/chat/${whatsappNumber.replace(/[^0-9]/g, '')}`} 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-blue-600 hover:underline inline-flex items-center gap-1"
               >
                 <MessageCircle className="h-4 w-4" />
-              WhatsApp
+              Leenk
             </a>
           </p>
         </div>
