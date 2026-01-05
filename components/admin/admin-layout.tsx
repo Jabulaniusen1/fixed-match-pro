@@ -20,7 +20,8 @@ import {
   X,
   BookOpen,
   Trophy,
-  MessageCircle
+  MessageCircle,
+  Link as LinkIcon
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
@@ -81,6 +82,11 @@ const navItems: NavItem[] = [
     href: '/admin/chat',
     label: 'Chat',
     icon: <MessageCircle className="h-5 w-5 lg:h-6 lg:w-6" />
+  },
+  {
+    href: '/admin/ad-links',
+    label: 'Ad Links',
+    icon: <LinkIcon className="h-5 w-5 lg:h-6 lg:w-6" />
   },
   {
     href: '/admin/config',
