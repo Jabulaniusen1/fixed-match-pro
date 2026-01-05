@@ -13,6 +13,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { Plus, Edit, Trash2, ExternalLink, ArrowUp, ArrowDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { Database } from '@/types/database'
+
+type AdLinkUpdate = Database['public']['Tables']['ad_links']['Update']
+type AdLinkInsert = Database['public']['Tables']['ad_links']['Insert']
 
 interface AdLink {
   id: string
@@ -93,16 +97,18 @@ export function AdLinksManager({ adLinks: initialAdLinks }: AdLinksManagerProps)
 
       if (editingLink) {
         // Update existing link
+        const updateData: AdLinkUpdate = {
+          title: linkForm.title.trim(),
+          url: linkForm.url.trim(),
+          description: linkForm.description.trim() || null,
+          display_order: linkForm.display_order,
+          is_active: linkForm.is_active,
+          updated_at: new Date().toISOString(),
+        }
         const { error } = await supabase
           .from('ad_links')
-          .update({
-            title: linkForm.title.trim(),
-            url: linkForm.url.trim(),
-            description: linkForm.description.trim() || null,
-            display_order: linkForm.display_order,
-            is_active: linkForm.is_active,
-            updated_at: new Date().toISOString(),
-          })
+          // @ts-expect-error - Supabase type inference issue
+          .update(updateData)
           .eq('id', editingLink.id)
 
         if (error) throw error
@@ -110,15 +116,17 @@ export function AdLinksManager({ adLinks: initialAdLinks }: AdLinksManagerProps)
         toast.success('Ad link updated successfully!')
       } else {
         // Create new link
+        const insertData: AdLinkInsert = {
+          title: linkForm.title.trim(),
+          url: linkForm.url.trim(),
+          description: linkForm.description.trim() || null,
+          display_order: linkForm.display_order,
+          is_active: linkForm.is_active,
+        }
         const { error } = await supabase
           .from('ad_links')
-          .insert({
-            title: linkForm.title.trim(),
-            url: linkForm.url.trim(),
-            description: linkForm.description.trim() || null,
-            display_order: linkForm.display_order,
-            is_active: linkForm.is_active,
-          })
+          // @ts-expect-error - Supabase type inference issue
+          .insert(insertData)
 
         if (error) throw error
 
@@ -164,12 +172,14 @@ export function AdLinksManager({ adLinks: initialAdLinks }: AdLinksManagerProps)
   const handleToggleActive = async (link: AdLink) => {
     try {
       const supabase = createClient()
+      const updateData: AdLinkUpdate = {
+        is_active: !link.is_active,
+        updated_at: new Date().toISOString(),
+      }
       const { error } = await supabase
         .from('ad_links')
-        .update({
-          is_active: !link.is_active,
-          updated_at: new Date().toISOString(),
-        })
+        // @ts-expect-error - Supabase type inference issue
+        .update(updateData)
         .eq('id', link.id)
 
       if (error) throw error
@@ -195,14 +205,24 @@ export function AdLinksManager({ adLinks: initialAdLinks }: AdLinksManagerProps)
       const supabase = createClient()
 
       // Swap display orders
+      const updateData1: AdLinkUpdate = {
+        display_order: targetLink.display_order,
+        updated_at: new Date().toISOString()
+      }
       await supabase
         .from('ad_links')
-        .update({ display_order: targetLink.display_order, updated_at: new Date().toISOString() })
+        // @ts-expect-error - Supabase type inference issue
+        .update(updateData1)
         .eq('id', link.id)
 
+      const updateData2: AdLinkUpdate = {
+        display_order: link.display_order,
+        updated_at: new Date().toISOString()
+      }
       await supabase
         .from('ad_links')
-        .update({ display_order: link.display_order, updated_at: new Date().toISOString() })
+        // @ts-expect-error - Supabase type inference issue
+        .update(updateData2)
         .eq('id', targetLink.id)
 
       toast.success('Display order updated!')
