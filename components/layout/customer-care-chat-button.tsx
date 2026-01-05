@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 
 export function CustomerCareChatButton() {
   const handleClick = () => {
-    window.open('https://leenk-pink.vercel.app/chat/32466905803', '_blank', 'noopener,noreferrer')
+    window.open('https://leenkchat.vercel.app/32466905803', '_blank', 'noopener,noreferrer')
   }
 
   return (

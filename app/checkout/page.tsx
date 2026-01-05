@@ -169,13 +169,32 @@ function CheckoutContent() {
             .eq('duration_days', selectedDuration)
 
           if (pricesData && pricesData.length > 0) {
-            // Try to find country-specific price first, then fallback to Nigeria, then any price
+            // First priority: Try to find exact country match
             const countryPrice = pricesData.find((p: any) => p.country === countryOption)
             if (countryPrice) {
               setSelectedPrice(countryPrice)
             } else {
-              const nigeriaPrice = pricesData.find((p: any) => p.country === 'Nigeria')
-              setSelectedPrice(nigeriaPrice || pricesData[0])
+              // Second priority: If Nigeria, look for Nigeria-specific price
+              if (countryOption === 'Nigeria') {
+                const nigeriaPrice = pricesData.find((p: any) => p.country === 'Nigeria')
+                if (nigeriaPrice) {
+                  setSelectedPrice(nigeriaPrice)
+                } else {
+                  // Fallback to USD prices for Nigeria if no Nigeria price
+                  const usdPrice = pricesData.find((p: any) => p.duration_days === selectedDuration && (p.currency === 'USD' || p.country === 'Other'))
+                  setSelectedPrice(usdPrice || pricesData[0])
+                }
+              } else {
+                // Third priority: For all other countries, look for USD prices (country = 'Other' or currency = 'USD')
+                const usdPrice = pricesData.find((p: any) => p.duration_days === selectedDuration && (p.currency === 'USD' || p.country === 'Other'))
+                if (usdPrice) {
+                  setSelectedPrice(usdPrice)
+                } else {
+                  // Fallback: try to find any price with USD currency
+                  const currencyPrice = pricesData.find((p: any) => p.duration_days === selectedDuration && p.currency === 'USD')
+                  setSelectedPrice(currencyPrice || pricesData[0])
+                }
+              }
             }
           } else {
             // No price found
@@ -252,13 +271,32 @@ function CheckoutContent() {
         .eq('duration_days', selectedDuration)
 
       if (pricesData && pricesData.length > 0) {
-        // Try to find country-specific price first, then fallback to Nigeria, then any price
+        // First priority: Try to find exact country match
         const countryPrice = pricesData.find((p: any) => p.country === countryOption)
         if (countryPrice) {
           setSelectedPrice(countryPrice)
         } else {
-          const nigeriaPrice = pricesData.find((p: any) => p.country === 'Nigeria')
-          setSelectedPrice(nigeriaPrice || pricesData[0])
+          // Second priority: If Nigeria, look for Nigeria-specific price
+          if (countryOption === 'Nigeria') {
+            const nigeriaPrice = pricesData.find((p: any) => p.country === 'Nigeria')
+            if (nigeriaPrice) {
+              setSelectedPrice(nigeriaPrice)
+            } else {
+              // Fallback to USD prices for Nigeria if no Nigeria price
+              const usdPrice = pricesData.find((p: any) => p.duration_days === selectedDuration && (p.currency === 'USD' || p.country === 'Other'))
+              setSelectedPrice(usdPrice || pricesData[0])
+            }
+          } else {
+            // Third priority: For all other countries, look for USD prices (country = 'Other' or currency = 'USD')
+            const usdPrice = pricesData.find((p: any) => p.duration_days === selectedDuration && (p.currency === 'USD' || p.country === 'Other'))
+            if (usdPrice) {
+              setSelectedPrice(usdPrice)
+            } else {
+              // Fallback: try to find any price with USD currency
+              const currencyPrice = pricesData.find((p: any) => p.duration_days === selectedDuration && p.currency === 'USD')
+              setSelectedPrice(currencyPrice || pricesData[0])
+            }
+          }
         }
       } else {
         // No price found
@@ -567,14 +605,14 @@ function CheckoutContent() {
     
     // Fallback to country-based currency
     const countryOption = mapCountryToOption(selectedCountry)
-    if (countryOption === 'Nigeria' || countryOption === 'Other') {
+    if (countryOption === 'Nigeria') {
       return '₦'
     } else if (countryOption === 'Ghana') {
       return '₵'
     } else if (countryOption === 'Kenya') {
       return 'KSh'
     }
-    return '₦' // Default to Naira
+    return '$' // Default to USD instead of Naira
   }
   const currency = getCurrencySymbol()
 
@@ -1082,7 +1120,7 @@ function CheckoutContent() {
             <p className="flex items-center justify-center gap-2">
             Can't find your suitable payment method? Contact support team on{' '}
               <a 
-                href={`https://leenk-pink.vercel.app/chat/${whatsappNumber.replace(/[^0-9]/g, '')}`} 
+                href={`https://leenkchat.vercel.app/${whatsappNumber.replace(/[^0-9]/g, '')}`} 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-blue-600 hover:underline inline-flex items-center gap-1"

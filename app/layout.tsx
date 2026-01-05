@@ -86,7 +86,7 @@ export default function RootLayout({
         {/* <script
           src="https://nordan-backend-production.up.railway.app/public/widget.js"
           defer
-          {...({ nordankey: "drQsq8VSVOimI" } as any)}
+          {...({ nordankey: "drsQsq8VSVOimI" } as any)}
         /> */}
         <PWAHead />
         {children}
