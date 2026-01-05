@@ -294,8 +294,8 @@ export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsMana
                   onClick={() => handleDateTypeChange('all')}
                   className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                     dateFilter.dateType === 'all'
-                      ? 'bg-[#1e40af] text-white'
-                      : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                      ? 'bg-[#1e3a8a] text-white'
+                      : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                   }`}
                 >
                   All
@@ -306,8 +306,8 @@ export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsMana
                   onClick={handlePreviousDays}
                   className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                     dateFilter.dateType === 'previous'
-                      ? 'bg-[#1e40af] text-white'
-                      : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                      ? 'bg-[#1e3a8a] text-white'
+                      : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                   }`}
                 >
                   Previous {dateFilter.dateType === 'previous' && dateFilter.daysBack > 1 ? `(${dateFilter.daysBack})` : ''}
@@ -318,8 +318,8 @@ export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsMana
                   onClick={() => handleDateTypeChange('today')}
                   className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                     dateFilter.dateType === 'today'
-                      ? 'bg-[#1e40af] text-white'
-                      : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                      ? 'bg-[#1e3a8a] text-white'
+                      : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                   }`}
                 >
                   Today
@@ -330,8 +330,8 @@ export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsMana
                   onClick={() => handleDateTypeChange('tomorrow')}
                   className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                     dateFilter.dateType === 'tomorrow'
-                      ? 'bg-[#1e40af] text-white'
-                      : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                      ? 'bg-[#1e3a8a] text-white'
+                      : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                   }`}
                 >
                   Tomorrow
@@ -345,7 +345,7 @@ export function VIPWinsManager({ winnings: initialWinnings, plans }: VIPWinsMana
                     size="sm"
                     className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium ${
                       dateFilter.dateType === 'custom'
-                        ? 'bg-[#1e40af] text-white'
+                        ? 'bg-[#1e3a8a] text-white'
                         : ''
                     }`}
                   >

@@ -161,7 +161,7 @@ export function DashboardContent({
           <CardHeader className="flex flex-row items-center justify-between space-y-0 lg:pb-2 p-4">
             <CardTitle className="text-sm font-medium text-gray-600">Total Subscriptions</CardTitle>
             <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-              <Crown className="h-4 w-4 text-[#1e40af]" />
+              <Crown className="h-4 w-4 text-[#1e3a8a]" />
             </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
@@ -224,7 +224,7 @@ export function DashboardContent({
                 {activeSubscriptions > 0 && (
                   <Button
                     size="sm"
-                    className="bg-[#1e40af] hover:bg-[#1e3a8a] text-white text-xs"
+                    className="bg-[#1e3a8a] hover:bg-[#1e3a8a] text-white text-xs"
                     onClick={() => router.push('/dashboard/predictions')}
                   >
                     View Predictions
@@ -303,7 +303,7 @@ export function DashboardContent({
                           {isActive && (
                             <Button
                               size="sm"
-                              className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e40af] text-white"
+                              className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e3a8a] text-white"
                               onClick={() => router.push('/dashboard/predictions')}
                             >
                               View Predictions
@@ -338,7 +338,7 @@ export function DashboardContent({
                   {activeSubscriptions === 0 && subscriptions.some((s) => s.plan_status === 'pending' || s.plan_status === 'pending_activation') && (
                     <div className="text-center pt-4 border-t">
                       <Button
-                        className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e40af] text-white font-bold"
+                        className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e3a8a] text-white font-bold"
                         onClick={() => router.push('/subscriptions')}
                       >
                         <Crown className="h-4 w-4 mr-2" />
@@ -350,7 +350,7 @@ export function DashboardContent({
                   {activeSubscriptions > 0 && (
                     <div className="text-center pt-4 border-t">
                   <Button
-                    className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e40af] text-white font-bold"
+                    className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e3a8a] text-white font-bold"
                     onClick={() => router.push('/dashboard/predictions')}
                   >
                         View All Predictions
@@ -368,7 +368,7 @@ export function DashboardContent({
                       You don't have any subscriptions. Subscribe now to unlock premium features and access exclusive content.
                     </p>
                     <Button
-                      className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e40af] text-white font-bold text-sm lg:text-base"
+                      className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e3a8a] text-white font-bold text-sm lg:text-base"
                       onClick={() => router.push('/subscriptions')}
                     >
                       <Crown className="h-4 w-4 mr-2" />
@@ -395,14 +395,14 @@ export function DashboardContent({
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-blue-100 rounded-lg">
-                    <Lock className="h-5 w-5 text-[#1e40af]" />
+                    <Lock className="h-5 w-5 text-[#1e3a8a]" />
                   </div>
                   <div className="text-left">
                     <div className="font-semibold text-sm">Change Password</div>
                     <div className="text-xs text-gray-500">Update your account password</div>
                   </div>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#1e40af] transition-colors flex-shrink-0" />
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#1e3a8a] transition-colors flex-shrink-0" />
               </button>
             </CardContent>
           </Card>
@@ -422,7 +422,7 @@ export function DashboardContent({
               <Button
                 className="w-full bg-red-500 hover:bg-red-600 text-white"
                 onClick={() => {
-                  window.location.href = 'mailto:support@predictsafe.com'
+                  window.location.href = 'mailto:support@fixedmatchpro.com'
                 }}
               >
                 <MessageCircle className="h-4 w-4 mr-2" />

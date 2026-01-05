@@ -28,7 +28,7 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions) {
     const transporter = createTransporter()
 
     const mailOptions = {
-      from: `"PredictSafe" <${process.env.SMTP_USER}>`,
+      from: `"Fixed Match Pro" <${process.env.SMTP_USER}>`,
       to,
       subject,
       html,
@@ -47,8 +47,8 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions) {
 // Email templates
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 const BRAND_COLORS = {
-  primary: '#1e40af',
-  primaryDark: '#1e3a8a',
+  primary: '#1e3a8a',
+  primaryDark: '#0f172a',
   green: '#22c55e',
   greenDark: '#16a34a',
   orange: '#f97316',
@@ -157,7 +157,7 @@ const baseStyles = getEmailStyles(BRAND_COLORS.primary, BRAND_COLORS.primaryDark
 
 export const emailTemplates = {
   userWelcome: (fullName?: string | null) => ({
-    subject: 'Welcome to PredictSafe!',
+    subject: 'Welcome to Fixed Match Pro!',
     html: `
       <!DOCTYPE html>
       <html>
@@ -174,7 +174,7 @@ export const emailTemplates = {
             </div>
             <div class="content">
               <p>Hello${fullName ? ` ${fullName}` : ''},</p>
-                <p>Thank you for signing up to <strong style="color: ${BRAND_COLORS.primary};">PredictSafe</strong>.</p>
+                <p>Thank you for signing up to <strong style="color: ${BRAND_COLORS.primary};">Fixed Match Pro</strong>.</p>
               <p>You're all set to start exploring premium predictions, VIP plans, and tools to help you win more consistently.</p>
                 <div style="text-align: center;">
                   <a href="${SITE_URL}/dashboard" class="button">Go to Dashboard</a>
@@ -182,7 +182,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>The PredictSafe Team</p>
+                <p>The Fixed Match Pro Team</p>
               </div>
             </div>
           </div>
@@ -214,7 +214,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>The PredictSafe Team</p>
+                <p>The Fixed Match Pro Team</p>
               </div>
             </div>
           </div>
@@ -249,7 +249,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>The PredictSafe Team</p>
+                <p>The Fixed Match Pro Team</p>
               </div>
             </div>
           </div>
@@ -284,7 +284,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>The PredictSafe Team</p>
+                <p>The Fixed Match Pro Team</p>
               </div>
             </div>
           </div>
@@ -319,7 +319,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>The PredictSafe Team</p>
+                <p>The Fixed Match Pro Team</p>
               </div>
             </div>
           </div>
@@ -354,7 +354,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>The PredictSafe Team</p>
+                <p>The Fixed Match Pro Team</p>
               </div>
             </div>
           </div>
@@ -393,7 +393,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>PredictSafe System</p>
+                <p>Fixed Match Pro System</p>
               </div>
             </div>
           </div>
@@ -428,7 +428,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>The PredictSafe Team</p>
+                <p>The Fixed Match Pro Team</p>
               </div>
             </div>
           </div>
@@ -469,7 +469,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>PredictSafe System</p>
+                <p>Fixed Match Pro System</p>
               </div>
             </div>
           </div>
@@ -514,7 +514,7 @@ export const emailTemplates = {
               </div>
               <div class="footer">
                 <p><strong>Best regards,</strong></p>
-                <p>The PredictSafe Team</p>
+                <p>The Fixed Match Pro Team</p>
                 <p style="margin-top: 12px; font-size: 13px;">If you have any questions, please contact our support team.</p>
               </div>
             </div>

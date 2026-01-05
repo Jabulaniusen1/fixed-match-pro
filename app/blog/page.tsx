@@ -10,8 +10,8 @@ import { getPlainTextExcerpt, stripHtmlTags } from '@/lib/utils/html'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Football Betting Tips & Predictions Blog | PredictSafe',
-  description: 'Read expert football betting tips, predictions analysis, and betting strategies. Stay updated with the latest insights from PredictSafe\'s team of betting experts.',
+  title: 'Football Betting Tips & Predictions Blog | Fixed Match Pro',
+  description: 'Read expert football betting tips, predictions analysis, and betting strategies. Stay updated with the latest insights from Fixed Match Pro\'s team of betting experts.',
   keywords: [
     'football betting blog',
     'betting tips blog',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     'football prediction analysis'
   ],
   openGraph: {
-    title: 'Football Betting Tips & Predictions Blog | PredictSafe',
+    title: 'Football Betting Tips & Predictions Blog | Fixed Match Pro',
     description: 'Read expert football betting tips, predictions analysis, and betting strategies.',
     type: 'website',
   },
@@ -57,7 +57,7 @@ export default async function BlogPage() {
     <PageLayout>
       <div className="container mx-auto px-4 py-8 lg:py-16">
         <div className="mb-8 lg:mb-12 text-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 lg:mb-4 text-[#1e40af]">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 lg:mb-4 text-[#1e3a8a]">
             Our Blog
           </h1>
           <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
@@ -106,7 +106,7 @@ export default async function BlogPage() {
                   </div>
                 )}
                 <CardHeader className="bg-white p-4 lg:p-6 flex-1">
-                  <CardTitle className="line-clamp-2 text-lg lg:text-xl font-bold text-[#1e40af] mb-2">
+                  <CardTitle className="line-clamp-2 text-lg lg:text-xl font-bold text-[#1e3a8a] mb-2">
                     {post.title}
                   </CardTitle>
                   <CardDescription className="line-clamp-3 text-sm lg:text-base text-gray-600 mb-4">
@@ -121,7 +121,7 @@ export default async function BlogPage() {
                 <CardContent className="bg-gray-50 p-4 lg:p-6">
                   <Button
                     asChild
-                    className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e40af] text-white font-bold text-sm lg:text-base w-full"
+                    className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e3a8a] text-white font-bold text-sm lg:text-base w-full"
                   >
                     <Link href={`/blog/${post.id}`}>Read More</Link>
                   </Button>

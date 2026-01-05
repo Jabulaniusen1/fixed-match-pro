@@ -126,7 +126,7 @@ export function InstallPrompt() {
             <div className="flex-shrink-0">
               <Image
                 src="/logo.png"
-                alt="PredictSafe Logo"
+                alt="Fixed Match Pro Logo"
                 width={64}
                 height={64}
                 className="w-16 h-16 rounded-lg"
@@ -134,7 +134,7 @@ export function InstallPrompt() {
             </div>
             <div className="flex-1">
               <h3 className="text-xl font-bold text-gray-900 mb-1">
-                Install PredictSafe App
+                Install Fixed Match Pro App
               </h3>
               <p className="text-sm text-gray-600">
                 Get faster access and a better experience with our mobile app
@@ -192,7 +192,7 @@ export function InstallPrompt() {
               </Button>
               <Button
                 onClick={handleInstall}
-                className="flex-1 bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e40af]"
+                className="flex-1 bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e3a8a]"
               >
                 <Download className="h-4 w-4 mr-2" />
                 Install App

@@ -4,7 +4,7 @@ import { PageLayout } from '@/components/layout/page-layout'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Match Analysis & Predictions | PredictSafe',
+  title: 'Match Analysis & Predictions | Fixed Match Pro',
   description: 'Detailed football match analysis, statistics, head-to-head records, and expert predictions. Get comprehensive match insights before placing your bets.',
   keywords: [
     'football match analysis',

@@ -244,7 +244,7 @@ export default function SubscriptionsPage() {
                 >
                   <Card 
                     className={`h-full flex flex-col bg-white border border-gray-200 shadow-sm transition-all duration-300 ${
-                      isPopular ? 'border-[#1e40af] border-2' : ''
+                      isPopular ? 'border-[#1e3a8a] border-2' : ''
                     }`}
                   >
                     <CardHeader className="pb-4 pt-6 px-6 bg-white">
@@ -327,13 +327,13 @@ export default function SubscriptionsPage() {
                           <ul className="space-y-2.5">
                             {plan.benefits.map((benefit, idx) => (
                               <li key={idx} className="flex items-start gap-2">
-                                <Check className="h-4 w-4 text-[#1e40af] flex-shrink-0 mt-0.5" />
+                                <Check className="h-4 w-4 text-[#1e3a8a] flex-shrink-0 mt-0.5" />
                                 <span className="text-sm text-gray-900">{benefit}</span>
                               </li>
                             ))}
                             {plan.max_predictions_per_day && (
                               <li className="flex items-start gap-2">
-                                <Check className="h-4 w-4 text-[#1e40af] flex-shrink-0 mt-0.5" />
+                                <Check className="h-4 w-4 text-[#1e3a8a] flex-shrink-0 mt-0.5" />
                                 <span className="text-sm text-gray-900">
                                   Up to {plan.max_predictions_per_day} predictions per day
                                 </span>
@@ -355,7 +355,7 @@ export default function SubscriptionsPage() {
                         )}
                         {monthlyPrice && (
                           <Button
-                            className="w-full font-semibold py-2 bg-[#1e40af] hover:bg-[#1e3a8a] text-white rounded transition-all duration-300 text-sm"
+                            className="w-full font-semibold py-2 bg-[#1e3a8a] hover:bg-[#1e3a8a] text-white rounded transition-all duration-300 text-sm"
                             onClick={() => handlePlanClick(plan.slug, 30)}
                           >
                             ► GET MONTHLY PLAN
@@ -381,7 +381,7 @@ export default function SubscriptionsPage() {
             {/* Additional Plans if more than 4 */}
             {plans.length > 4 && (
           <div className="mt-12">
-            <h3 className="text-2xl font-bold text-center mb-8 text-[#1e40af]">Additional Plans</h3>
+            <h3 className="text-2xl font-bold text-center mb-8 text-[#1e3a8a]">Additional Plans</h3>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {plans.slice(4).map((plan) => {
                 const weeklyPrice = getPriceForCountry(plan, 7)
@@ -456,7 +456,7 @@ export default function SubscriptionsPage() {
                         <ul className="flex-1 space-y-2 mb-6">
                           {plan.benefits.slice(0, 3).map((benefit, idx) => (
                             <li key={idx} className="flex items-start gap-2">
-                              <Check className="h-4 w-4 text-[#1e40af] flex-shrink-0 mt-0.5" />
+                              <Check className="h-4 w-4 text-[#1e3a8a] flex-shrink-0 mt-0.5" />
                               <span className="text-sm text-gray-900">{benefit}</span>
                             </li>
                           ))}
@@ -475,7 +475,7 @@ export default function SubscriptionsPage() {
                         )}
                         {monthlyPrice && (
                           <Button
-                            className="w-full font-semibold py-2 bg-[#1e40af] hover:bg-[#1e3a8a] text-white rounded transition-all duration-300 text-sm"
+                            className="w-full font-semibold py-2 bg-[#1e3a8a] hover:bg-[#1e3a8a] text-white rounded transition-all duration-300 text-sm"
                             onClick={() => handlePlanClick(plan.slug, 30)}
                           >
                             ► GET MONTHLY PLAN

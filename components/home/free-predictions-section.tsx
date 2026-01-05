@@ -497,8 +497,29 @@ export function FreePredictionsSection() {
   }
 
   return (
-    <section className="py-4 lg:py-8 bg-white">
-      <div className="container mx-auto px-4">
+    <section className="py-8 lg:py-12 bg-white">
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Section Header */}
+        <div className="mb-8 lg:mb-12 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1e3a8a] mb-3">
+            Free Football Predictions
+          </h2>
+          <p className="text-base lg:text-lg text-gray-600 max-w-3xl mx-auto mb-6">
+            Get expert predictions for today's matches. Test our accuracy with free tips before upgrading to VIP.
+          </p>
+          {/* Quick Stats */}
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-6">
+            <div className="flex items-center gap-2 bg-[#1e3a8a]/10 px-4 py-2 rounded-full">
+              <span className="text-lg font-bold text-[#1e3a8a]">{predictions.length}</span>
+              <span className="text-sm text-gray-700">Predictions Today</span>
+            </div>
+            <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full">
+              <span className="text-lg font-bold text-[#22c55e]">85%+</span>
+              <span className="text-sm text-gray-700">Win Rate</span>
+            </div>
+          </div>
+        </div>
+
         {/* Mobile Header */}
         <div className="mb-4 lg:hidden">
           {/* Mobile Filters - Moved before title */}
@@ -521,10 +542,10 @@ export function FreePredictionsSection() {
                   <button
                     key={filter.id}
                     onClick={() => handleFilterChange(filter.id)}
-                    className={`text-xs font-semibold rounded-md transition-all px-2 py-2.5 ${colSpan
+                    className={`text-xs font-semibold rounded-md transition-all px-2 py-3 ${colSpan
                       } ${isActive
-                        ? 'bg-[#1e40af] text-white'
-                        : 'bg-white text-gray-600 hover:text-[#1e40af]'
+                        ? 'bg-[#1e3a8a] text-white'
+                        : 'bg-white text-gray-600 hover:text-[#1e3a8a]'
                     }`}
                   >
                     {filter.label}
@@ -545,8 +566,8 @@ export function FreePredictionsSection() {
                   variant="outline"
                   className={cn(
                     "px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all justify-start text-left font-normal",
-                    !customDate && dateType !== 'custom' && "text-gray-600 hover:text-[#1e40af] hover:bg-white",
-                    (customDate || dateType === 'custom') && "bg-[#1e40af] text-white shadow-sm"
+                    !customDate && dateType !== 'custom' && "text-gray-600 hover:text-[#1e3a8a] hover:bg-white",
+                    (customDate || dateType === 'custom') && "bg-[#1e3a8a] text-white shadow-sm"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -575,8 +596,8 @@ export function FreePredictionsSection() {
                 setDaysBack(0)
               }}
               className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${dateType === 'today'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                  ? 'bg-[#1e3a8a] text-white shadow-sm'
+                  : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
               }`}
             >
               Today
@@ -588,8 +609,8 @@ export function FreePredictionsSection() {
                 setDaysBack(0)
               }}
               className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${dateType === 'tomorrow'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                  ? 'bg-[#1e3a8a] text-white shadow-sm'
+                  : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
               }`}
             >
               Tomorrow
@@ -598,17 +619,17 @@ export function FreePredictionsSection() {
         </div>
 
         {/* Desktop Header */}
-        <div className="mb-4 lg:mb-8 hidden lg:block">
-          {/* Desktop Filters - Moved before title */}
-          <div className="mb-4">
+        <div className="mb-6 lg:mb-10 hidden lg:block">
+          {/* Desktop Filters */}
+          <div className="mb-6">
             <Tabs value={selectedFilter} onValueChange={handleFilterChange}>
               <div className="overflow-x-auto">
-                <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9 bg-gray-100 p-1 rounded-lg min-w-[500px] lg:min-w-0">
+                <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9 bg-gray-100 rounded-xl min-w-[500px] lg:min-w-0 shadow-sm">
                   {FILTERS.map((filter) => (
                     <TabsTrigger 
                       key={filter.id} 
                       value={filter.id} 
-                      className="text-xs sm:text-sm font-semibold data-[state=active]:bg-[#1e40af] data-[state=active]:text-white rounded-md transition-all px-2 lg:px-4"
+                      className="text-xs sm:text-sm font-semibold data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=active]:shadow-md rounded-lg transition-all px-3 lg:px-4 py-2"
                     >
                       {filter.label}
                     </TabsTrigger>
@@ -617,16 +638,14 @@ export function FreePredictionsSection() {
               </div>
             </Tabs>
           </div>
-          
-          
         </div>
 
-        <div className="mb-4 lg:mb-8 hidden lg:flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="mb-6 lg:mb-8 hidden lg:flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 lg:mb-2 text-[#1e40af]">{getFilterLabel()}</h2>
-          <p className="text-sm lg:text-base text-gray-600">
-            Get expert predictions for {getCurrentDate().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}'s matches
-          </p>
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 text-gray-900">{getFilterLabel()}</h3>
+            <p className="text-sm lg:text-base text-gray-600">
+              {getCurrentDate().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
           </div>
           <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
             <Popover>
@@ -635,8 +654,8 @@ export function FreePredictionsSection() {
                   variant="outline"
                   className={cn(
                     "px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all justify-start text-left font-normal",
-                    !customDate && dateType !== 'custom' && "text-gray-600 hover:text-[#1e40af] hover:bg-white",
-                    (customDate || dateType === 'custom') && "bg-[#1e40af] text-white shadow-sm"
+                    !customDate && dateType !== 'custom' && "text-gray-600 hover:text-[#1e3a8a] hover:bg-white",
+                    (customDate || dateType === 'custom') && "bg-[#1e3a8a] text-white shadow-sm"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -665,8 +684,8 @@ export function FreePredictionsSection() {
                 setDaysBack(0)
               }}
               className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${dateType === 'today'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                  ? 'bg-[#1e3a8a] text-white shadow-sm'
+                  : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
               }`}
             >
               Today
@@ -678,8 +697,8 @@ export function FreePredictionsSection() {
                 setDaysBack(0)
               }}
               className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${dateType === 'tomorrow'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                  ? 'bg-[#1e3a8a] text-white shadow-sm'
+                  : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
               }`}
             >
               Tomorrow
@@ -712,7 +731,7 @@ export function FreePredictionsSection() {
                   </div>
 
                   {/* Header Bar */}
-                  <div className="bg-[#1e40af] text-white px-3 py-2 rounded grid grid-cols-3 gap-2 text-xs font-semibold">
+                  <div className="bg-[#1e3a8a] text-white px-3 py-2 rounded grid grid-cols-3 gap-2 text-xs font-semibold">
                     <div>Tip</div>
                     <div className="text-center">Odd</div>
                     <div className="text-center">Confidence</div>
@@ -784,7 +803,7 @@ export function FreePredictionsSection() {
                     const matchId = `${prediction.match_id}-${prediction.prediction_type}`
                     window.location.href = `/match/${encodeURIComponent(matchId)}`
                   }}
-                  className="bg-gray-100 rounded-lg p-3 space-y-2 cursor-pointer hover:bg-gray-200 transition-colors"
+                  className="bg-white border-2 border-gray-200 rounded-xl p-4 space-y-3 cursor-pointer hover:border-[#1e3a8a] hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
                 >
                   {/* Top Row: Time and Home Team */}
                   <div className="flex items-center justify-between">
@@ -856,7 +875,7 @@ export function FreePredictionsSection() {
                   )}
 
                   {/* Header Bar */}
-                  <div className="bg-[#1e40af] text-white px-2 py-2 rounded grid grid-cols-5 gap-1 text-[10px] sm:text-xs font-semibold">
+                  <div className="bg-[#1e3a8a] text-white px-2 py-2 rounded grid grid-cols-5 gap-1 text-[10px] sm:text-xs font-semibold">
                     <div className="text-center">Status</div>
                     <div className="text-center">Tip</div>
                     <div className="text-center">Score</div>
@@ -901,9 +920,9 @@ export function FreePredictionsSection() {
             </div>
 
             {/* Desktop View */}
-            <div className="hidden lg:block space-y-0 border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-lg">
+            <div className="hidden lg:block space-y-0 border-2 border-gray-200 rounded-2xl overflow-hidden bg-white shadow-xl">
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
+            <div className="bg-gradient-to-r from-[#1e3a8a] via-[#1e3a8a] to-[#0f172a] text-white px-3 sm:px-4 lg:px-6 py-4 lg:py-5 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-lg">
               <div className="col-span-2 lg:col-span-2">Time & League</div>
               <div className="col-span-4">Teams</div>
               <div className="col-span-1 text-center hidden sm:block">Score</div>
@@ -922,9 +941,9 @@ export function FreePredictionsSection() {
                         window.location.href = `/match/${encodeURIComponent(matchId)}`
                       }}
                       className={cn(
-                        'px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 grid grid-cols-12 gap-2 lg:gap-4 items-center border-b border-gray-100 bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 hover:shadow-md transition-all duration-300 cursor-pointer transform hover:scale-[1.01] hover:border-l-4 hover:border-l-[#22c55e]',
+                        'px-3 sm:px-4 lg:px-6 py-4 sm:py-5 lg:py-6 grid grid-cols-12 gap-2 lg:gap-4 items-center border-b border-gray-100 bg-white hover:bg-gradient-to-r hover:from-blue-50/80 hover:to-green-50/80 hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-[1.01] hover:border-l-4 hover:border-l-[#22c55e]',
                         index === predictions.length - 1 && 'border-b-0',
-                        index % 2 === 0 && 'bg-gray-50/50'
+                        index % 2 === 0 && 'bg-gray-50/30'
                       )}
                     >
                       {/* Time & League */}

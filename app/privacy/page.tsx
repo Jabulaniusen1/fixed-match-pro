@@ -7,21 +7,21 @@ export default function PrivacyPage() {
       <Navbar />
       <main className="flex-1 bg-gray-50">
       <div className="container mx-auto px-4 py-8 lg:py-16 max-w-4xl">
-        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Privacy Policy — PredictSafe</h1>
+        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Privacy Policy — Fixed Match Pro</h1>
         <p className="text-sm text-gray-600 mb-8">Last Updated: {new Date().toLocaleDateString()}</p>
 
         <div className="prose prose-lg max-w-none space-y-6 text-gray-700">
           <section>
             <p className="text-base lg:text-lg leading-relaxed">
-              PredictSafe ("we", "our", "us") is committed to protecting your personal information and ensuring transparency in how we collect, use, store, and safeguard your data. By using our website, mobile app, or services ("Services"), you consent to the practices outlined in this Privacy Policy.
+              Fixed Match Pro ("we", "our", "us") is committed to protecting your personal information and ensuring transparency in how we collect, use, store, and safeguard your data. By using our website, mobile app, or services ("Services"), you consent to the practices outlined in this Privacy Policy.
             </p>
             <p className="text-base lg:text-lg leading-relaxed font-semibold mt-4">
-              If you do not agree with our Privacy Policy, please discontinue using PredictSafe.
+              If you do not agree with our Privacy Policy, please discontinue using Fixed Match Pro.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">1. Information We Collect</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">1. Information We Collect</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">We may collect the following categories of information:</p>
             
             <h3 className="text-xl font-semibold mt-6 mb-3">1.1. Personal Information Provided by You</h3>
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
             </ul>
 
             <h3 className="text-xl font-semibold mt-6 mb-3">1.2. Automatically Collected Information</h3>
-            <p className="text-base lg:text-lg leading-relaxed mb-4">When you access PredictSafe, we automatically collect:</p>
+            <p className="text-base lg:text-lg leading-relaxed mb-4">When you access Fixed Match Pro, we automatically collect:</p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>Device information (mobile, tablet, browser type)</li>
               <li>IP address & approximate location</li>
@@ -51,8 +51,8 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">2. How We Use Your Information</h2>
-            <p className="text-base lg:text-lg leading-relaxed mb-4">PredictSafe uses your information to:</p>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">2. How We Use Your Information</h2>
+            <p className="text-base lg:text-lg leading-relaxed mb-4">Fixed Match Pro uses your information to:</p>
             
             <h3 className="text-xl font-semibold mt-6 mb-3">2.1. Provide and Improve Services</h3>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
@@ -89,8 +89,8 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">3. Cookies & Tracking Technologies</h2>
-            <p className="text-base lg:text-lg leading-relaxed mb-4">PredictSafe uses cookies to:</p>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">3. Cookies & Tracking Technologies</h2>
+            <p className="text-base lg:text-lg leading-relaxed mb-4">Fixed Match Pro uses cookies to:</p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>Keep you logged in</li>
               <li>Remember your preferences</li>
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">4. Sharing of Information</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">4. Sharing of Information</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">We only share your information with trusted third parties when necessary:</p>
             
             <h3 className="text-xl font-semibold mt-6 mb-3">4.1. Payment Processors</h3>
@@ -124,12 +124,12 @@ export default function PrivacyPage() {
             </ul>
 
             <p className="text-base lg:text-lg leading-relaxed mt-4 font-semibold">
-              PredictSafe does not sell personal information to marketers or advertisers.
+              Fixed Match Pro does not sell personal information to marketers or advertisers.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">5. Data Security</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">5. Data Security</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">We implement strict security measures to protect your data:</p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>Encrypted communication (HTTPS & SSL)</li>
@@ -144,7 +144,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">6. Data Retention</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">6. Data Retention</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">We retain your information only for as long as needed to:</p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>Provide services</li>
@@ -157,7 +157,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">7. User Rights</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">7. User Rights</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">Depending on your country, you may have the right to:</p>
             <ul className="list-none space-y-2 text-base lg:text-lg">
               <li className="flex items-start gap-2">
@@ -191,31 +191,31 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">8. Children's Privacy</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">8. Children's Privacy</h2>
             <p className="text-base lg:text-lg leading-relaxed">
-              PredictSafe is not intended for users under 18. We do not knowingly collect information from minors. If a minor registers, the account will be deleted immediately.
+              Fixed Match Pro is not intended for users under 18. We do not knowingly collect information from minors. If a minor registers, the account will be deleted immediately.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">9. Third-Party Links</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">9. Third-Party Links</h2>
             <p className="text-base lg:text-lg leading-relaxed">
-              PredictSafe may contain links to third-party websites (Telegram, Facebook, payment gateways, etc.). We are not responsible for the privacy practices of these external sites. We advise users to review third-party policies before sharing any information.
+              Fixed Match Pro may contain links to third-party websites (Telegram, Facebook, payment gateways, etc.). We are not responsible for the privacy practices of these external sites. We advise users to review third-party policies before sharing any information.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">10. Changes to This Privacy Policy</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">10. Changes to This Privacy Policy</h2>
             <p className="text-base lg:text-lg leading-relaxed">
               We may update this Privacy Policy occasionally. Any changes become effective immediately upon posting. We encourage you to review this page regularly.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">11. Contact Us</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">11. Contact Us</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">For questions, concerns, or requests regarding your data:</p>
             <ul className="list-none space-y-2 text-base lg:text-lg">
-              <li>📩 Support Email: <a href="mailto:predictsafe@gmail.com" className="text-[#1e40af] hover:underline">predictsafe@gmail.com</a></li>
+              <li>📩 Support Email: <a href="mailto:fixedmatchpro@gmail.com" className="text-[#1e3a8a] hover:underline">fixedmatchpro@gmail.com</a></li>
             </ul>
           </section>
         </div>

@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Frequently Asked Questions | PredictSafe',
-  description: 'Get answers to common questions about PredictSafe, our VIP packages, predictions, subscriptions, and betting tips. Learn how to get started with our premium football prediction service.',
+  title: 'Frequently Asked Questions | Fixed Match Pro',
+  description: 'Get answers to common questions about Fixed Match Pro, our VIP packages, predictions, subscriptions, and betting tips. Learn how to get started with our premium football prediction service.',
   keywords: [
     'football predictions FAQ',
     'betting tips questions',
@@ -30,16 +30,16 @@ export default function FAQPage() {
       <main className="flex-1 bg-gray-50">
         <div className="container mx-auto px-4 py-8 lg:py-16 max-w-4xl">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Frequently Asked Questions (FAQ)</h1>
-          <p className="text-base lg:text-lg text-gray-600 mb-8">Everything you need to know about PredictSafe and our premium plans.</p>
+          <p className="text-base lg:text-lg text-gray-600 mb-8">Everything you need to know about Fixed Match Pro and our premium plans.</p>
 
           <div className="space-y-6">
             <Card className="border-2 border-gray-200 shadow-sm">
               <CardHeader className="p-5 border-b border-gray-200">
-                <CardTitle className="text-lg font-semibold">1. What is PredictSafe?</CardTitle>
+                <CardTitle className="text-lg font-semibold">1. What is Fixed Match Pro?</CardTitle>
               </CardHeader>
               <CardContent className="p-5">
                 <p className="text-base lg:text-lg text-gray-700 leading-relaxed">
-                  PredictSafe is a premium football prediction platform delivering highly analyzed sports predictions using advanced statistics, AI models, and professional expert review. We offer four major VIP packages designed for different betting strategies.
+                  Fixed Match Pro is a premium football prediction platform delivering highly analyzed sports predictions using advanced statistics, AI models, and professional expert review. We offer four major VIP packages designed for different betting strategies.
                 </p>
               </CardContent>
             </Card>
@@ -67,7 +67,7 @@ export default function FAQPage() {
                 <div>
                   <p className="font-semibold text-base lg:text-lg mb-2">⭐ 4. Correct Score Premium Package (Special Plan)</p>
                   <p className="text-sm lg:text-base text-gray-700 mb-2">Our most exclusive plan with the highest accuracy.</p>
-                  <p className="text-sm lg:text-base text-gray-600">What it includes: Correct Score predictions with up to 95% accuracy, Deep statistical modeling + expert manual review, Limited-access premium picks, Covers Yesterday / Today / Tomorrow filters. Reserved only for serious bettors seeking precision. This is PredictSafe's most premium and most limited service.</p>
+                  <p className="text-sm lg:text-base text-gray-600">What it includes: Correct Score predictions with up to 95% accuracy, Deep statistical modeling + expert manual review, Limited-access premium picks, Covers Yesterday / Today / Tomorrow filters. Reserved only for serious bettors seeking precision. This is Fixed Match Pro's most premium and most limited service.</p>
                 </div>
               </CardContent>
             </Card>
@@ -192,11 +192,11 @@ export default function FAQPage() {
 
             <Card className="border-2 border-gray-200 shadow-sm">
               <CardHeader className="p-5 border-b border-gray-200">
-                <CardTitle className="text-lg font-semibold">12. Is PredictSafe a betting platform?</CardTitle>
+                <CardTitle className="text-lg font-semibold">12. Is Fixed Match Pro a betting platform?</CardTitle>
               </CardHeader>
               <CardContent className="p-5">
                 <p className="text-base lg:text-lg text-gray-700 leading-relaxed">
-                  No. PredictSafe provides prediction and analysis only. We do not place bets or handle betting for users.
+                  No. Fixed Match Pro provides prediction and analysis only. We do not place bets or handle betting for users.
                 </p>
               </CardContent>
             </Card>
@@ -229,7 +229,7 @@ export default function FAQPage() {
               </CardHeader>
               <CardContent className="p-5">
                 <p className="text-base lg:text-lg text-gray-700 leading-relaxed">
-                  Yes. PredictSafe uses strong encryption and never sells user data.
+                  Yes. Fixed Match Pro uses strong encryption and never sells user data.
                 </p>
               </CardContent>
             </Card>

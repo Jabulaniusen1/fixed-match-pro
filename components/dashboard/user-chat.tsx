@@ -434,7 +434,7 @@ export function UserChat() {
                           alt="Admin"
                           width={40}
                           height={40}
-                          className="w-10 h-10 rounded-full object-cover border-2 border-[#1e40af]"
+                          className="w-10 h-10 rounded-full object-cover border-2 border-[#1e3a8a]"
                         />
                       ) : message.sender?.avatar_url ? (
                         <Image
@@ -445,7 +445,7 @@ export function UserChat() {
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-10 h-10 bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                        <div className="w-10 h-10 bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] rounded-full flex items-center justify-center text-white font-semibold text-sm">
                           {senderInitial}
                         </div>
                       )}
@@ -454,7 +454,7 @@ export function UserChat() {
                   <div className={`flex flex-col max-w-[70%] ${isOwnMessage ? 'items-end' : 'items-start'}`}>
                     <div className={`rounded-lg px-4 py-2 ${
                       isOwnMessage
-                        ? 'bg-[#1e40af] text-white'
+                        ? 'bg-[#1e3a8a] text-white'
                         : 'bg-gray-100 text-gray-900'
                     }`}>
                       <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
@@ -474,7 +474,7 @@ export function UserChat() {
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-10 h-10 bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                        <div className="w-10 h-10 bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] rounded-full flex items-center justify-center text-white font-semibold text-sm">
                           {user?.email?.charAt(0).toUpperCase() || 'U'}
                         </div>
                       )}
@@ -492,7 +492,7 @@ export function UserChat() {
                   alt="Admin"
                   width={40}
                   height={40}
-                  className="w-10 h-10 rounded-full object-cover border-2 border-[#1e40af]"
+                  className="w-10 h-10 rounded-full object-cover border-2 border-[#1e3a8a]"
                 />
               </div>
               <div className="flex flex-col items-start">

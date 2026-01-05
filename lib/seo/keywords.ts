@@ -5,6 +5,9 @@
 
 export const pageKeywords: Record<string, string[]> = {
   '/': [
+    'fixed match predictions',
+    'fixed match pro',
+    'fixed predictions',
     'free football predictions',
     'football betting tips',
     'soccer predictions today',
@@ -15,6 +18,7 @@ export const pageKeywords: Record<string, string[]> = {
     'football betting advice',
     'sports betting tips',
     'football analysis',
+    'fixed match tips',
   ],
   '/subscriptions': [
     'VIP football predictions',
@@ -61,14 +65,14 @@ export const pageKeywords: Record<string, string[]> = {
     'predictions support',
   ],
   '/about': [
-    'about PredictSafe',
+    'about Fixed Match Pro',
     'football prediction service',
     'betting tips provider',
     'who we are',
     'predictions company',
   ],
   '/contact': [
-    'contact PredictSafe',
+    'contact Fixed Match Pro',
     'football predictions support',
     'betting tips contact',
     'customer support',

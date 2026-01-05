@@ -23,8 +23,8 @@ export function Navbar() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [siteHeader, setSiteHeader] = useState('PredictSafe')
-  const [siteSubheader, setSiteSubheader] = useState('Your trusted source for accurate football predictions')
+  const [siteHeader, setSiteHeader] = useState('Fixed Match Pro')
+  const [siteSubheader, setSiteSubheader] = useState('Professional fixed match predictions and expert betting tips')
   const [adLinks, setAdLinks] = useState<Array<{ id: string; title: string; url: string; description: string | null }>>([])
 
   useEffect(() => {
@@ -97,93 +97,105 @@ export function Navbar() {
   }
 
   return (
-    <nav className="relative lg:py-4 bg-white border-b border-purple-500">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link href="/" className="lg:h-20 lg:w-40 h-20 w-24">
+          <Link href="/" className="flex items-center h-12 lg:h-16">
             <Image
               src="/logo.png"
               alt={`${siteHeader} Logo`}
-              width={100}
-              height={100}  
-              className=" w-auto object-cover h-full w-full object-center"
+              width={120}
+              height={60}  
+              className="h-full w-auto object-contain"
               priority
             />
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden lg:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-1">
             <Link
               href="/"
-              className={`text-sm font-medium transition-colors ${
-                pathname === '/' ? 'text-[#1e40af]' : 'text-gray-600 hover:text-[#1e40af]'
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                pathname === '/' 
+                  ? 'text-[#1e3a8a] bg-[#1e3a8a]/10' 
+                  : 'text-gray-700 hover:text-[#1e3a8a] hover:bg-gray-100'
               }`}
             >
               Home
             </Link>
             
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#1e40af] transition-colors focus:outline-none">
+              <DropdownMenuTrigger className={`flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-lg transition-all focus:outline-none ${
+                pathname?.includes('/dashboard/predictions') && !pathname?.includes('plan=free')
+                  ? 'text-[#1e3a8a] bg-[#1e3a8a]/10'
+                  : 'text-gray-700 hover:text-[#1e3a8a] hover:bg-gray-100'
+              }`}>
                 Premium Tips
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white border-gray-200">
+              <DropdownMenuContent className="bg-white border-gray-200 shadow-lg rounded-xl mt-2 p-2 min-w-[200px]">
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=standard" className="text-gray-900 hover:bg-gray-100">Standard Package</Link>
+                  <Link href="/dashboard/predictions?plan=standard" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Standard Package</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=daily-2-odds" className="text-gray-900 hover:bg-gray-100">Daily 2 Odds</Link>
+                  <Link href="/dashboard/predictions?plan=daily-2-odds" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Daily 2 Odds</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=profit-multiplier" className="text-gray-900 hover:bg-gray-100">Profit Multiplier</Link>
+                  <Link href="/dashboard/predictions?plan=profit-multiplier" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Profit Multiplier</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=correct-score" className="text-gray-900 hover:bg-gray-100">Correct Score</Link>
+                  <Link href="/dashboard/predictions?plan=correct-score" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Correct Score</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#1e40af] transition-colors focus:outline-none">
+              <DropdownMenuTrigger className={`flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-lg transition-all focus:outline-none ${
+                pathname?.includes('plan=free')
+                  ? 'text-[#1e3a8a] bg-[#1e3a8a]/10'
+                  : 'text-gray-700 hover:text-[#1e3a8a] hover:bg-gray-100'
+              }`}>
                 Free Tips
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white border-gray-200">
+              <DropdownMenuContent className="bg-white border-gray-200 shadow-lg rounded-xl mt-2 p-2 min-w-[200px] max-h-[400px] overflow-y-auto">
                 <DropdownMenuItem asChild>
-                  <Link href="/" className="text-gray-900 hover:bg-gray-100">Free Tips</Link>
+                  <Link href="/" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Free Tips</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=free" className="text-gray-900 hover:bg-gray-100">All Tips</Link>
+                  <Link href="/dashboard/predictions?plan=free" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">All Tips</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=free&type=super-single" className="text-gray-900 hover:bg-gray-100">Super Single</Link>
+                  <Link href="/dashboard/predictions?plan=free&type=super-single" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Super Single</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=free&type=double-chance" className="text-gray-900 hover:bg-gray-100">Double Chance</Link>
+                  <Link href="/dashboard/predictions?plan=free&type=double-chance" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Double Chance</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=free&type=home-win" className="text-gray-900 hover:bg-gray-100">Home Win</Link>
+                  <Link href="/dashboard/predictions?plan=free&type=home-win" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Home Win</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=free&type=away-win" className="text-gray-900 hover:bg-gray-100">Away Win</Link>
+                  <Link href="/dashboard/predictions?plan=free&type=away-win" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Away Win</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=free&type=1.5-goals" className="text-gray-900 hover:bg-gray-100">1.5 Goals</Link>
+                  <Link href="/dashboard/predictions?plan=free&type=1.5-goals" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">1.5 Goals</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=free&type=2.5-goals" className="text-gray-900 hover:bg-gray-100">2.5 Goals</Link>
+                  <Link href="/dashboard/predictions?plan=free&type=2.5-goals" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">2.5 Goals</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/predictions?plan=free&type=btts" className="text-gray-900 hover:bg-gray-100">BTTS/GG</Link>
+                  <Link href="/dashboard/predictions?plan=free&type=btts" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">BTTS/GG</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             <Link
               href="/subscriptions"
-              className={`text-sm font-medium transition-colors ${
-                pathname === '/subscriptions' ? 'text-purple-600' : 'text-purple-600 hover:text-purple-700'
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                pathname === '/subscriptions' 
+                  ? 'text-[#1e3a8a] bg-[#1e3a8a]/10' 
+                  : 'text-gray-700 hover:text-[#1e3a8a] hover:bg-gray-100'
               }`}
             >
               VIP Packages
@@ -191,8 +203,10 @@ export function Navbar() {
 
             <Link
               href="/livescores"
-              className={`text-sm font-medium transition-colors ${
-                pathname === '/livescores' ? 'text-blue-600' : 'text-blue-600 hover:text-blue-700'
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                pathname === '/livescores' 
+                  ? 'text-[#1e3a8a] bg-[#1e3a8a]/10' 
+                  : 'text-gray-700 hover:text-[#1e3a8a] hover:bg-gray-100'
               }`}
             >
               Livescores
@@ -200,57 +214,54 @@ export function Navbar() {
 
             <Link
               href="/blog"
-              className={`text-sm font-medium transition-colors ${
-                pathname === '/blog' ? 'text-[#1e40af]' : 'text-gray-600 hover:text-[#1e40af]'
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                pathname === '/blog' 
+                  ? 'text-[#1e3a8a] bg-[#1e3a8a]/10' 
+                  : 'text-gray-700 hover:text-[#1e3a8a] hover:bg-gray-100'
               }`}
             >
               Blog
             </Link>
 
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#1e40af] transition-colors focus:outline-none">
+              <DropdownMenuTrigger className={`flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-lg transition-all focus:outline-none ${
+                pathname === '/faq' || pathname === '/about' || pathname === '/terms' || pathname === '/privacy'
+                  ? 'text-[#1e3a8a] bg-[#1e3a8a]/10'
+                  : 'text-gray-700 hover:text-[#1e3a8a] hover:bg-gray-100'
+              }`}>
                 More
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white border-gray-200">
+              <DropdownMenuContent className="bg-white border-gray-200 shadow-lg rounded-xl mt-2 p-2 min-w-[200px]">
                 <DropdownMenuItem asChild>
-                  <Link href="/faq" className="text-gray-900 hover:bg-gray-100">FAQ</Link>
+                  <Link href="/faq" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">FAQ</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/about" className="text-gray-900 hover:bg-gray-100">About Us</Link>
+                  <Link href="/about" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">About Us</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/terms" className="text-gray-900 hover:bg-gray-100">Terms & Conditions</Link>
+                  <Link href="/terms" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Terms & Conditions</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/privacy" className="text-gray-900 hover:bg-gray-100">Privacy Policy</Link>
+                  <Link href="/privacy" className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">Privacy Policy</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Link
-              href="/contact"
-              className={`text-sm font-medium transition-colors ${
-                pathname === '/contact' ? 'text-[#1e40af]' : 'text-gray-600 hover:text-[#1e40af]'
-              }`}
-            >
-              Contact Us
-            </Link>
-
             {adLinks.length > 0 && (
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#1e40af] transition-colors focus:outline-none">
+                <DropdownMenuTrigger className="flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-lg transition-all focus:outline-none text-gray-700 hover:text-[#1e3a8a] hover:bg-gray-100">
                   Links
-                  <ChevronDown className="h-3 w-3" />
+                  <ChevronDown className="h-4 w-4" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white border-gray-200">
+                <DropdownMenuContent className="bg-white border-gray-200 shadow-lg rounded-xl mt-2 p-2 min-w-[200px]">
                   {adLinks.map((link) => (
                     <DropdownMenuItem key={link.id} asChild>
                       <a
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-900 hover:bg-gray-100"
+                        className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2"
                       >
                         {link.title}
                       </a>
@@ -262,43 +273,45 @@ export function Navbar() {
 
           </div>
 
+          {/* Right Side Buttons */}
+          <div className="flex items-center gap-2 lg:gap-3">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden text-gray-600 hover:text-[#1e40af]"
+              className="lg:hidden p-2 text-gray-700 hover:text-[#1e3a8a] hover:bg-gray-100 rounded-lg transition-colors"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
 
-          {/* Right Side Buttons */}
-          <div className="hidden lg:flex items-center gap-3">
+            {/* Desktop Auth Buttons */}
+            <div className="hidden lg:flex items-center gap-2">
             {loading ? (
-              <div className="h-8 w-8 animate-pulse rounded-full bg-gray-200" />
+                <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200" />
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
+                    <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-gray-100">
+                      <Avatar className="h-9 w-9 border-2 border-gray-200">
                       { user?.avatar_url ? <AvatarImage src={user?.avatar_url} alt={user.email} /> : 
-                      <AvatarFallback className="bg-[#1e40af] text-white">{user.email?.charAt(0).toUpperCase()}</AvatarFallback> }
+                        <AvatarFallback className="bg-[#1e3a8a] text-white text-sm">{user.email?.charAt(0).toUpperCase()}</AvatarFallback> }
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-white border-gray-200" align="end" forceMount>
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium text-gray-900">{user.email}</p>
+                  <DropdownMenuContent className="w-56 bg-white border-gray-200 shadow-lg rounded-xl mt-2 p-2" align="end" forceMount>
+                    <div className="flex items-center gap-2 p-2 mb-1">
+                      <div className="flex flex-col space-y-0.5 leading-none">
+                        <p className="font-semibold text-sm text-gray-900 truncate">{user.email}</p>
+                      </div>
                     </div>
-                  </div>
-                  <DropdownMenuSeparator className="bg-gray-200" />
-                  <DropdownMenuItem asChild className="text-gray-900 hover:bg-gray-100">
+                    <DropdownMenuSeparator className="bg-gray-200 my-1" />
+                    <DropdownMenuItem asChild className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">
                     <Link href="/dashboard">Dashboard</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="text-gray-900 hover:bg-gray-100">
+                    <DropdownMenuItem asChild className="text-gray-900 hover:bg-[#1e3a8a]/10 rounded-lg px-3 py-2">
                     <Link href="/dashboard/settings">Settings</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-gray-200" />
-                  <DropdownMenuItem onClick={handleLogout} className="text-gray-900 hover:bg-gray-100">Log out</DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200 my-1" />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 hover:bg-red-50 rounded-lg px-3 py-2">Log out</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
@@ -306,22 +319,25 @@ export function Navbar() {
                 <Link href="/signup">
                   <Button 
                     variant="outline" 
-                    className="border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white bg-transparent rounded-lg"
+                      size="sm"
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 bg-transparent rounded-lg font-semibold"
                   >
-                    <User className="h-4 w-4 mr-2" />
+                      <User className="h-4 w-4 mr-1.5" />
                     Register
                   </Button>
                 </Link>
                 <Link href="/login">
                   <Button 
-                    className="bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-lg"
+                      size="sm"
+                      className="bg-[#1e3a8a] hover:bg-[#0f172a] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                   >
-                    <ArrowRight className="h-4 w-4 mr-2" />
                     Login
+                      <ArrowRight className="h-4 w-4 ml-1.5" />
                   </Button>
                 </Link>
               </>
             )}
+            </div>
           </div>
         </div>
 
@@ -341,20 +357,20 @@ export function Navbar() {
         >
           <div className="flex flex-col h-full">
             {/* Mobile Menu Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-[#1e3a8a] to-[#0f172a]">
               <Link href="/" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                 <Image
                   src="/logo.png"
                   alt={`${siteHeader} Logo`}
                   width={50}
                   height={50}
-                  className="w-auto object-contain"
+                  className="w-auto object-contain brightness-0 invert"
                   priority
                 />
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-gray-600 hover:text-[#1e40af] transition-colors"
+                className="text-white hover:text-gray-200 transition-colors p-1 rounded-lg hover:bg-white/10"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -367,8 +383,8 @@ export function Navbar() {
                   href="/" 
                   className={`px-4 py-3 rounded-lg transition-colors ${
                     pathname === '/' 
-                      ? 'bg-[#1e40af]/10 text-[#1e40af] font-medium' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e40af]'
+                      ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a]'
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -387,28 +403,28 @@ export function Navbar() {
                 </Link>
                 <Link 
                   href="/dashboard/predictions?plan=standard" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Standard Package
                 </Link>
                 <Link 
                   href="/dashboard/predictions?plan=daily-2-odds" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Daily 2 Odds
                 </Link>
                 <Link 
                   href="/dashboard/predictions?plan=profit-multiplier" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Profit Multiplier
                 </Link>
                 <Link 
                   href="/dashboard/predictions?plan=correct-score" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Correct Score
@@ -428,8 +444,8 @@ export function Navbar() {
                   href="/blog" 
                   className={`px-4 py-3 rounded-lg transition-colors ${
                     pathname === '/blog' 
-                      ? 'bg-[#1e40af]/10 text-[#1e40af] font-medium' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e40af]'
+                      ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a]'
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -437,7 +453,7 @@ export function Navbar() {
                 </Link>
                 <Link 
                   href="/faq" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   FAQ
@@ -446,8 +462,8 @@ export function Navbar() {
                   href="/contact" 
                   className={`px-4 py-3 rounded-lg transition-colors ${
                     pathname === '/contact' 
-                      ? 'bg-[#1e40af]/10 text-[#1e40af] font-medium' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e40af]'
+                      ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a]'
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -463,7 +479,7 @@ export function Navbar() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
+                        className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {link.title}
@@ -485,7 +501,7 @@ export function Navbar() {
                         {user?.avatar_url ? (
                           <AvatarImage src={user.avatar_url} alt={user.email} />
                         ) : (
-                        <AvatarFallback className="bg-[#1e40af] text-white">{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback className="bg-[#1e3a8a] text-white">{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                         )}
                       </Avatar>
                       <div className="flex-1 min-w-0">
@@ -495,14 +511,14 @@ export function Navbar() {
                   </div>
                   <Link 
                     href="/dashboard" 
-                    className="block px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
+                    className="block px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
                   <Link 
                     href="/dashboard/settings" 
-                    className="block px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
+                    className="block px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Settings
@@ -530,7 +546,7 @@ export function Navbar() {
                   </Link>
                   <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                     <Button 
-                      className="w-full bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-lg"
+                      className="w-full bg-[#1e3a8a] hover:bg-[#0f172a] text-white rounded-lg"
                     >
                       <ArrowRight className="h-4 w-4 mr-2" />
                       Login

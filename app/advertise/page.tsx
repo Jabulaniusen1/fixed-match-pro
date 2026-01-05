@@ -17,25 +17,25 @@ export default function AdvertisePage() {
           <div className="space-y-6">
             <Card className="border-2 border-gray-200 shadow-sm">
               <CardHeader className="p-5 border-b border-gray-200">
-                <CardTitle className="text-lg font-semibold">Why Advertise on PredictSafe?</CardTitle>
+                <CardTitle className="text-lg font-semibold">Why Advertise on Fixed Match Pro?</CardTitle>
               </CardHeader>
               <CardContent className="p-5 space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-[#1e40af] mb-2">🎯 Highly Targeted Audience</h3>
+                  <h3 className="text-lg font-semibold text-[#1e3a8a] mb-2">🎯 Highly Targeted Audience</h3>
                   <p className="text-base text-gray-700 leading-relaxed">
                     Your ads reach users who are: Active football bettors, Engaged sports followers, Daily prediction seekers, Fans of analytics and betting tools. This makes ad conversions higher and more profitable.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-[#1e40af] mb-2">📈 High Daily Traffic</h3>
+                  <h3 className="text-lg font-semibold text-[#1e3a8a] mb-2">📈 High Daily Traffic</h3>
                   <p className="text-base text-gray-700 leading-relaxed">
-                    PredictSafe receives consistent and growing daily visitors through: Free daily predictions, VIP plans, Live scores, Match tracking, Correct Score features. Your brand gets constant exposure.
+                    Fixed Match Pro receives consistent and growing daily visitors through: Free daily predictions, VIP plans, Live scores, Match tracking, Correct Score features. Your brand gets constant exposure.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-[#1e40af] mb-2">📍 Strategic Ad Placements</h3>
+                  <h3 className="text-lg font-semibold text-[#1e3a8a] mb-2">📍 Strategic Ad Placements</h3>
                   <p className="text-base text-gray-700 leading-relaxed mb-2">
                     Advertisers get access to premium visibility spots:
                   </p>
@@ -54,7 +54,7 @@ export default function AdvertisePage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-[#1e40af] mb-2">💼 Perfect For</h3>
+                  <h3 className="text-lg font-semibold text-[#1e3a8a] mb-2">💼 Perfect For</h3>
                   <p className="text-base text-gray-700 leading-relaxed mb-2">Businesses in:</p>
                   <ul className="list-disc list-inside space-y-1 text-base text-gray-700 ml-4">
                     <li>Sports betting</li>
@@ -111,9 +111,9 @@ export default function AdvertisePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-[#1e40af] shadow-lg bg-gradient-to-br from-blue-50 to-white">
+            <Card className="border-2 border-[#1e3a8a] shadow-lg bg-gradient-to-br from-blue-50 to-white">
               <CardHeader className="p-5 border-b border-gray-200">
-                <CardTitle className="text-lg font-semibold text-[#1e40af]">Ready to Advertise?</CardTitle>
+                <CardTitle className="text-lg font-semibold text-[#1e3a8a]">Ready to Advertise?</CardTitle>
                 <CardDescription className="text-base">
                   Send us your ad materials and preferred placement.
                 </CardDescription>
@@ -123,8 +123,8 @@ export default function AdvertisePage() {
                   <div>
                     <p className="text-base text-gray-700 mb-2">Contact us:</p>
                     <ul className="list-none space-y-2 text-base text-gray-700">
-                      <li>📧 Email: <a href="mailto:Advert.predictsafe@gmail.com" className="text-[#1e40af] hover:underline font-semibold">Advert.predictsafe@gmail.com</a></li>
-                      <li>📧 Alternative: <a href="mailto:predictsafe@gmail.com" className="text-[#1e40af] hover:underline font-semibold">predictsafe@gmail.com</a></li>
+                      <li>📧 Email: <a href="mailto:Advert.fixedmatchpro@gmail.com" className="text-[#1e3a8a] hover:underline font-semibold">Advert.fixedmatchpro@gmail.com</a></li>
+                      <li>📧 Alternative: <a href="mailto:fixedmatchpro@gmail.com" className="text-[#1e3a8a] hover:underline font-semibold">fixedmatchpro@gmail.com</a></li>
                       <li>🌐 Or use our Contact Page on the website</li>
                     </ul>
                   </div>

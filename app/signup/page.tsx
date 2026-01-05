@@ -270,9 +270,9 @@ export default function SignupPage() {
           {/* Form Container */}
           <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-br from-[#1e40af] via-[#1e3a8a] to-[#1e40af] p-8 text-center">
+            <div className="bg-gradient-to-br from-[#1e3a8a] via-[#1e3a8a] to-[#1e3a8a] p-8 text-center">
               <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
-              <p className="text-blue-100 text-sm">Join PredictSafe and start winning today</p>
+              <p className="text-blue-100 text-sm">Join Fixed Match Pro and start winning today</p>
             </div>
 
             {/* Form */}
@@ -296,7 +296,7 @@ export default function SignupPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required
-                  className="h-12 border-2 border-gray-200 rounded-lg focus:border-[#1e40af] focus:ring-2 focus:ring-[#1e40af]/20 transition-all bg-gray-50/50"
+                  className="h-12 border-2 border-gray-200 rounded-lg focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/20 transition-all bg-gray-50/50"
                 />
               </div>
 
@@ -311,7 +311,7 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-12 border-2 border-gray-200 rounded-lg focus:border-[#1e40af] focus:ring-2 focus:ring-[#1e40af]/20 transition-all bg-gray-50/50"
+                  className="h-12 border-2 border-gray-200 rounded-lg focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/20 transition-all bg-gray-50/50"
                 />
               </div>
 
@@ -328,12 +328,12 @@ export default function SignupPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="h-12 border-2 border-gray-200 rounded-lg focus:border-[#1e40af] focus:ring-2 focus:ring-[#1e40af]/20 transition-all bg-gray-50/50 pr-12"
+                    className="h-12 border-2 border-gray-200 rounded-lg focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a]/20 transition-all bg-gray-50/50 pr-12"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#1e40af] transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#1e3a8a] transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
@@ -349,7 +349,7 @@ export default function SignupPage() {
                 <Label htmlFor="country" className="text-sm font-medium text-gray-700 ml-1">
                   Country
                 </Label>
-                <div className="border-2 border-gray-200 rounded-lg focus-within:border-[#1e40af] focus-within:ring-2 focus-within:ring-[#1e40af]/20 transition-all bg-gray-50/50">
+                <div className="border-2 border-gray-200 rounded-lg focus-within:border-[#1e3a8a] focus-within:ring-2 focus-within:ring-[#1e3a8a]/20 transition-all bg-gray-50/50">
                   <Combobox
                     options={countries}
                     value={selectedCountry}
@@ -364,7 +364,7 @@ export default function SignupPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e40af] text-white font-semibold text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full h-12 bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e3a8a] text-white font-semibold text-base rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 disabled={loading || rateLimitError}
               >
                 {loading ? 'Creating account...' : rateLimitError ? `Wait ${rateLimitCountdown}s` : 'Create Account'}
@@ -373,7 +373,7 @@ export default function SignupPage() {
               <div className="text-center pt-4">
                 <p className="text-sm text-gray-600">
                   Already have an account?{' '}
-                  <Link href="/login" className="text-[#1e40af] font-semibold hover:text-[#1e3a8a] transition-colors">
+                  <Link href="/login" className="text-[#1e3a8a] font-semibold hover:text-[#1e3a8a] transition-colors">
                     Sign in
                   </Link>
                 </p>
@@ -394,13 +394,13 @@ export default function SignupPage() {
             priority
             quality={90}
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1e40af]/80 to-[#1e3a8a]/80" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a8a]/80 to-[#1e3a8a]/80" />
         </div>
         <div className="relative z-10 h-full flex flex-col items-center justify-center p-12 text-white">
           <div className="max-w-md text-center">
             <h2 className="text-4xl font-bold mb-4">Start Your Winning Journey</h2>
             <p className="text-xl text-white/90 leading-relaxed">
-              Join thousands of successful bettors who trust PredictSafe for accurate football predictions and expert betting tips.
+              Join thousands of successful bettors who trust Fixed Match Pro for accurate football predictions and expert betting tips.
             </p>
           </div>
         </div>

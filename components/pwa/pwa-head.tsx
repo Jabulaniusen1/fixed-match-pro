@@ -20,7 +20,7 @@ export function PWAHead() {
     const metaTags = [
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
-      { name: 'apple-mobile-web-app-title', content: 'PredictSafe' },
+      { name: 'apple-mobile-web-app-title', content: 'Fixed Match Pro' },
     ]
 
     metaTags.forEach(({ name, content }) => {

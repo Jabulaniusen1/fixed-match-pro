@@ -4,9 +4,9 @@ import { AboutSection } from '@/components/home/about-section'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'About Us | PredictSafe',
+  title: 'About Us | Fixed Match Pro',
   description:
-    'Learn more about PredictSafe, our mission, vision, and how we deliver accurate football predictions and betting tips powered by data, experts, and AI.',
+    'Learn more about Fixed Match Pro, our mission, vision, and how we deliver accurate football predictions and betting tips powered by data, experts, and AI.',
 }
 
 export default function AboutPage() {

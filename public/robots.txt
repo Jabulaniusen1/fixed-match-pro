@@ -1,4 +1,4 @@
-# robots.txt for PredictSafe
+# robots.txt for Fixed Match Pro
 
 # Allow all search engines to crawl the site
 User-agent: *
@@ -33,7 +33,7 @@ Allow: /advertise
 Allow: /match/
 
 # Sitemap location (update with your actual domain)
-Sitemap: https://predictsafe.com/sitemap.xml
+Sitemap: https://fixedmatchpro.com/sitemap.xml
 
 # Crawl delay (optional - adjust based on server capacity)
 Crawl-delay: 1

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Skranji:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -20,8 +20,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-skranji);
-  --font-sporty: var(--font-skranji);
+  --font-sans: var(--font-montserrat);
+  --font-sporty: var(--font-montserrat);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -129,28 +129,33 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    font-family: var(--font-skranji), sans-serif;
+    font-family: var(--font-montserrat), sans-serif;
+  }
+  html {
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-skranji), sans-serif;
+    font-family: var(--font-montserrat), sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 }
 
 /* Company Colors */
 :root {
-  --color-primary-blue: #1e40af;
-  --color-primary-blue-dark: #1e3a8a;
+  --color-primary-blue: #1e3a8a;
+  --color-primary-blue-dark: #0f172a;
   --color-primary-green: #22c55e;
   --color-primary-green-dark: #16a34a;
   --color-primary-orange: #f97316;
   --color-primary-orange-dark: #ea580c;
 }
 
-.font-skranji {
-  font-family: 'Skranji', sans-serif !important;
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif !important;
 }
 
 /* Range slider styling */
@@ -165,7 +170,7 @@ input[type="range"].range-slider::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #1e40af;
+  background: #1e3a8a;
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -175,7 +180,7 @@ input[type="range"].range-slider::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #1e40af;
+  background: #1e3a8a;
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);

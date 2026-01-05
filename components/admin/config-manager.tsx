@@ -142,9 +142,9 @@ export function ConfigManager({ config }: ConfigManagerProps) {
               <Label htmlFor="site_header">Site Title / Header</Label>
               <Input
                 id="site_header"
-                defaultValue={configMap.get('site_header') || 'PredictSafe'}
+                defaultValue={configMap.get('site_header') || 'Fixed Match Pro'}
                 onBlur={(e) => handleUpdateConfig('site_header', e.target.value)}
-                placeholder="PredictSafe"
+                placeholder="Fixed Match Pro"
               />
             </div>
             <div className="space-y-2">
@@ -170,9 +170,9 @@ export function ConfigManager({ config }: ConfigManagerProps) {
               <Label htmlFor="hero_headline">Hero Headline</Label>
             <Input
               id="hero_headline"
-                defaultValue={configMap.get('hero_headline') || 'Welcome to PredictSafe'}
+                defaultValue={configMap.get('hero_headline') || 'Welcome to Fixed Match Pro'}
               onBlur={(e) => handleUpdateConfig('hero_headline', e.target.value)}
-                placeholder="Welcome to PredictSafe"
+                placeholder="Welcome to Fixed Match Pro"
             />
           </div>
           <div className="space-y-2">
@@ -210,7 +210,7 @@ export function ConfigManager({ config }: ConfigManagerProps) {
               type="email"
               defaultValue={configMap.get('contact_email') || ''}
               onBlur={(e) => handleUpdateConfig('contact_email', e.target.value)}
-                placeholder="contact@predictsafe.com"
+                placeholder="contact@fixedmatchpro.com"
               />
             </div>
             <div className="space-y-2">

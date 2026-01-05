@@ -139,7 +139,7 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
           <Link href="/dashboard" className="flex-shrink-0" onClick={handleNavClick}>
             <Image
               src="/logo.png"
-              alt="PredictSafe Logo"
+              alt="Fixed Match Pro Logo"
               width={60}
               height={60}
               className="w-auto h-12 lg:h-16 object-contain"
@@ -172,7 +172,7 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
                 onClick={handleNavClick}
                   className={`flex items-center justify-between gap-3 lg:gap-4 px-3 lg:px-4 py-2.5 lg:py-3.5 rounded-lg text-sm lg:text-base font-medium transition-colors ${
                   isActive
-                      ? 'bg-[#1e40af] text-white shadow-sm'
+                      ? 'bg-[#1e3a8a] text-white shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -183,8 +183,8 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
                 {badgeCount > 0 && (
                   <span className={`flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold ${
                     isActive
-                      ? 'bg-white text-[#1e40af]'
-                      : 'bg-[#1e40af] text-white'
+                      ? 'bg-white text-[#1e3a8a]'
+                      : 'bg-[#1e3a8a] text-white'
                   }`}>
                     {badgeCount > 99 ? '99+' : badgeCount}
                   </span>
@@ -200,7 +200,7 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
               onClick={handleNavClick}
               className={`flex items-center gap-3 lg:gap-4 px-3 lg:px-4 py-2.5 lg:py-3.5 rounded-lg text-sm lg:text-base font-medium transition-colors ${
                 pathname === '/dashboard/settings'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
+                  ? 'bg-[#1e3a8a] text-white shadow-sm'
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
@@ -249,7 +249,7 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
             <div className="flex items-center gap-2 pl-3">
               { userProfile?.avatar_url ? 
               <Image src={userProfile.avatar_url} alt="User Avatar" width={40} height={40} className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover" /> : 
-              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] rounded-full flex items-center justify-center text-white font-semibold text-sm"> 
+              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] rounded-full flex items-center justify-center text-white font-semibold text-sm"> 
                 {userInitial}
               </div> }
               <div className="hidden lg:block text-left">

@@ -528,8 +528,8 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                         onClick={() => handlePreviousDays(plan.slug)}
                         className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                           getDateFilter(plan.slug).dateType === 'previous'
-                            ? 'bg-[#1e40af] text-white'
-                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                            ? 'bg-[#1e3a8a] text-white'
+                            : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                         }`}
                       >
                         Previous
@@ -540,8 +540,8 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                         onClick={() => handleDateTypeChange(plan.slug, 'today')}
                         className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                           getDateFilter(plan.slug).dateType === 'today'
-                            ? 'bg-[#1e40af] text-white'
-                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                            ? 'bg-[#1e3a8a] text-white'
+                            : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                         }`}
                       >
                         Today
@@ -552,8 +552,8 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                         onClick={() => handleDateTypeChange(plan.slug, 'tomorrow')}
                         className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                           getDateFilter(plan.slug).dateType === 'tomorrow'
-                            ? 'bg-[#1e40af] text-white'
-                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                            ? 'bg-[#1e3a8a] text-white'
+                            : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                         }`}
                       >
                         Tomorrow
@@ -567,7 +567,7 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                           size="sm"
                           className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium ${
                             getDateFilter(plan.slug).dateType === 'custom'
-                              ? 'bg-[#1e40af] text-white'
+                              ? 'bg-[#1e3a8a] text-white'
                               : ''
                           }`}
                         >
@@ -633,7 +633,7 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                     {/* Desktop Table View */}
                     <div className="hidden md:block space-y-0 border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-lg">
                       {/* Header */}
-                      <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
+                      <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
                         <div className="col-span-2 lg:col-span-2">Time & League</div>
                         <div className="col-span-3">Teams</div>
                         <div className="col-span-1 text-center">Tip</div>
@@ -1022,8 +1022,8 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                         onClick={() => handlePreviousDays('correct-score')}
                         className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                           getDateFilter('correct-score').dateType === 'previous'
-                            ? 'bg-[#1e40af] text-white'
-                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                            ? 'bg-[#1e3a8a] text-white'
+                            : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                         }`}
                       >
                         Previous
@@ -1034,8 +1034,8 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                         onClick={() => handleDateTypeChange('correct-score', 'today')}
                         className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                           getDateFilter('correct-score').dateType === 'today'
-                            ? 'bg-[#1e40af] text-white'
-                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                            ? 'bg-[#1e3a8a] text-white'
+                            : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                         }`}
                       >
                         Today
@@ -1046,8 +1046,8 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                         onClick={() => handleDateTypeChange('correct-score', 'tomorrow')}
                         className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                           getDateFilter('correct-score').dateType === 'tomorrow'
-                            ? 'bg-[#1e40af] text-white'
-                            : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                            ? 'bg-[#1e3a8a] text-white'
+                            : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
                         }`}
                       >
                         Tomorrow
@@ -1061,7 +1061,7 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                           size="sm"
                           className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium ${
                             getDateFilter('correct-score').dateType === 'custom'
-                              ? 'bg-[#1e40af] text-white'
+                              ? 'bg-[#1e3a8a] text-white'
                               : ''
                           }`}
                         >
@@ -1127,7 +1127,7 @@ export function PredictionsManager({ plans, predictions }: PredictionsManagerPro
                   {/* Desktop Table View */}
                   <div className="hidden md:block space-y-0 border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-lg">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
+                    <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
                       <div className="col-span-2 lg:col-span-2">Time & League</div>
                       <div className="col-span-3">Teams</div>
                       <div className="col-span-1 text-center">Predicted</div>

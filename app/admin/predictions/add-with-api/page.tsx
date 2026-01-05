@@ -351,7 +351,7 @@ function AddPredictionWithAPIContent() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="confidence">Minimum Confidence Level</Label>
-                    <span className="text-sm font-semibold text-[#1e40af]">{minConfidence[0]}%</span>
+                    <span className="text-sm font-semibold text-[#1e3a8a]">{minConfidence[0]}%</span>
                   </div>
                   <div className="relative">
                     <input
@@ -364,7 +364,7 @@ function AddPredictionWithAPIContent() {
                       onChange={(e) => setMinConfidence([parseInt(e.target.value)])}
                       className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-slider"
                       style={{
-                        background: `linear-gradient(to right, #1e40af 0%, #1e40af ${((minConfidence[0] - 50) / 50) * 100}%, #e5e7eb ${((minConfidence[0] - 50) / 50) * 100}%, #e5e7eb 100%)`
+                        background: `linear-gradient(to right, #1e3a8a 0%, #1e3a8a ${((minConfidence[0] - 50) / 50) * 100}%, #e5e7eb ${((minConfidence[0] - 50) / 50) * 100}%, #e5e7eb 100%)`
                       }}
                     />
                   </div>

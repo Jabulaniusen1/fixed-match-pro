@@ -6,9 +6,9 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
-  title: 'Contact Us | PredictSafe',
+  title: 'Contact Us | Fixed Match Pro',
   description:
-    'Contact PredictSafe support team for questions about subscriptions, VIP packages, payments, or technical issues.',
+    'Contact Fixed Match Pro support team for questions about subscriptions, VIP packages, payments, or technical issues.',
 }
 
 export default async function ContactPage() {
@@ -52,7 +52,7 @@ export default async function ContactPage() {
     })
   }
 
-  const contactEmail = config.contact_email || 'predictsafe@gmail.com'
+  const contactEmail = config.contact_email || 'fixedmatchpro@gmail.com'
   const telegramLink = config.telegram_link || 'https://t.me/joinsurefixedwin'
   const whatsappNumber = config.whatsapp_number || '+234 704 532 1193'
 
@@ -66,14 +66,14 @@ export default async function ContactPage() {
               <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Contact Us</h1>
               <p className="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto">
                 Have questions about your subscription, VIP packages, payments, or predictions? Reach out to the
-                PredictSafe team and we’ll respond as soon as possible.
+                Fixed Match Pro team and we’ll respond as soon as possible.
               </p>
             </div>
 
             <div className="grid gap-8 lg:grid-cols-2">
               {/* Support & Enquiries */}
               <div className="space-y-6">
-                <div className="bg-[#1e40af] text-white rounded-2xl shadow-md p-6 sm:p-7">
+                <div className="bg-[#1e3a8a] text-white rounded-2xl shadow-md p-6 sm:p-7">
                   <h2 className="text-xl font-semibold mb-2">Support & Enquiries</h2>
                   <p className="text-sm text-blue-100 mb-4">
                     For faster responses about payments, subscriptions or VIP access, contact us via email,
@@ -120,7 +120,7 @@ export default async function ContactPage() {
 
                   <p className="mt-5 text-[11px] text-blue-100/80 leading-relaxed">
                     Please do not send your card or banking details via email or chat. Our team will never ask for your
-                    PIN or OTP. Always confirm you are on the official PredictSafe website before making any payment.
+                    PIN or OTP. Always confirm you are on the official Fixed Match Pro website before making any payment.
                   </p>
                 </div>
 
@@ -130,10 +130,10 @@ export default async function ContactPage() {
                     For advertising, affiliate partnerships, or bulk VIP packages for communities or investment clubs:
                   </p>
                   <a
-                    href="mailto:adverts.predictsafe@gmail.com"
-                    className="inline-flex items-center text-sm font-medium text-[#1e40af] hover:underline"
+                    href="mailto:adverts.fixedmatchpro@gmail.com"
+                    className="inline-flex items-center text-sm font-medium text-[#1e3a8a] hover:underline"
                   >
-                    adverts.predictsafe@gmail.com
+                    adverts.fixedmatchpro@gmail.com
                   </a>
                 </div>
               </div>

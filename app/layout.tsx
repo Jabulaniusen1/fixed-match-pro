@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Skranji } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -7,19 +7,22 @@ import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { PWAHead } from "@/components/pwa/pwa-head";
 import { CustomerCareChatButton } from "@/components/layout/customer-care-chat-button";
 
-const skranji = Skranji({
-  variable: "--font-skranji",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "PredictSafe - Accurate Football Predictions & Betting Tips",
-    template: "%s | PredictSafe"
+    default: "Fixed Match Pro - Accurate Football Predictions & Betting Tips",
+    template: "%s | Fixed Match Pro"
   },
-  description: "Get accurate football predictions, betting tips, and expert analysis. Free daily predictions, VIP packages, correct score tips, and live scores. Trusted by thousands of bettors worldwide.",
+  description: "Get professional fixed match predictions, accurate betting tips, and expert analysis. Premium fixed match predictions, VIP packages, correct score tips, and live scores. Trusted by thousands of bettors worldwide.",
   keywords: [
+    "fixed match predictions",
+    "fixed match pro",
+    "fixed predictions",
     "football predictions",
     "betting tips",
     "soccer predictions",
@@ -31,17 +34,18 @@ export const metadata: Metadata = {
     "free football tips",
     "daily predictions",
     "betting advice",
-    "football analysis"
+    "football analysis",
+    "fixed match tips"
   ],
-  authors: [{ name: "PredictSafe" }],
-  creator: "PredictSafe",
-  publisher: "PredictSafe",
+  authors: [{ name: "Fixed Match Pro" }],
+  creator: "Fixed Match Pro",
+  publisher: "Fixed Match Pro",
   manifest: "/manifest.json",
-  themeColor: "#1e40af",
+  themeColor: "#1e3a8a",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "PredictSafe",
+    title: "Fixed Match Pro",
   },
   robots: {
     index: true,
@@ -57,17 +61,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://predictsafe.com",
-    siteName: "PredictSafe",
-    title: "PredictSafe - Accurate Football Predictions & Betting Tips",
-    description: "Get accurate football predictions, betting tips, and expert analysis. Free daily predictions, VIP packages, and correct score tips.",
+    url: "https://fixedmatchpro.com",
+    siteName: "Fixed Match Pro",
+    title: "Fixed Match Pro - Accurate Football Predictions & Betting Tips",
+    description: "Get professional fixed match predictions, accurate betting tips, and expert analysis. Premium fixed match predictions, VIP packages, and correct score tips.",
   },
   twitter: {
     card: "summary_large_image",
-  title: "PredictSafe - Accurate Football Predictions",
+  title: "Fixed Match Pro - Accurate Football Predictions",
     description: "Get accurate football predictions, betting tips, and expert analysis.",
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://predictsafe.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://fixedmatchpro.com'),
   alternates: {
     canonical: '/',
   },
@@ -81,7 +85,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${skranji.variable} font-skranji antialiased`}
+        className={`${montserrat.variable} font-montserrat antialiased`}
       >
         {/* <script
           src="https://nordan-backend-production.up.railway.app/public/widget.js"

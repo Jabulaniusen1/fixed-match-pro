@@ -371,14 +371,25 @@ export function PremiumPredictionsSection() {
   }
 
   return (
-    <section className="py-8 lg:py-16 bg-gradient-to-b from-gray-900 via-black to-gray-900">
-      <div className="container mx-auto px-4">
-        <div className="mb-4 lg:mb-8">
-          <div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent mb-1 lg:mb-2">
-              Premium Predictions
-            </h2>
-            <p className="text-sm lg:text-base text-gray-300">Exclusive high-value predictions - Subscribe to unlock</p>
+    <section className="py-12 lg:py-20 bg-gradient-to-b from-gray-900 via-black to-gray-900 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5 pointer-events-none"></div>
+      <div className="container mx-auto px-4 max-w-7xl relative z-10">
+        <div className="mb-8 lg:mb-12 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent mb-3">
+            Premium Predictions
+          </h2>
+          <p className="text-base lg:text-lg text-gray-300 max-w-3xl mx-auto mb-6">
+            Exclusive high-value predictions with maximum accuracy. Subscribe to unlock premium features.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            <div className="flex items-center gap-2 bg-yellow-500/10 backdrop-blur-sm px-4 py-2 rounded-full border border-yellow-500/20">
+              <span className="text-lg font-bold text-yellow-400">95%+</span>
+              <span className="text-sm text-gray-300">Accuracy</span>
+            </div>
+            <div className="flex items-center gap-2 bg-yellow-500/10 backdrop-blur-sm px-4 py-2 rounded-full border border-yellow-500/20">
+              <span className="text-lg font-bold text-yellow-400">VIP Only</span>
+              <span className="text-sm text-gray-300">Exclusive</span>
+            </div>
           </div>
         </div>
 
@@ -653,7 +664,7 @@ export function PremiumPredictionsSection() {
                       <div
                         key={prediction.id}
                         onClick={handleSubscribe}
-                        className="bg-gray-800 border border-yellow-600/30 rounded-lg p-3 space-y-2 cursor-pointer hover:bg-gray-700 hover:border-yellow-500/50 transition-all shadow-lg shadow-black/50"
+                        className="bg-gray-800/90 backdrop-blur-sm border-2 border-yellow-600/30 rounded-xl p-4 space-y-3 cursor-pointer hover:bg-gray-700/90 hover:border-yellow-500/60 hover:shadow-xl hover:shadow-yellow-500/20 transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-black/50"
                       >
                         {/* Top Row: Time and Home Team */}
                         <div className="flex items-center justify-between">
@@ -790,10 +801,10 @@ export function PremiumPredictionsSection() {
                           key={prediction.id}
                           onClick={showLocks ? handleSubscribe : undefined}
                           className={cn(
-                            'px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 grid grid-cols-12 gap-2 lg:gap-4 items-center border-b border-yellow-600/20 bg-gray-800 transition-all duration-300 transform',
+                            'px-3 sm:px-4 lg:px-6 py-4 sm:py-5 lg:py-6 grid grid-cols-12 gap-2 lg:gap-4 items-center border-b border-yellow-600/20 bg-gray-800/80 backdrop-blur-sm transition-all duration-300 transform',
                             index === profitMultiplierPredictions.length - 1 && 'border-b-0',
-                            index % 2 === 0 && 'bg-gray-900/50',
-                            showLocks && 'hover:bg-gray-700 hover:border-yellow-500/40 hover:shadow-lg hover:shadow-yellow-500/10 cursor-pointer hover:scale-[1.01] hover:border-l-4 hover:border-l-yellow-500'
+                            index % 2 === 0 && 'bg-gray-900/40',
+                            showLocks && 'hover:bg-gray-700/90 hover:border-yellow-500/50 hover:shadow-xl hover:shadow-yellow-500/20 cursor-pointer hover:scale-[1.01] hover:border-l-4 hover:border-l-yellow-500'
                           )}
                         >
                           {/* Time & League */}

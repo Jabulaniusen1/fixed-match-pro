@@ -1,11 +1,11 @@
 {
-  "name": "PredictSafe - Football Predictions",
-  "short_name": "PredictSafe",
-  "description": "Get accurate football predictions, betting tips, and expert analysis. Free daily predictions, VIP packages, correct score tips, and live scores.",
+  "name": "Fixed Match Pro - Football Predictions",
+  "short_name": "Fixed Match Pro",
+  "description": "Get professional fixed match predictions, accurate betting tips, and expert analysis. Premium fixed match predictions, VIP packages, correct score tips, and live scores.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#1e40af",
+  "theme_color": "#1e3a8a",
   "orientation": "portrait-primary",
   "icons": [
     {

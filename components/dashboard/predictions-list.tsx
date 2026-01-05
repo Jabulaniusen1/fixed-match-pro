@@ -665,7 +665,7 @@ export function PredictionsList({ allPlans, subscriptions: initialSubscriptions 
                 </div>
 
                   {/* Header Bar */}
-                  <div className="bg-[#1e40af] text-white px-3 py-2 rounded grid grid-cols-3 gap-2 text-xs font-semibold">
+                  <div className="bg-[#1e3a8a] text-white px-3 py-2 rounded grid grid-cols-3 gap-2 text-xs font-semibold">
                     <div>Score</div>
                     <div className="text-center">Odd</div>
                     <div className="text-center">Status</div>
@@ -696,7 +696,7 @@ export function PredictionsList({ allPlans, subscriptions: initialSubscriptions 
           {/* Desktop Table View */}
           <div className="hidden lg:block space-y-0 border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-lg">
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
+            <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
               <div className="col-span-3 lg:col-span-2">Time & League</div>
               <div className="col-span-5">Teams</div>
               <div className="col-span-1 text-center">Score</div>
@@ -890,7 +890,7 @@ export function PredictionsList({ allPlans, subscriptions: initialSubscriptions 
                 </div>
 
                   {/* Header Bar */}
-                  <div className="bg-[#1e40af] text-white px-3 py-2 rounded grid grid-cols-3 gap-2 text-xs font-semibold">
+                  <div className="bg-[#1e3a8a] text-white px-3 py-2 rounded grid grid-cols-3 gap-2 text-xs font-semibold">
                     <div>Tip</div>
                     <div className="text-center">Odd</div>
                     <div className="text-center">Confidence</div>
@@ -921,7 +921,7 @@ export function PredictionsList({ allPlans, subscriptions: initialSubscriptions 
           {/* Desktop Table View */}
           <div className="hidden lg:block space-y-0 border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-lg">
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
+            <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] text-white px-3 sm:px-4 lg:px-6 py-3 lg:py-4 grid grid-cols-12 gap-2 lg:gap-4 items-center font-bold text-xs sm:text-sm shadow-md">
               <div className="col-span-3 lg:col-span-2">Time & League</div>
               <div className="col-span-5">Teams</div>
               <div className="col-span-1 text-center hidden sm:block">Status</div>

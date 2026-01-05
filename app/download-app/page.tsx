@@ -65,14 +65,14 @@ export default function DownloadAppPage() {
     <div className="flex min-h-screen flex-col">
       <Navbar />
       <main className="flex-1">
-        <section className="py-12 lg:py-20 bg-gradient-to-b from-[#1e40af] to-[#1e3a8a]">
+        <section className="py-12 lg:py-20 bg-gradient-to-b from-[#1e3a8a] to-[#1e3a8a]">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <div className="flex justify-center mb-6">
                 <div className="relative w-32 h-32 bg-white rounded-2xl p-4 shadow-2xl">
                   <Image
                     src="/logo.png"
-                    alt="PredictSafe Logo"
+                    alt="Fixed Match Pro Logo"
                     width={128}
                     height={128}
                     className="w-full h-full object-contain"
@@ -80,7 +80,7 @@ export default function DownloadAppPage() {
                 </div>
               </div>
               <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-                Download PredictSafe App
+                Download Fixed Match Pro App
               </h1>
               <p className="text-xl text-blue-100 mb-8">
                 Get faster access to predictions, live scores, and betting tips on your mobile device
@@ -100,7 +100,7 @@ export default function DownloadAppPage() {
                       App Already Installed
                     </CardTitle>
                     <CardDescription className="text-center">
-                      You're currently using the installed version of PredictSafe
+                      You're currently using the installed version of Fixed Match Pro
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="text-center">
@@ -115,13 +115,13 @@ export default function DownloadAppPage() {
                     <CardHeader>
                       <CardTitle className="text-2xl text-center">Install on iOS</CardTitle>
                       <CardDescription className="text-center">
-                        Follow these simple steps to add PredictSafe to your home screen
+                        Follow these simple steps to add Fixed Match Pro to your home screen
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-6">
                         <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-lg">
-                          <div className="flex-shrink-0 w-12 h-12 bg-[#1e40af] rounded-full flex items-center justify-center text-white font-bold text-lg">
+                          <div className="flex-shrink-0 w-12 h-12 bg-[#1e3a8a] rounded-full flex items-center justify-center text-white font-bold text-lg">
                             1
                           </div>
                           <div className="flex-1">
@@ -129,7 +129,7 @@ export default function DownloadAppPage() {
                             <p className="text-gray-600 mb-3">
                               Tap the <strong>Share button</strong> at the bottom of your Safari browser
                             </p>
-                            <div className="flex items-center gap-2 text-[#1e40af] font-semibold">
+                            <div className="flex items-center gap-2 text-[#1e3a8a] font-semibold">
                               <Share2 className="h-5 w-5" />
                               <span>Look for the Share icon (□↑)</span>
                             </div>
@@ -137,7 +137,7 @@ export default function DownloadAppPage() {
                         </div>
 
                         <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-lg">
-                          <div className="flex-shrink-0 w-12 h-12 bg-[#1e40af] rounded-full flex items-center justify-center text-white font-bold text-lg">
+                          <div className="flex-shrink-0 w-12 h-12 bg-[#1e3a8a] rounded-full flex items-center justify-center text-white font-bold text-lg">
                             2
                           </div>
                           <div className="flex-1">
@@ -145,7 +145,7 @@ export default function DownloadAppPage() {
                             <p className="text-gray-600 mb-3">
                               Scroll down in the share menu and tap <strong>"Add to Home Screen"</strong>
                             </p>
-                            <div className="flex items-center gap-2 text-[#1e40af] font-semibold">
+                            <div className="flex items-center gap-2 text-[#1e3a8a] font-semibold">
                               <Plus className="h-5 w-5" />
                               <span>Add to Home Screen option</span>
                             </div>
@@ -153,7 +153,7 @@ export default function DownloadAppPage() {
                         </div>
 
                         <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-lg">
-                          <div className="flex-shrink-0 w-12 h-12 bg-[#1e40af] rounded-full flex items-center justify-center text-white font-bold text-lg">
+                          <div className="flex-shrink-0 w-12 h-12 bg-[#1e3a8a] rounded-full flex items-center justify-center text-white font-bold text-lg">
                             3
                           </div>
                           <div className="flex-1">
@@ -161,20 +161,20 @@ export default function DownloadAppPage() {
                             <p className="text-gray-600 mb-3">
                               Review the app name and icon, then tap <strong>"Add"</strong> in the top right corner
                             </p>
-                            <div className="flex items-center gap-2 text-[#1e40af] font-semibold">
+                            <div className="flex items-center gap-2 text-[#1e3a8a] font-semibold">
                               <Check className="h-5 w-5" />
                               <span>Tap Add to confirm</span>
                             </div>
                           </div>
                         </div>
 
-                        <div className="mt-8 p-6 bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] rounded-lg text-white">
+                        <div className="mt-8 p-6 bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] rounded-lg text-white">
                           <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
                             <Smartphone className="h-5 w-5" />
                             You're All Set!
                           </h3>
                           <p className="text-blue-100">
-                            Once installed, you'll find the PredictSafe app on your home screen. 
+                            Once installed, you'll find the Fixed Match Pro app on your home screen. 
                             Tap it anytime to access predictions, live scores, and more!
                           </p>
                         </div>
@@ -190,7 +190,7 @@ export default function DownloadAppPage() {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Smartphone className="h-5 w-5 text-[#1e40af]" />
+                            <Smartphone className="h-5 w-5 text-[#1e3a8a]" />
                           </div>
                           <div>
                             <h4 className="font-semibold mb-1">Fast Access</h4>
@@ -199,7 +199,7 @@ export default function DownloadAppPage() {
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Download className="h-5 w-5 text-[#1e40af]" />
+                            <Download className="h-5 w-5 text-[#1e3a8a]" />
                           </div>
                           <div>
                             <h4 className="font-semibold mb-1">Offline Access</h4>
@@ -208,7 +208,7 @@ export default function DownloadAppPage() {
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Check className="h-5 w-5 text-[#1e40af]" />
+                            <Check className="h-5 w-5 text-[#1e3a8a]" />
                           </div>
                           <div>
                             <h4 className="font-semibold mb-1">App-like Experience</h4>
@@ -217,7 +217,7 @@ export default function DownloadAppPage() {
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <ArrowRight className="h-5 w-5 text-[#1e40af]" />
+                            <ArrowRight className="h-5 w-5 text-[#1e3a8a]" />
                           </div>
                           <div>
                             <h4 className="font-semibold mb-1">Push Notifications</h4>
@@ -234,7 +234,7 @@ export default function DownloadAppPage() {
                     <CardHeader>
                       <CardTitle className="text-2xl text-center">Install on Android</CardTitle>
                       <CardDescription className="text-center">
-                        Click the button below to install PredictSafe on your Android device
+                        Click the button below to install Fixed Match Pro on your Android device
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="text-center space-y-6">
@@ -242,10 +242,10 @@ export default function DownloadAppPage() {
                         <Button
                           onClick={handleInstall}
                           size="lg"
-                          className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e40af] text-white px-8 py-6 text-lg font-bold shadow-lg"
+                          className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] hover:from-[#1e3a8a] hover:to-[#1e3a8a] text-white px-8 py-6 text-lg font-bold shadow-lg"
                         >
                           <Download className="h-6 w-6 mr-2" />
-                          Install PredictSafe App
+                          Install Fixed Match Pro App
                         </Button>
                       ) : (
                         <div className="space-y-4">
@@ -263,7 +263,7 @@ export default function DownloadAppPage() {
                             </li>
                             <li className="flex items-start gap-2">
                               <span className="font-semibold">3.</span>
-                              <span>Tap it to install PredictSafe</span>
+                              <span>Tap it to install Fixed Match Pro</span>
                             </li>
                           </ol>
                         </div>
@@ -279,7 +279,7 @@ export default function DownloadAppPage() {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Smartphone className="h-5 w-5 text-[#1e40af]" />
+                            <Smartphone className="h-5 w-5 text-[#1e3a8a]" />
                           </div>
                           <div>
                             <h4 className="font-semibold mb-1">Fast Access</h4>
@@ -288,7 +288,7 @@ export default function DownloadAppPage() {
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Download className="h-5 w-5 text-[#1e40af]" />
+                            <Download className="h-5 w-5 text-[#1e3a8a]" />
                           </div>
                           <div>
                             <h4 className="font-semibold mb-1">Offline Access</h4>
@@ -297,7 +297,7 @@ export default function DownloadAppPage() {
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Check className="h-5 w-5 text-[#1e40af]" />
+                            <Check className="h-5 w-5 text-[#1e3a8a]" />
                           </div>
                           <div>
                             <h4 className="font-semibold mb-1">App-like Experience</h4>
@@ -306,7 +306,7 @@ export default function DownloadAppPage() {
                         </div>
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <ArrowRight className="h-5 w-5 text-[#1e40af]" />
+                            <ArrowRight className="h-5 w-5 text-[#1e3a8a]" />
                           </div>
                           <div>
                             <h4 className="font-semibold mb-1">Push Notifications</h4>
@@ -320,7 +320,7 @@ export default function DownloadAppPage() {
               ) : (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-2xl text-center">Download PredictSafe</CardTitle>
+                    <CardTitle className="text-2xl text-center">Download Fixed Match Pro</CardTitle>
                     <CardDescription className="text-center">
                       Visit this page on your mobile device to install the app
                     </CardDescription>
@@ -331,12 +331,12 @@ export default function DownloadAppPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                       <div className="p-4 bg-blue-50 rounded-lg">
-                        <Smartphone className="h-8 w-8 text-[#1e40af] mx-auto mb-2" />
+                        <Smartphone className="h-8 w-8 text-[#1e3a8a] mx-auto mb-2" />
                         <p className="font-semibold">iOS Device</p>
                         <p className="text-sm text-gray-600">Use Safari browser</p>
                       </div>
                       <div className="p-4 bg-blue-50 rounded-lg">
-                        <Smartphone className="h-8 w-8 text-[#1e40af] mx-auto mb-2" />
+                        <Smartphone className="h-8 w-8 text-[#1e3a8a] mx-auto mb-2" />
                         <p className="font-semibold">Android Device</p>
                         <p className="text-sm text-gray-600">Use Chrome browser</p>
                       </div>

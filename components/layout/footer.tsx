@@ -84,36 +84,36 @@ export function Footer() {
   }, [])
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-gray-800 text-white border-t border-gray-700">
-      <div className="container mx-auto px-4 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
+    <footer className="bg-gradient-to-br from-[#1e3a8a] via-[#1e3a8a] to-[#0f172a] text-white border-t border-[#1e3a8a]/50">
+      <div className="container mx-auto px-4 max-w-7xl py-8 lg:py-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-8">
           {/* Brand Section */}
-          <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
+          <div className="sm:col-span-2 lg:col-span-1">
+            <Link href="/" className="flex items-center gap-2 mb-3">
               <Image
                 src="/logo.png"
-                alt={`${config.site_header || 'PredictSafe'} Logo`}
-                width={70}
-                height={70}
-                className="w-auto object-contain"
+                alt={`${config.site_header || 'Fixed Match Pro'} Logo`}
+                width={60}
+                height={60}
+                className="w-auto object-contain brightness-0 invert"
                 priority
               />
             </Link>
-            <p className="text-sm text-gray-300 leading-relaxed mb-6">
+            <p className="text-sm text-white/90 leading-relaxed mb-4">
               {config.site_subheader || 'Your trusted source for accurate football predictions and betting tips.'}
             </p>
             
             {/* Social Media Icons */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {config.social_links?.facebook && (
                 <a
                   href={config.social_links.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-600 flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300"
                   aria-label="Facebook"
                 >
-                  <Facebook className="h-5 w-5 text-white" />
+                  <Facebook className="h-4 w-4 text-white" />
                 </a>
               )}
               {config.social_links?.twitter && (
@@ -121,10 +121,10 @@ export function Footer() {
                   href={config.social_links.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-black flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300"
                   aria-label="Twitter"
                 >
-                  <Twitter className="h-5 w-5 text-white" />
+                  <Twitter className="h-4 w-4 text-white" />
                 </a>
               )}
               {config.social_links?.instagram && (
@@ -132,10 +132,10 @@ export function Footer() {
                   href={config.social_links.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-gradient-to-r hover:from-purple-600 hover:via-pink-600 hover:to-orange-500 flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300"
                   aria-label="Instagram"
                 >
-                  <Instagram className="h-5 w-5 text-white" />
+                  <Instagram className="h-4 w-4 text-white" />
                 </a>
               )}
               {config.social_links?.youtube && (
@@ -143,10 +143,10 @@ export function Footer() {
                   href={config.social_links.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-600 flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300"
                   aria-label="YouTube"
                 >
-                  <Youtube className="h-5 w-5 text-white" />
+                  <Youtube className="h-4 w-4 text-white" />
                 </a>
               )}
               {config.social_links?.linkedin && (
@@ -154,10 +154,10 @@ export function Footer() {
                   href={config.social_links.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-700 flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300"
                   aria-label="LinkedIn"
                 >
-                  <Linkedin className="h-5 w-5 text-white" />
+                  <Linkedin className="h-4 w-4 text-white" />
                 </a>
               )}
               {config.telegram_link && (
@@ -165,10 +165,10 @@ export function Footer() {
                   href={config.telegram_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-500 flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300"
                   aria-label="Telegram"
                 >
-                  <Send className="h-5 w-5 text-white" />
+                  <Send className="h-4 w-4 text-white" />
                 </a>
               )}
             </div>
@@ -176,36 +176,31 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-bold mb-4 text-white">Quick Links</h4>
-            <ul className="space-y-3 text-sm">
+            <h4 className="text-sm font-bold mb-3 text-white uppercase tracking-wide">Quick Links</h4>
+            <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                  <span>Home</span>
+                <Link href="/" className="text-white/80 hover:text-white transition-colors">
+                  Home
                 </Link>
               </li>
               <li>
-                <Link href="/subscriptions" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                  <span>VIP Packages</span>
+                <Link href="/subscriptions" className="text-white/80 hover:text-white transition-colors">
+                  VIP Packages
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                  <span>Blog</span>
+                <Link href="/blog" className="text-white/80 hover:text-white transition-colors">
+                  Blog
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                  <span>FAQ</span>
+                <Link href="/faq" className="text-white/80 hover:text-white transition-colors">
+                  FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/advertise" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                  <span>Advertise With Us</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/download-app" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                  <span>Download App</span>
+                <Link href="/livescores" className="text-white/80 hover:text-white transition-colors">
+                  Live Scores
                 </Link>
               </li>
             </ul>
@@ -213,26 +208,21 @@ export function Footer() {
 
           {/* Predictions */}
           <div>
-            <h4 className="text-lg font-bold mb-4 text-white">Predictions</h4>
-            <ul className="space-y-3 text-sm">
+            <h4 className="text-sm font-bold mb-3 text-white uppercase tracking-wide">Predictions</h4>
+            <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/" className="text-white/80 hover:text-white transition-colors">
                   Free Tips
                 </Link>
               </li>
               <li>
-                <Link href="/subscriptions" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/subscriptions" className="text-white/80 hover:text-white transition-colors">
                   VIP Packages
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/dashboard" className="text-white/80 hover:text-white transition-colors">
                   Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link href="/livescores" className="text-gray-300 hover:text-white transition-colors">
-                  Live Scores
                 </Link>
               </li>
             </ul>
@@ -240,49 +230,44 @@ export function Footer() {
 
           {/* Legal & Contact */}
           <div>
-            <h4 className="text-lg font-bold mb-4 text-white">Legal & Support</h4>
-            <ul className="space-y-3 text-sm mb-6">
+            <h4 className="text-sm font-bold mb-3 text-white uppercase tracking-wide">Legal & Support</h4>
+            <ul className="space-y-2 text-sm mb-4">
               <li>
-                <Link href="/terms" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/terms" className="text-white/80 hover:text-white transition-colors">
                   Terms & Conditions
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/privacy" className="text-white/80 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/disclaimer" className="text-gray-300 hover:text-white transition-colors">
-                  Disclaimer
+                <Link href="/about" className="text-white/80 hover:text-white transition-colors">
+                  About Us
                 </Link>
               </li>
               <li>
-                <Link href="/refund" className="text-gray-300 hover:text-white transition-colors">
-                  Refund Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/cookies" className="text-gray-300 hover:text-white transition-colors">
-                  Cookie Policy
+                <Link href="/contact" className="text-white/80 hover:text-white transition-colors">
+                  Contact
                 </Link>
               </li>
             </ul>
             
             {/* Contact Info */}
             {(config.contact_email || config.whatsapp_number) && (
-              <div className="mt-6 pt-6 border-t border-gray-700 space-y-2">
-            {config.contact_email && (
-                  <div className="flex items-center gap-2 text-gray-300 text-sm">
-                  <Mail className="h-4 w-4" />
-                  <a href={`mailto:${config.contact_email}`} className="hover:text-white transition-colors">
-                    {config.contact_email}
-                  </a>
-                </div>
+              <div className="pt-4 border-t border-white/10 space-y-2">
+                {config.contact_email && (
+                  <div className="flex items-center gap-2 text-white/80 text-xs">
+                    <Mail className="h-3.5 w-3.5" />
+                    <a href={`mailto:${config.contact_email}`} className="hover:text-white transition-colors">
+                      {config.contact_email}
+                    </a>
+                  </div>
                 )}
                 {config.whatsapp_number && (
-                  <div className="flex items-center gap-2 text-gray-300 text-sm">
-                    <Phone className="h-4 w-4" />
+                  <div className="flex items-center gap-2 text-white/80 text-xs">
+                    <Phone className="h-3.5 w-3.5" />
                     <a 
                       href={`https://wa.me/${config.whatsapp_number.replace(/[^0-9]/g, '')}`}
                       target="_blank"
@@ -299,18 +284,12 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-gray-700">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-400 text-center md:text-left">
-              © {new Date().getFullYear()} {config.site_header || 'PredictSafe'}. All rights reserved.
+        <div className="pt-6 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-white/70 text-center sm:text-left">
+              © {new Date().getFullYear()} {config.site_header || 'Fixed Match Pro'}. All rights reserved.
             </p>
-            <div className="flex items-center gap-6 text-sm text-gray-400">
-              <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
-              <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
-            </div>
-          </div>
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-xs text-white/60">
               Crafted by{' '}
               <a 
                 href="https://jabulaniusen.com" 

@@ -19,9 +19,9 @@ export function PageLayout({ children, title, subtitle }: PageLayoutProps) {
       {/* Hero Section with Background */}
       <section className="relative min-h-[200px] flex items-center overflow-hidden">
         {/* Background Image with Fallback */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#1e40af] to-[#1e3a8a]">
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#1e3a8a] to-[#0f172a]">
           <Image
-            src="/hero-pics/hero.jpg"
+            src="/heropic.jpg"
             alt="Background"
             fill
             className="object-cover"

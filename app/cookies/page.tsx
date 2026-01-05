@@ -7,13 +7,13 @@ export default function CookiesPage() {
       <Navbar />
       <main className="flex-1 bg-gray-50">
       <div className="container mx-auto px-4 py-8 lg:py-16 max-w-4xl">
-        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Cookie Policy — PredictSafe</h1>
+        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Cookie Policy — Fixed Match Pro</h1>
         <p className="text-sm text-gray-600 mb-8">Last Updated: {new Date().toLocaleDateString()}</p>
 
         <div className="prose prose-lg max-w-none space-y-6 text-gray-700">
           <section>
             <p className="text-base lg:text-lg leading-relaxed">
-              This Cookie Policy explains how PredictSafe ("we", "our", "us") uses cookies and similar technologies on our website. By accessing or using PredictSafe.com, you agree to the use of cookies as described below.
+              This Cookie Policy explains how Fixed Match Pro ("we", "our", "us") uses cookies and similar technologies on our website. By accessing or using Fixed Match Pro.com, you agree to the use of cookies as described below.
             </p>
             <p className="text-base lg:text-lg leading-relaxed mt-4">
               If you do not agree, you may disable cookies through your browser settings (see Section 5).
@@ -21,7 +21,7 @@ export default function CookiesPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">1. What Are Cookies?</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">1. What Are Cookies?</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">
               Cookies are small text files stored on your device (computer, tablet, mobile) when you visit a website. They help websites function properly, remember user preferences, and improve user experience.
             </p>
@@ -29,13 +29,13 @@ export default function CookiesPage() {
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>Session Cookies (deleted when you close your browser)</li>
               <li>Persistent Cookies (stored for a set period)</li>
-              <li>First-Party Cookies (from PredictSafe)</li>
+              <li>First-Party Cookies (from Fixed Match Pro)</li>
               <li>Third-Party Cookies (from external services we use)</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">2. How PredictSafe Uses Cookies</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">2. How Fixed Match Pro Uses Cookies</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">We use cookies to:</p>
             
             <h3 className="text-xl font-semibold mt-6 mb-3">a. Improve Website Functionality</h3>
@@ -63,7 +63,7 @@ export default function CookiesPage() {
               <li>Device type</li>
             </ul>
             <p className="text-base lg:text-lg leading-relaxed mt-4">
-              This helps us improve performance and optimize PredictSafe.
+              This helps us improve performance and optimize Fixed Match Pro.
             </p>
 
             <h3 className="text-xl font-semibold mt-6 mb-3">d. Security & Fraud Prevention</h3>
@@ -81,8 +81,8 @@ export default function CookiesPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">3. Third-Party Cookies We Use</h2>
-            <p className="text-base lg:text-lg leading-relaxed mb-4">PredictSafe may use trusted third-party services such as:</p>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">3. Third-Party Cookies We Use</h2>
+            <p className="text-base lg:text-lg leading-relaxed mb-4">Fixed Match Pro may use trusted third-party services such as:</p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>Google Analytics (user behavior insights)</li>
               <li>Payment gateways (for secure transactions)</li>
@@ -94,7 +94,7 @@ export default function CookiesPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">4. What Data Cookies Collect</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">4. What Data Cookies Collect</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">Cookies may collect non-personal data such as:</p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>IP address</li>
@@ -109,7 +109,7 @@ export default function CookiesPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">5. How to Manage or Disable Cookies</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">5. How to Manage or Disable Cookies</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">You may disable or control cookies through your browser settings.</p>
             <p className="text-base lg:text-lg leading-relaxed mb-4">Common browsers:</p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
@@ -120,23 +120,23 @@ export default function CookiesPage() {
             </ul>
             <div className="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
               <p className="text-base lg:text-lg leading-relaxed font-semibold text-yellow-800">
-                Important: Disabling cookies may cause parts of PredictSafe to malfunction (e.g., login, subscriptions, dashboard access).
+                Important: Disabling cookies may cause parts of Fixed Match Pro to malfunction (e.g., login, subscriptions, dashboard access).
               </p>
             </div>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">6. Changes to This Cookie Policy</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">6. Changes to This Cookie Policy</h2>
             <p className="text-base lg:text-lg leading-relaxed">
-              We may update this policy occasionally to reflect changes in technology or regulations. Your continued use of PredictSafe confirms acceptance of the updated policy.
+              We may update this policy occasionally to reflect changes in technology or regulations. Your continued use of Fixed Match Pro confirms acceptance of the updated policy.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">7. Contact Us</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">7. Contact Us</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">If you have questions about cookies or data usage:</p>
             <ul className="list-none space-y-2 text-base lg:text-lg">
-              <li>📩 Support Email: <a href="mailto:predictsafe@gmail.com" className="text-[#1e40af] hover:underline">predictsafe@gmail.com</a></li>
+              <li>📩 Support Email: <a href="mailto:fixedmatchpro@gmail.com" className="text-[#1e3a8a] hover:underline">fixedmatchpro@gmail.com</a></li>
             </ul>
           </section>
         </div>

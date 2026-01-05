@@ -693,7 +693,7 @@ export function PlansManager({ plans, subscriptions }: PlansManagerProps) {
                         <Button
                           size="sm"
                           onClick={() => handleCreatePrice(plan.id)}
-                          className="bg-[#1e40af] hover:bg-[#1e3a8a]"
+                          className="bg-[#1e3a8a] hover:bg-[#1e3a8a]"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Add Price

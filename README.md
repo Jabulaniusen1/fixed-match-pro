@@ -1,4 +1,4 @@
-# PredictSafe - Bet Prediction Web App
+# Fixed Match Pro - Bet Prediction Web App
 
 A comprehensive bet prediction web application built with Next.js, Supabase, and Tailwind CSS.
 

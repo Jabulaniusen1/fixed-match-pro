@@ -67,7 +67,7 @@ export function ProfitMultiplierSection() {
       <div className="container mx-auto px-4">
         <div className="mb-4 lg:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 lg:gap-0">
           <div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1e40af] mb-1 lg:mb-2">Profit Multiplier</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1e3a8a] mb-1 lg:mb-2">Profit Multiplier</h2>
             <p className="text-sm lg:text-base text-gray-600">Premium high-odds predictions (Locked Preview)</p>
           </div>
           <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
@@ -75,8 +75,8 @@ export function ProfitMultiplierSection() {
               onClick={() => setDateType('previous')}
               className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                 dateType === 'previous'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                  ? 'bg-[#1e3a8a] text-white shadow-sm'
+                  : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
               }`}
             >
               Previous
@@ -85,8 +85,8 @@ export function ProfitMultiplierSection() {
               onClick={() => setDateType('today')}
               className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                 dateType === 'today'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                  ? 'bg-[#1e3a8a] text-white shadow-sm'
+                  : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
               }`}
             >
               Today
@@ -95,8 +95,8 @@ export function ProfitMultiplierSection() {
               onClick={() => setDateType('tomorrow')}
               className={`px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
                 dateType === 'tomorrow'
-                  ? 'bg-[#1e40af] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-[#1e40af] hover:bg-white'
+                  ? 'bg-[#1e3a8a] text-white shadow-sm'
+                  : 'text-gray-600 hover:text-[#1e3a8a] hover:bg-white'
               }`}
             >
               Tomorrow
@@ -132,7 +132,7 @@ export function ProfitMultiplierSection() {
                 </Button>
               </div>
             </div>
-            <CardHeader className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white opacity-30">
+            <CardHeader className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] text-white opacity-30">
               <CardTitle className="text-lg font-bold">
                 Premium Predictions
               </CardTitle>
@@ -148,7 +148,7 @@ export function ProfitMultiplierSection() {
                 </div>
                 <div className="flex items-center justify-between p-2 bg-white rounded">
                   <span className="text-sm font-semibold text-gray-700">Odds:</span>
-                  <span className="text-sm font-bold text-[#1e40af]">2.80 - 4.30</span>
+                  <span className="text-sm font-bold text-[#1e3a8a]">2.80 - 4.30</span>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-white rounded">
                   <span className="text-sm font-semibold text-gray-700">Confidence:</span>
@@ -174,7 +174,7 @@ export function ProfitMultiplierSection() {
                     </Button>
                   </div>
                 </div>
-                <CardHeader className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white">
+                <CardHeader className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] text-white">
                   <CardTitle className="text-lg font-bold">
                     {prediction.home_team} vs {prediction.away_team}
                   </CardTitle>
@@ -190,7 +190,7 @@ export function ProfitMultiplierSection() {
                     </div>
                     <div className="flex items-center justify-between p-2 bg-white rounded">
                       <span className="text-sm font-semibold text-gray-700">Odds:</span>
-                      <span className="text-sm font-bold text-[#1e40af] opacity-50">{prediction.odds}</span>
+                      <span className="text-sm font-bold text-[#1e3a8a] opacity-50">{prediction.odds}</span>
                     </div>
                     <div className="flex items-center justify-between p-2 bg-white rounded">
                       <span className="text-sm font-semibold text-gray-700">Confidence:</span>

@@ -6,7 +6,7 @@ import { Database } from '@/types/database'
 export const revalidate = 3600 // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://predictsafe.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fixedmatchpro.com'
   
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [

@@ -53,80 +53,118 @@ export function LeagueTableSection() {
   const currentStandings = standings[activeLeague] || []
 
   return (
-    <section className="py-8 lg:py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="mb-4 lg:mb-8">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 lg:mb-2 text-[#1e40af]">League Tables</h2>
-          <p className="text-sm lg:text-base text-gray-600">Current standings for top European leagues</p>
+    <section className="py-8 lg:py-12 bg-gradient-to-b from-white via-gray-50/30 to-white">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="mb-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900">League Tables</h2>
+          <p className="text-sm text-gray-600">Current standings for top European leagues</p>
         </div>
-        <Card className="border-2 border-gray-200 shadow-xl">
-          <CardHeader className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white p-4 lg:p-6">
-            <CardTitle className="text-lg lg:text-2xl">Top 5 Leagues</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Tabs value={activeLeague} onValueChange={setActiveLeague}>
-              <div className="overflow-x-auto px-2 lg:px-4 pt-4">
-                <TabsList className="grid w-full grid-cols-5 bg-gray-100 p-1 rounded-lg min-w-[500px] lg:min-w-0">
-                  <TabsTrigger value={TOP_LEAGUES.PREMIER_LEAGUE} className="data-[state=active]:bg-[#1e40af] data-[state=active]:text-white font-semibold text-xs lg:text-sm px-1 lg:px-2">Premier League</TabsTrigger>
-                  <TabsTrigger value={TOP_LEAGUES.LA_LIGA} className="data-[state=active]:bg-[#1e40af] data-[state=active]:text-white font-semibold text-xs lg:text-sm px-1 lg:px-2">La Liga</TabsTrigger>
-                  <TabsTrigger value={TOP_LEAGUES.SERIE_A} className="data-[state=active]:bg-[#1e40af] data-[state=active]:text-white font-semibold text-xs lg:text-sm px-1 lg:px-2">Serie A</TabsTrigger>
-                  <TabsTrigger value={TOP_LEAGUES.BUNDESLIGA} className="data-[state=active]:bg-[#1e40af] data-[state=active]:text-white font-semibold text-xs lg:text-sm px-1 lg:px-2">Bundesliga</TabsTrigger>
-                  <TabsTrigger value={TOP_LEAGUES.LIGUE_1} className="data-[state=active]:bg-[#1e40af] data-[state=active]:text-white font-semibold text-xs lg:text-sm px-1 lg:px-2">Ligue 1</TabsTrigger>
-                </TabsList>
-              </div>
-              {Object.values(TOP_LEAGUES).map((leagueId) => (
-                <TabsContent key={leagueId} value={leagueId} className="m-0">
-                  {loading ? (
-                    <div className="py-12 text-center">Loading standings...</div>
-                  ) : currentStandings.length === 0 ? (
-                    <div className="py-12 text-center text-muted-foreground">
-                      No standings available
-                    </div>
-                  ) : (
+        
+        {/* League Tabs - Horizontal Pills */}
+        <div className="mb-6">
+          <Tabs value={activeLeague} onValueChange={setActiveLeague}>
+            <div className="flex flex-wrap justify-center gap-2">
+              <TabsList className="bg-transparent p-0 h-auto">
+                <TabsTrigger 
+                  value={TOP_LEAGUES.PREMIER_LEAGUE} 
+                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
+                >
+                  Premier League
+                </TabsTrigger>
+                <TabsTrigger 
+                  value={TOP_LEAGUES.LA_LIGA} 
+                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
+                >
+                  La Liga
+                </TabsTrigger>
+                <TabsTrigger 
+                  value={TOP_LEAGUES.SERIE_A} 
+                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
+                >
+                  Serie A
+                </TabsTrigger>
+                <TabsTrigger 
+                  value={TOP_LEAGUES.BUNDESLIGA} 
+                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
+                >
+                  Bundesliga
+                </TabsTrigger>
+                <TabsTrigger 
+                  value={TOP_LEAGUES.LIGUE_1} 
+                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
+                >
+                  Ligue 1
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            
+            {Object.values(TOP_LEAGUES).map((leagueId) => (
+              <TabsContent key={leagueId} value={leagueId} className="mt-6">
+                {loading ? (
+                  <div className="py-12 text-center text-gray-500">Loading standings...</div>
+                ) : currentStandings.length === 0 ? (
+                  <div className="py-12 text-center text-gray-500">
+                    No standings available
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div className="overflow-x-auto">
                       <Table>
                         <TableHeader>
-                          <TableRow className="bg-[#1e40af] text-white hover:bg-[#1e3a8a]">
-                            <TableHead className="w-8 lg:w-12 font-bold text-white text-xs lg:text-sm">Pos</TableHead>
-                            <TableHead className="font-bold text-white text-xs lg:text-sm">Team</TableHead>
-                            <TableHead className="text-center font-bold text-white text-xs lg:text-sm">MP</TableHead>
-                            <TableHead className="text-center font-bold text-white text-xs lg:text-sm">W</TableHead>
-                            <TableHead className="text-center font-bold text-white text-xs lg:text-sm">D</TableHead>
-                            <TableHead className="text-center font-bold text-white text-xs lg:text-sm">L</TableHead>
-                            <TableHead className="text-center font-bold text-white text-xs lg:text-sm hidden sm:table-cell">GD</TableHead>
-                            <TableHead className="text-center font-bold text-white text-xs lg:text-sm">Pts</TableHead>
+                          <TableRow className="bg-gray-50 border-b border-gray-200">
+                            <TableHead className="w-12 font-semibold text-gray-700 text-xs py-3">#</TableHead>
+                            <TableHead className="font-semibold text-gray-700 text-xs py-3">Team</TableHead>
+                            <TableHead className="text-center font-semibold text-gray-700 text-xs py-3">MP</TableHead>
+                            <TableHead className="text-center font-semibold text-gray-700 text-xs py-3">W</TableHead>
+                            <TableHead className="text-center font-semibold text-gray-700 text-xs py-3">D</TableHead>
+                            <TableHead className="text-center font-semibold text-gray-700 text-xs py-3">L</TableHead>
+                            <TableHead className="text-center font-semibold text-gray-700 text-xs hidden sm:table-cell py-3">GD</TableHead>
+                            <TableHead className="text-center font-semibold text-gray-700 text-xs py-3">Pts</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {Array.isArray(currentStandings) && currentStandings.length > 0 ? (
                             currentStandings.slice(0, 20).map((team: Standing, index: number) => {
                               const goalsDiff = parseInt(team.overall_league_GF || '0') - parseInt(team.overall_league_GA || '0')
+                              const isTopThree = parseInt(team.overall_league_position || '0') <= 3
                               return (
                                 <TableRow 
                                   key={team.team_id}
-                                  className={`hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 hover:shadow-md transition-all duration-300 cursor-pointer transform hover:scale-[1.01] ${
-                                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                                  className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                                    isTopThree ? 'bg-gradient-to-r from-yellow-50/50 to-orange-50/50' : index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
                                   }`}
                                 >
-                                  <TableCell className="font-bold text-[#1e40af] text-xs lg:text-sm">{team.overall_league_position}</TableCell>
-                                  <TableCell className="flex items-center gap-1 lg:gap-2 font-semibold text-xs lg:text-sm">
-                                    {team.team_badge && (
-                                      <img src={team.team_badge} alt={team.team_name} className="w-4 h-4 lg:w-6 lg:h-6" />
-                                    )}
-                                    <span className="truncate">{team.team_name}</span>
+                                  <TableCell className="font-bold text-gray-900 text-sm py-3">
+                                    <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${
+                                      isTopThree ? 'bg-[#1e3a8a] text-white' : 'bg-gray-200 text-gray-700'
+                                    }`}>
+                                      {team.overall_league_position}
+                                    </span>
                                   </TableCell>
-                                  <TableCell className="text-center font-medium text-xs lg:text-sm">{team.overall_league_payed}</TableCell>
-                                  <TableCell className="text-center font-medium text-[#22c55e] text-xs lg:text-sm">{team.overall_league_W}</TableCell>
-                                  <TableCell className="text-center font-medium text-xs lg:text-sm">{team.overall_league_D}</TableCell>
-                                  <TableCell className="text-center font-medium text-red-500 text-xs lg:text-sm">{team.overall_league_L}</TableCell>
-                                  <TableCell className="text-center font-semibold text-xs lg:text-sm hidden sm:table-cell">{goalsDiff > 0 ? '+' : ''}{goalsDiff}</TableCell>
-                                  <TableCell className="text-center font-bold text-base lg:text-lg text-[#1e40af]">{team.overall_league_PTS}</TableCell>
+                                  <TableCell className="py-3">
+                                    <div className="flex items-center gap-2">
+                                      {team.team_badge && (
+                                        <img src={team.team_badge} alt={team.team_name} className="w-6 h-6 object-contain" />
+                                      )}
+                                      <span className="font-medium text-sm text-gray-900 truncate">{team.team_name}</span>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-center text-sm text-gray-600 py-3">{team.overall_league_payed}</TableCell>
+                                  <TableCell className="text-center font-semibold text-sm text-green-600 py-3">{team.overall_league_W}</TableCell>
+                                  <TableCell className="text-center text-sm text-gray-600 py-3">{team.overall_league_D}</TableCell>
+                                  <TableCell className="text-center font-semibold text-sm text-red-500 py-3">{team.overall_league_L}</TableCell>
+                                  <TableCell className="text-center text-sm text-gray-700 hidden sm:table-cell py-3">
+                                    <span className={goalsDiff > 0 ? 'text-green-600' : goalsDiff < 0 ? 'text-red-500' : 'text-gray-600'}>
+                                      {goalsDiff > 0 ? '+' : ''}{goalsDiff}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell className="text-center font-bold text-base text-[#1e3a8a] py-3">{team.overall_league_PTS}</TableCell>
                                 </TableRow>
                               )
                             })
                           ) : (
                             <TableRow>
-                              <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                              <TableCell colSpan={8} className="text-center py-12 text-gray-500">
                                 No standings data available
                               </TableCell>
                             </TableRow>
@@ -134,12 +172,12 @@ export function LeagueTableSection() {
                         </TableBody>
                       </Table>
                     </div>
-                  )}
-                </TabsContent>
-              ))}
-            </Tabs>
-          </CardContent>
-        </Card>
+                  </div>
+                )}
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
       </div>
     </section>
   )

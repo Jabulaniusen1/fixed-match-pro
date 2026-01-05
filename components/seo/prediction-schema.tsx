@@ -28,17 +28,17 @@ export function PredictionSchema({ predictions }: PredictionSchemaProps) {
     const organizationSchema = {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      name: 'PredictSafe',
-      url: 'https://predictsafe.com',
-      logo: 'https://predictsafe.com/logo.png',
-      description: 'Accurate football predictions and betting tips',
+      name: 'Fixed Match Pro',
+      url: 'https://fixedmatchpro.com',
+      logo: 'https://fixedmatchpro.com/logo.png',
+      description: 'Professional fixed match predictions and accurate betting tips',
       sameAs: [
-        'https://t.me/predictsafe',
+        'https://t.me/fixedmatchpro',
       ],
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'Customer Service',
-        email: 'support@predictsafe.com',
+        email: 'support@fixedmatchpro.com',
       },
     }
 
@@ -46,13 +46,13 @@ export function PredictionSchema({ predictions }: PredictionSchemaProps) {
     const websiteSchema = {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'PredictSafe',
-      url: 'https://predictsafe.com',
+      name: 'Fixed Match Pro',
+      url: 'https://fixedmatchpro.com',
       potentialAction: {
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: 'https://predictsafe.com/search?q={search_term_string}',
+          urlTemplate: 'https://fixedmatchpro.com/search?q={search_term_string}',
         },
         'query-input': 'required name=search_term_string',
       },
@@ -65,9 +65,9 @@ export function PredictionSchema({ predictions }: PredictionSchemaProps) {
       serviceType: 'Football Prediction Service',
       provider: {
         '@type': 'Organization',
-        name: 'PredictSafe',
+        name: 'Fixed Match Pro',
       },
-      description: 'Professional football predictions and betting tips',
+      description: 'Professional fixed match predictions and accurate betting tips',
       areaServed: 'Worldwide',
       offers: {
         '@type': 'Offer',

@@ -234,7 +234,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <Link href="/admin" className="flex-shrink-0" onClick={handleNavClick}>
             <Image
               src="/logo.png"
-              alt="PredictSafe Logo"
+              alt="Fixed Match Pro Logo"
               width={60}
               height={60}
               className="w-auto h-12 lg:h-16 object-contain"

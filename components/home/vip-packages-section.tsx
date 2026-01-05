@@ -199,7 +199,7 @@ export function VIPPackagesSection() {
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-6 lg:mb-12">
-          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-2 lg:mb-4 text-[#1e40af]">Choose Your Plan</h2>
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-2 lg:mb-4 text-[#1e3a8a]">Choose Your Plan</h2>
           <p className="text-sm sm:text-base lg:text-xl text-gray-600 mb-4 lg:mb-8 max-w-2xl mx-auto px-2">
             Select the perfect package to maximize your betting success
           </p>
@@ -210,8 +210,8 @@ export function VIPPackagesSection() {
               onClick={() => setBillingPeriod('weekly')}
               className={`px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm lg:text-base font-semibold transition-all ${
                 billingPeriod === 'weekly'
-                  ? 'bg-[#1e40af] text-white shadow-md'
-                  : 'text-gray-600 hover:text-[#1e40af]'
+                  ? 'bg-[#1e3a8a] text-white shadow-md'
+                  : 'text-gray-600 hover:text-[#1e3a8a]'
               }`}
             >
               Weekly
@@ -220,8 +220,8 @@ export function VIPPackagesSection() {
               onClick={() => setBillingPeriod('monthly')}
               className={`px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm lg:text-base font-semibold transition-all ${
                 billingPeriod === 'monthly'
-                  ? 'bg-[#1e40af] text-white shadow-md'
-                  : 'text-gray-600 hover:text-[#1e40af]'
+                  ? 'bg-[#1e3a8a] text-white shadow-md'
+                  : 'text-gray-600 hover:text-[#1e3a8a]'
               }`}
             >
               Monthly
@@ -253,7 +253,7 @@ export function VIPPackagesSection() {
                 >
                   <Card 
                     className={`h-full flex flex-col bg-white border border-gray-200 shadow-sm transition-all duration-300 ${
-                      isPopular ? 'border-[#1e40af] border-2' : ''
+                      isPopular ? 'border-[#1e3a8a] border-2' : ''
                     }`}
                   >
                     <CardHeader className="pb-4 pt-6 px-6 bg-white">
@@ -309,13 +309,13 @@ export function VIPPackagesSection() {
                           <ul className="space-y-2.5">
                             {plan.benefits.map((benefit, idx) => (
                               <li key={idx} className="flex items-start gap-2">
-                                <Check className="h-4 w-4 text-[#1e40af] flex-shrink-0 mt-0.5" />
+                                <Check className="h-4 w-4 text-[#1e3a8a] flex-shrink-0 mt-0.5" />
                                 <span className="text-sm text-gray-900">{benefit}</span>
                               </li>
                             ))}
                             {plan.max_predictions_per_day && (
                               <li className="flex items-start gap-2">
-                                <Check className="h-4 w-4 text-[#1e40af] flex-shrink-0 mt-0.5" />
+                                <Check className="h-4 w-4 text-[#1e3a8a] flex-shrink-0 mt-0.5" />
                                 <span className="text-sm text-gray-900">
                                   Up to {plan.max_predictions_per_day} predictions per day
                                 </span>

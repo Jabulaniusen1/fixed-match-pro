@@ -1,6 +1,6 @@
 # SEO Setup Documentation
 
-This document outlines the SEO improvements implemented for PredictSafe.
+This document outlines the SEO improvements implemented for Fixed Match Pro.
 
 ## 1. Robots.txt
 
@@ -158,7 +158,7 @@ export default function MatchPage({ match, prediction }) {
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Page Title | PredictSafe',
+  title: 'Page Title | Fixed Match Pro',
   description: 'Page description for SEO',
   keywords: ['keyword1', 'keyword2', 'keyword3'],
   robots: {

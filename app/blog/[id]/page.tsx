@@ -49,7 +49,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${blogPost.title} | PredictSafe Blog`,
+    title: `${blogPost.title} | Fixed Match Pro Blog`,
     description: description,
     keywords: blogPost.meta_keywords 
       ? blogPost.meta_keywords.split(',').map(k => k.trim())
@@ -162,7 +162,7 @@ export default async function BlogPostPage({
 
         <article className="prose prose-lg max-w-none">
           <header className="mb-8">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-[#1e40af]">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-[#1e3a8a]">
               {blogPost.title}
             </h1>
             
@@ -216,7 +216,7 @@ export default async function BlogPostPage({
 
           <div 
             className="blog-content text-base lg:text-lg text-gray-700 leading-relaxed prose prose-lg max-w-none
-              prose-headings:text-[#1e40af] prose-headings:font-bold
+              prose-headings:text-[#1e3a8a] prose-headings:font-bold
               prose-p:mb-4 prose-p:leading-relaxed
               prose-a:text-red-600 prose-a:no-underline hover:prose-a:underline
               prose-strong:font-bold prose-strong:text-gray-900

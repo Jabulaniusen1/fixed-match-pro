@@ -7,20 +7,20 @@ export default function RefundPage() {
       <Navbar />
       <main className="flex-1 bg-gray-50">
       <div className="container mx-auto px-4 py-8 lg:py-16 max-w-4xl">
-        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Refund Policy — PredictSafe</h1>
+        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Refund Policy — Fixed Match Pro</h1>
         <p className="text-sm text-gray-600 mb-8">Last Updated: {new Date().toLocaleDateString()}</p>
 
         <div className="prose prose-lg max-w-none space-y-6 text-gray-700">
           <section>
             <p className="text-base lg:text-lg leading-relaxed">
-              At PredictSafe, we are committed to delivering high-quality, data-driven football predictions and premium betting intelligence. Because our services provide instant digital access to valuable information, our refund policy is structured to ensure fairness, transparency, and user protection.
+              At Fixed Match Pro, we are committed to delivering high-quality, data-driven football predictions and premium betting intelligence. Because our services provide instant digital access to valuable information, our refund policy is structured to ensure fairness, transparency, and user protection.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">1. No Refund on Delivered Digital Services</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">1. No Refund on Delivered Digital Services</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">
-              All PredictSafe plans (VIP Packages, Predictions, Subscriptions, and Digital Features) become non-refundable once:
+              All Fixed Match Pro plans (VIP Packages, Predictions, Subscriptions, and Digital Features) become non-refundable once:
             </p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>Access to predictions has been granted, or</li>
@@ -32,7 +32,7 @@ export default function RefundPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">2. Duplicate Payments / Accidental Overcharge</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">2. Duplicate Payments / Accidental Overcharge</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">If you are charged twice for the same plan or payment method error occurs:</p>
             <ul className="list-none space-y-2 text-base lg:text-lg">
               <li className="flex items-start gap-2">
@@ -50,12 +50,12 @@ export default function RefundPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">3. Failed Subscription Activation</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">3. Failed Subscription Activation</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">If a user pays but the system fails to activate their plan:</p>
             <ul className="list-none space-y-2 text-base lg:text-lg">
               <li className="flex items-start gap-2">
                 <span className="text-green-600 font-bold">✔</span>
-                <span>The PredictSafe support team will manually verify the payment.</span>
+                <span>The Fixed Match Pro support team will manually verify the payment.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-green-600 font-bold">✔</span>
@@ -69,7 +69,7 @@ export default function RefundPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">4. Unauthorized Transactions</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">4. Unauthorized Transactions</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">If you notice a payment on your account that you did not authorize:</p>
             <ul className="list-none space-y-2 text-base lg:text-lg">
               <li className="flex items-start gap-2">
@@ -88,8 +88,8 @@ export default function RefundPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">5. Network or Local Payment Issues</h2>
-            <p className="text-base lg:text-lg leading-relaxed mb-4">PredictSafe is not responsible for:</p>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">5. Network or Local Payment Issues</h2>
+            <p className="text-base lg:text-lg leading-relaxed mb-4">Fixed Match Pro is not responsible for:</p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>Network failures</li>
               <li>Bank delays</li>
@@ -103,7 +103,7 @@ export default function RefundPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">6. Non-Performance-Based Complaints</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">6. Non-Performance-Based Complaints</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">Refunds will not be granted for reasons such as:</p>
             <ul className="list-disc list-inside space-y-2 text-base lg:text-lg ml-4">
               <li>Losses from betting slips</li>
@@ -118,27 +118,27 @@ export default function RefundPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">7. Subscription Duration</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">7. Subscription Duration</h2>
             <p className="text-base lg:text-lg leading-relaxed">
               All subscription periods begin counting from the moment the plan is activated — either automatically or manually after verification. Users are responsible for monitoring their subscription timeline.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-[#1e40af] mt-8 mb-4">8. Contact for Refund or Payment Issues</h2>
+            <h2 className="text-2xl font-bold text-[#1e3a8a] mt-8 mb-4">8. Contact for Refund or Payment Issues</h2>
             <p className="text-base lg:text-lg leading-relaxed mb-4">If you have questions or need assistance, contact our support team:</p>
             <ul className="list-none space-y-2 text-base lg:text-lg">
-              <li>📧 Support Email: <a href="mailto:predictsafe@gmail.com" className="text-[#1e40af] hover:underline">predictsafe@gmail.com</a></li>
+              <li>📧 Support Email: <a href="mailto:fixedmatchpro@gmail.com" className="text-[#1e3a8a] hover:underline">fixedmatchpro@gmail.com</a></li>
             </ul>
             <p className="text-base lg:text-lg leading-relaxed mt-4">
               Our team responds within 24 hours.
             </p>
           </section>
 
-          <section className="mt-8 p-4 bg-gray-50 rounded-lg border-l-4 border-[#1e40af]">
-            <h2 className="text-xl font-bold text-[#1e40af] mb-2">Final Note</h2>
+          <section className="mt-8 p-4 bg-gray-50 rounded-lg border-l-4 border-[#1e3a8a]">
+            <h2 className="text-xl font-bold text-[#1e3a8a] mb-2">Final Note</h2>
             <p className="text-base lg:text-lg leading-relaxed">
-              By subscribing to any PredictSafe service, you agree to this Refund Policy. We are dedicated to providing value, clarity, and a trustworthy experience throughout your time with us.
+              By subscribing to any Fixed Match Pro service, you agree to this Refund Policy. We are dedicated to providing value, clarity, and a trustworthy experience throughout your time with us.
             </p>
           </section>
         </div>

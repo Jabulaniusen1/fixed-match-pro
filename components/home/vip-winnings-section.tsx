@@ -304,24 +304,52 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
     return '-'
   }
 
+  // Calculate statistics
+  const totalWinnings = winnings.length
+  const winCount = winnings.filter(w => w.result === 'win').length
+  const winRate = totalWinnings > 0 ? Math.round((winCount / totalWinnings) * 100) : 0
+
   return (
-    <section className="py-4 lg:py-8 bg-white">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-4 lg:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 lg:mb-2 text-[#1e40af]">VIP Winnings</h2>
-            <p className="text-sm lg:text-base text-gray-600">Track our successful VIP predictions</p>
+    <section className="py-8 lg:py-12 bg-white">
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Header with Statistics */}
+        <div className="mb-8 lg:mb-12">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 text-[#1e3a8a]">VIP Winnings</h2>
+            <p className="text-base lg:text-lg text-gray-600 max-w-3xl mx-auto">
+              Track our successful VIP predictions and see why thousands trust Fixed Match Pro
+            </p>
           </div>
-          <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
-            <Popover>
+          
+          {/* Statistics Cards */}
+          {!loading && totalWinnings > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              <div className="bg-gradient-to-br from-[#1e3a8a] to-[#0f172a] rounded-xl p-6 text-white shadow-lg">
+                <div className="text-3xl font-bold mb-1">{totalWinnings}</div>
+                <div className="text-sm text-white/90">Total Predictions</div>
+              </div>
+              <div className="bg-gradient-to-br from-[#22c55e] to-[#16a34a] rounded-xl p-6 text-white shadow-lg">
+                <div className="text-3xl font-bold mb-1">{winCount}</div>
+                <div className="text-sm text-white/90">Wins</div>
+              </div>
+              <div className="bg-gradient-to-br from-[#f97316] to-[#ea580c] rounded-xl p-6 text-white shadow-lg">
+                <div className="text-3xl font-bold mb-1">{winRate}%</div>
+                <div className="text-sm text-white/90">Win Rate</div>
+              </div>
+            </div>
+          )}
+          
+          {/* Date Filter */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
+              <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
                     "px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all justify-start text-left",
-                    !selectedDate && "text-gray-600 hover:text-[#1e40af] hover:bg-white",
-                    selectedDate && "bg-[#1e40af] text-white"
+                    !selectedDate && "text-gray-600 hover:text-[#1e3a8a] hover:bg-white",
+                    selectedDate && "bg-[#1e3a8a] text-white"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
@@ -336,15 +364,15 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                   initialFocus
                 />
               </PopoverContent>
-            </Popover>
-            <Button
+              </Popover>
+              <Button
               variant="outline"
               onClick={handleTodayClick}
               className={cn(
                 "px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all",
                 !selectedDate || (selectedDate && format(selectedDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'))
-                  ? "bg-[#1e40af] text-white"
-                  : "text-gray-600 hover:text-[#1e40af] hover:bg-white"
+                  ? "bg-[#1e3a8a] text-white"
+                  : "text-gray-600 hover:text-[#1e3a8a] hover:bg-white"
               )}
             >
               Today
@@ -353,11 +381,12 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
               <Button
                 variant="outline"
                 onClick={handleClearDate}
-                className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all text-gray-600 hover:text-[#1e40af] hover:bg-white"
+                className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-all text-gray-600 hover:text-[#1e3a8a] hover:bg-white"
               >
                 Clear
               </Button>
             )}
+            </div>
           </div>
         </div>
         
@@ -369,7 +398,7 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                 <div key={i} className="bg-gray-100 rounded-lg p-3 space-y-2 animate-pulse">
                   <div className="h-4 w-16 bg-gray-300 rounded" />
                   <div className="h-3 w-20 bg-gray-300 rounded" />
-                  <div className="bg-[#1e40af] text-white px-3 py-2 rounded grid grid-cols-3 gap-2 text-xs font-semibold">
+                  <div className="bg-[#1e3a8a] text-white px-3 py-2 rounded grid grid-cols-3 gap-2 text-xs font-semibold">
                     <div>Result</div>
                     <div>Tip</div>
                     <div>League</div>
@@ -389,7 +418,7 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                 <div key={planIndex} className="space-y-4">
                   <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
                   <div className="space-y-0 border rounded-lg overflow-hidden bg-white">
-              <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-6 py-3 grid grid-cols-12 gap-4 items-center font-semibold text-sm">
+              <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e3a8a] text-white px-6 py-3 grid grid-cols-12 gap-4 items-center font-semibold text-sm">
                 <div className="col-span-2">Date</div>
                 <div className="col-span-5">Teams</div>
                 <div className="col-span-1 text-center">Result</div>
@@ -439,16 +468,16 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
               return (
                 <div key={planName} className="space-y-4">
                   {/* Plan Header */}
-                  <div className="flex items-center justify-between border-b-2 border-[#1e40af] pb-2">
+                  <div className="flex items-center justify-between border-b-2 border-[#1e3a8a] pb-2">
                     <div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-[#1e40af]">{planName}</h3>
+                      <h3 className="text-xl sm:text-2xl font-bold text-[#1e3a8a]">{planName}</h3>
                     </div>
                     {hasMore && (
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => togglePlanExpansion(planName)}
-                        className="text-[#1e40af] border-[#1e40af] hover:bg-[#1e40af] hover:text-white"
+                        className="text-[#1e3a8a] border-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white"
                       >
                         {isExpanded ? 'Show Less' : 'See All'}
                       </Button>
@@ -460,7 +489,7 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                     {planWinnings.map((winning) => (
                 <div
                   key={winning.id}
-                  className="bg-gray-100 rounded-lg p-3 space-y-2"
+                  className="bg-white border-2 border-gray-200 rounded-xl p-4 space-y-3 hover:border-[#22c55e] hover:shadow-lg transition-all duration-300"
                 >
                   {/* Top Row: Date and Home Team */}
                   <div className="flex items-center justify-between">
@@ -519,7 +548,7 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                   </div>
 
                   {/* Header Bar */}
-                  <div className="bg-[#1e40af] text-white px-2 py-2 rounded grid grid-cols-3 gap-1 text-[10px] sm:text-xs font-semibold">
+                  <div className="bg-[#1e3a8a] text-white px-2 py-2 rounded grid grid-cols-3 gap-1 text-[10px] sm:text-xs font-semibold">
                     <div className="text-center">Result</div>
                     <div className="text-center">Tip</div>
                     <div className="text-center">League</div>
@@ -534,7 +563,7 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                         {winning.result === 'win' ? '✓ Win' : '✗ Loss'}
                       </Badge>
                     </div>
-                    <div className="text-[10px] sm:text-xs font-semibold text-[#1e40af] text-center truncate">
+                    <div className="text-[10px] sm:text-xs font-semibold text-[#1e3a8a] text-center truncate">
                       {winning.prediction_type}
                     </div>
                     <div className="text-[10px] sm:text-xs font-medium text-gray-600 text-center truncate">
@@ -546,9 +575,9 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
             </div>
 
             {/* Desktop View */}
-            <div className="hidden lg:block space-y-0 border-2 border-gray-200 rounded-xl overflow-hidden bg-white shadow-lg">
+            <div className="hidden lg:block space-y-0 border-2 border-gray-200 rounded-2xl overflow-hidden bg-white shadow-xl">
               {/* Header */}
-              <div className="bg-gradient-to-r from-[#1e40af] to-[#1e3a8a] text-white px-6 py-4 grid grid-cols-12 gap-4 items-center font-bold text-sm shadow-md">
+              <div className="bg-gradient-to-r from-[#1e3a8a] via-[#1e3a8a] to-[#0f172a] text-white px-6 py-5 grid grid-cols-12 gap-4 items-center font-bold text-sm shadow-lg">
                 <div className="col-span-2">Date</div>
                 <div className="col-span-5">Teams</div>
                 <div className="col-span-1 text-center">Result</div>
@@ -561,9 +590,9 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
                 <div
                   key={winning.id}
                   className={cn(
-                    'px-6 py-5 grid grid-cols-12 gap-4 items-center border-b border-gray-100 bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 hover:shadow-md transition-all duration-300',
+                    'px-6 py-6 grid grid-cols-12 gap-4 items-center border-b border-gray-100 bg-white hover:bg-gradient-to-r hover:from-blue-50/80 hover:to-green-50/80 hover:shadow-lg transition-all duration-300',
                     index === planWinnings.length - 1 && 'border-b-0',
-                    index % 2 === 0 && 'bg-gray-50/50'
+                    index % 2 === 0 && 'bg-gray-50/30'
                   )}
                 >
                   {/* Date */}
@@ -646,7 +675,7 @@ export function VIPWinningsSection({ planIds, showAll = true }: VIPWinningsSecti
 
                   {/* Tip */}
                   <div className="col-span-2 text-center">
-                    <span className="text-sm font-semibold text-[#1e40af]">
+                    <span className="text-sm font-semibold text-[#1e3a8a]">
                       {winning.prediction_type}
                     </span>
                   </div>
