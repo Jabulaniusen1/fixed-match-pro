@@ -207,29 +207,6 @@ export function Navbar() {
               Blog
             </Link>
 
-            {adLinks.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#1e40af] transition-colors focus:outline-none">
-                  Links
-                  <ChevronDown className="h-3 w-3" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white border-gray-200">
-                  {adLinks.map((link) => (
-                    <DropdownMenuItem key={link.id} asChild>
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-900 hover:bg-gray-100"
-                      >
-                        {link.title}
-                      </a>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#1e40af] transition-colors focus:outline-none">
                 More
@@ -259,6 +236,30 @@ export function Navbar() {
             >
               Contact Us
             </Link>
+
+            {adLinks.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#1e40af] transition-colors focus:outline-none">
+                  Links
+                  <ChevronDown className="h-3 w-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white border-gray-200">
+                  {adLinks.map((link) => (
+                    <DropdownMenuItem key={link.id} asChild>
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-900 hover:bg-gray-100"
+                      >
+                        {link.title}
+                      </a>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
           </div>
 
           {/* Mobile Menu Button */}
@@ -434,23 +435,6 @@ export function Navbar() {
                 >
                   Blog
                 </Link>
-                {adLinks.length > 0 && (
-                  <>
-                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Links</div>
-                    {adLinks.map((link) => (
-                      <a
-                        key={link.id}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {link.title}
-                      </a>
-                    ))}
-                  </>
-                )}
                 <Link 
                   href="/faq" 
                   className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
@@ -470,6 +454,23 @@ export function Navbar() {
                   Contact Us
                 </Link>
               </div>
+              {adLinks.length > 0 && (
+                  <>
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Links</div>
+                    {adLinks.map((link) => (
+                      <a
+                        key={link.id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e40af] transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {link.title}
+                      </a>
+                    ))}
+                  </>
+                )}
 
               {/* User Section */}
               {loading ? (
