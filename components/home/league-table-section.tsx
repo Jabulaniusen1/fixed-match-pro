@@ -60,42 +60,44 @@ export function LeagueTableSection() {
           <p className="text-sm text-gray-600">Current standings for top European leagues</p>
         </div>
         
-        {/* League Tabs - Horizontal Pills */}
+        {/* League Tabs - Horizontal Scrollable Pills */}
         <div className="mb-6">
           <Tabs value={activeLeague} onValueChange={setActiveLeague}>
-            <div className="flex flex-wrap justify-center gap-2">
-              <TabsList className="bg-transparent p-0 h-auto">
-                <TabsTrigger 
-                  value={TOP_LEAGUES.PREMIER_LEAGUE} 
-                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
-                >
-                  Premier League
-                </TabsTrigger>
-                <TabsTrigger 
-                  value={TOP_LEAGUES.LA_LIGA} 
-                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
-                >
-                  La Liga
-                </TabsTrigger>
-                <TabsTrigger 
-                  value={TOP_LEAGUES.SERIE_A} 
-                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
-                >
-                  Serie A
-                </TabsTrigger>
-                <TabsTrigger 
-                  value={TOP_LEAGUES.BUNDESLIGA} 
-                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
-                >
-                  Bundesliga
-                </TabsTrigger>
-                <TabsTrigger 
-                  value={TOP_LEAGUES.LIGUE_1} 
-                  className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md"
-                >
-                  Ligue 1
-                </TabsTrigger>
-              </TabsList>
+            <div className="overflow-x-auto -mx-4 px-4 scroll-smooth">
+              <div className="inline-flex min-w-full justify-center">
+                <TabsList className="bg-transparent p-0 h-auto flex gap-2 flex-nowrap">
+                  <TabsTrigger 
+                    value={TOP_LEAGUES.PREMIER_LEAGUE} 
+                    className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md whitespace-nowrap flex-shrink-0"
+                  >
+                    Premier League
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value={TOP_LEAGUES.LA_LIGA} 
+                    className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md whitespace-nowrap flex-shrink-0"
+                  >
+                    La Liga
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value={TOP_LEAGUES.SERIE_A} 
+                    className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md whitespace-nowrap flex-shrink-0"
+                  >
+                    Serie A
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value={TOP_LEAGUES.BUNDESLIGA} 
+                    className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md whitespace-nowrap flex-shrink-0"
+                  >
+                    Bundesliga
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value={TOP_LEAGUES.LIGUE_1} 
+                    className="data-[state=active]:bg-[#1e3a8a] data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 data-[state=inactive]:border data-[state=inactive]:border-gray-300 font-medium text-xs sm:text-sm px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md whitespace-nowrap flex-shrink-0"
+                  >
+                    Ligue 1
+                  </TabsTrigger>
+                </TabsList>
+              </div>
             </div>
             
             {Object.values(TOP_LEAGUES).map((leagueId) => (

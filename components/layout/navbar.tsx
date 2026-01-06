@@ -114,7 +114,7 @@ export function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 max-w-full overflow-x-hidden">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center h-12 lg:h-16">
+          <Link href="/" className="flex items-center h-12">
             <Image
               src="/fixed-match-pro logo.png"
               alt={`${siteHeader} Logo`}
