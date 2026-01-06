@@ -109,6 +109,7 @@ export function Navbar() {
   }
 
   return (
+    <>
     <nav className="sticky top-0 z-[100] bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 max-w-full overflow-x-hidden">
         <div className="flex items-center justify-between h-16 lg:h-20">
@@ -352,21 +353,23 @@ export function Navbar() {
             </div>
           </div>
         </div>
+      </div>
+    </nav>
 
-        {/* Mobile Menu Overlay */}
-        {mobileMenuOpen && (
-          <div 
-            className="fixed inset-0 bg-black/50 z-[90] lg:hidden transition-opacity duration-300"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-        )}
+    {/* Mobile Menu Overlay */}
+    {mobileMenuOpen && (
+      <div 
+        className="fixed inset-0 bg-black/50 z-[9998] lg:hidden transition-opacity duration-300"
+        onClick={() => setMobileMenuOpen(false)}
+      />
+    )}
 
-        {/* Mobile Menu */}
-        <div
-          className={`lg:hidden fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-white shadow-2xl z-[100] transform transition-transform duration-300 ease-in-out overflow-y-auto ${
-            mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
-        >
+    {/* Mobile Menu */}
+    <div
+      className={`lg:hidden fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-white shadow-2xl z-[9999] transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+        mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}
+    >
           <div className="flex flex-col h-full">
             {/* Mobile Menu Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-[#1e3a8a] to-[#0f172a]">
@@ -569,8 +572,7 @@ export function Navbar() {
             </div>
           </div>
         </div>
-      </div>
-    </nav>
+    </>
   )
 }
 
