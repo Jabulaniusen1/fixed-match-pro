@@ -91,7 +91,7 @@ export function Footer() {
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-3">
               <Image
-                src="/logo.png"
+                src="/fixed-match-pro logo.png"
                 alt={`${config.site_header || 'Fixed Match Pro'} Logo`}
                 width={60}
                 height={60}
@@ -257,13 +257,13 @@ export function Footer() {
             {/* Contact Info */}
             {(config.contact_email || config.whatsapp_number) && (
               <div className="pt-4 border-t border-white/10 space-y-2">
-                {config.contact_email && (
+            {config.contact_email && (
                   <div className="flex items-center gap-2 text-white/80 text-xs">
                     <Mail className="h-3.5 w-3.5" />
-                    <a href={`mailto:${config.contact_email}`} className="hover:text-white transition-colors">
-                      {config.contact_email}
-                    </a>
-                  </div>
+                  <a href={`mailto:${config.contact_email}`} className="hover:text-white transition-colors">
+                    {config.contact_email}
+                  </a>
+                </div>
                 )}
                 {config.whatsapp_number && (
                   <div className="flex items-center gap-2 text-white/80 text-xs">

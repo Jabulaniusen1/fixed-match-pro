@@ -125,7 +125,7 @@ export function InstallPrompt() {
           <div className="flex items-center gap-4 mb-4">
             <div className="flex-shrink-0">
               <Image
-                src="/logo.png"
+                src="/fixed-match-pro logo.png"
                 alt="Fixed Match Pro Logo"
                 width={64}
                 height={64}

@@ -89,6 +89,18 @@ export function Navbar() {
     fetchAdLinks()
   }, [])
 
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileMenuOpen])
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -97,15 +109,15 @@ export function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-      <div className="container mx-auto px-4 sm:px-6">
+    <nav className="sticky top-0 z-[100] bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      <div className="container mx-auto px-4 sm:px-6 max-w-full overflow-x-hidden">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center h-12 lg:h-16">
             <Image
-              src="/logo.png"
+              src="/fixed-match-pro logo.png"
               alt={`${siteHeader} Logo`}
-              width={120}
+              width={100}
               height={60}  
               className="h-full w-auto object-contain"
               priority
@@ -344,14 +356,14 @@ export function Navbar() {
         {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
           <div 
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
+            className="fixed inset-0 bg-black/50 z-[90] lg:hidden transition-opacity duration-300"
             onClick={() => setMobileMenuOpen(false)}
           />
         )}
 
         {/* Mobile Menu */}
         <div
-          className={`lg:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+          className={`lg:hidden fixed top-0 right-0 h-full w-[85vw] max-w-sm bg-white shadow-2xl z-[100] transform transition-transform duration-300 ease-in-out overflow-y-auto ${
             mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
@@ -360,10 +372,10 @@ export function Navbar() {
             <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-[#1e3a8a] to-[#0f172a]">
               <Link href="/" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                 <Image
-                  src="/logo.png"
+                  src="/fixed-match-pro logo.png"
                   alt={`${siteHeader} Logo`}
-                  width={50}
-                  height={50}
+                  width={30}
+                  height={30}
                   className="w-auto object-contain brightness-0 invert"
                   priority
                 />
@@ -377,11 +389,11 @@ export function Navbar() {
             </div>
 
             {/* Mobile Menu Content */}
-            <div className="flex-1 overflow-y-auto py-4 px-4">
-              <div className="flex flex-col gap-1">
+            <div className="flex-1 overflow-y-auto py-4 px-4 overflow-x-hidden">
+              <div className="flex flex-col gap-1 w-full">
                 <Link 
                   href="/" 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
+                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
                     pathname === '/' 
                       ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
                       : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a]'
@@ -392,7 +404,7 @@ export function Navbar() {
                 </Link>
                 <Link 
                   href="/subscriptions" 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
+                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
                     pathname === '/subscriptions' 
                       ? 'bg-purple-100 text-purple-600 font-medium' 
                       : 'text-purple-600 hover:bg-purple-50 hover:text-purple-700'
@@ -403,35 +415,35 @@ export function Navbar() {
                 </Link>
                 <Link 
                   href="/dashboard/predictions?plan=standard" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Standard Package
                 </Link>
                 <Link 
                   href="/dashboard/predictions?plan=daily-2-odds" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Daily 2 Odds
                 </Link>
                 <Link 
                   href="/dashboard/predictions?plan=profit-multiplier" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Profit Multiplier
                 </Link>
                 <Link 
                   href="/dashboard/predictions?plan=correct-score" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Correct Score
                 </Link>
                 <Link 
                   href="/livescores" 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
+                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
                     pathname === '/livescores' 
                       ? 'bg-blue-100 text-blue-600 font-medium' 
                       : 'text-blue-600 hover:bg-blue-50 hover:text-blue-700'
@@ -442,7 +454,7 @@ export function Navbar() {
                 </Link>
                 <Link 
                   href="/blog" 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
+                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
                     pathname === '/blog' 
                       ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
                       : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a]'
@@ -453,14 +465,14 @@ export function Navbar() {
                 </Link>
                 <Link 
                   href="/faq" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
+                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   FAQ
                 </Link>
                 <Link 
                   href="/contact" 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
+                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
                     pathname === '/contact' 
                       ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
                       : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a]'
@@ -479,7 +491,7 @@ export function Navbar() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
+                        className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {link.title}
@@ -511,14 +523,14 @@ export function Navbar() {
                   </div>
                   <Link 
                     href="/dashboard" 
-                    className="block px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
+                    className="block w-full px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
                   <Link 
                     href="/dashboard/settings" 
-                    className="block px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
+                    className="block w-full px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Settings
@@ -534,8 +546,8 @@ export function Navbar() {
                   </button>
                 </div>
               ) : (
-                <div className="mt-6 pt-6 border-t border-gray-200 px-4 space-y-2 flex flex-col gap-2">
-                  <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                <div className="mt-6 pt-6 border-t border-gray-200 px-4 space-y-2 flex flex-col gap-2 w-full">
+                  <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full">
                     <Button 
                       variant="outline" 
                       className="w-full border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white bg-transparent rounded-lg"
@@ -544,7 +556,7 @@ export function Navbar() {
                       Register
                     </Button>
                   </Link>
-                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full">
                     <Button 
                       className="w-full bg-[#1e3a8a] hover:bg-[#0f172a] text-white rounded-lg"
                     >

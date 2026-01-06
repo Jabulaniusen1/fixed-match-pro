@@ -689,7 +689,7 @@ export function AdminChat() {
                         {isOwnMessage && (
                           <div className="flex-shrink-0">
                             <Image
-                              src="/logo.png"
+                              src="/fixed-match-pro logo.png"
                               alt="Admin"
                               width={40}
                               height={40}

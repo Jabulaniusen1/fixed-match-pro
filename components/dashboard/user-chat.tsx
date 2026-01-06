@@ -430,7 +430,7 @@ export function UserChat() {
                     <div className="flex-shrink-0">
                       {message.sender?.is_admin ? (
                         <Image
-                          src="/logo.png"
+                          src="/fixed-match-pro logo.png"
                           alt="Admin"
                           width={40}
                           height={40}
@@ -488,7 +488,7 @@ export function UserChat() {
             <div className="flex gap-3 justify-start">
               <div className="flex-shrink-0">
                 <Image
-                  src="/logo.png"
+                  src="/fixed-match-pro logo.png"
                   alt="Admin"
                   width={40}
                   height={40}

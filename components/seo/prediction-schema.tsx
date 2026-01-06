@@ -30,7 +30,7 @@ export function PredictionSchema({ predictions }: PredictionSchemaProps) {
       '@type': 'Organization',
       name: 'Fixed Match Pro',
       url: 'https://fixedmatchpro.com',
-      logo: 'https://fixedmatchpro.com/logo.png',
+      logo: 'https://fixedmatchpro.com/fixed-match-pro logo.png',
       description: 'Professional fixed match predictions and accurate betting tips',
       sameAs: [
         'https://t.me/fixedmatchpro',

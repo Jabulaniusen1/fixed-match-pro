@@ -71,7 +71,7 @@ export default function DownloadAppPage() {
               <div className="flex justify-center mb-6">
                 <div className="relative w-32 h-32 bg-white rounded-2xl p-4 shadow-2xl">
                   <Image
-                    src="/logo.png"
+                    src="/fixed-match-pro logo.png"
                     alt="Fixed Match Pro Logo"
                     width={128}
                     height={128}

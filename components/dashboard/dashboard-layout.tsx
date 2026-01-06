@@ -138,7 +138,7 @@ export function DashboardLayout({ children, user, userProfile }: DashboardLayout
         <div className="h-16 lg:h-20 border-b border-gray-200 flex items-center justify-between px-4">
           <Link href="/dashboard" className="flex-shrink-0" onClick={handleNavClick}>
             <Image
-              src="/logo.png"
+              src="/fixed-match-pro logo.png"
               alt="Fixed Match Pro Logo"
               width={60}
               height={60}

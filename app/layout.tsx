@@ -75,6 +75,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  icons: {
+    icon: '/fixed-match-pro favicon.png',
+    shortcut: '/fixed-match-pro favicon.png',
+    apple: '/fixed-match-pro favicon.png',
+  },
 };
 
 export default function RootLayout({
