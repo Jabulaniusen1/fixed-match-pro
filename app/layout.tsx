@@ -5,7 +5,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { PWAHead } from "@/components/pwa/pwa-head";
-import { CustomerCareChatButton } from "@/components/layout/customer-care-chat-button";
+// import { CustomerCareChatButton } from "@/components/layout/customer-care-chat-button";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -101,7 +101,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         <InstallPrompt />
-        <CustomerCareChatButton />
+        {/* <CustomerCareChatButton /> */}
         {/* Tawk.to Chat Widget */}
         {/* <Script
           id="tawk-to-script"
