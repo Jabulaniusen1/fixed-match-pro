@@ -392,183 +392,248 @@ export function Navbar() {
             </div>
 
             {/* Mobile Menu Content */}
-            <div className="flex-1 overflow-y-auto py-4 px-4 overflow-x-hidden">
-              <div className="flex flex-col gap-1 w-full">
-                <Link 
-                  href="/" 
-                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
-                    pathname === '/' 
-                      ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a]'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Home
-                </Link>
-                <Link 
-                  href="/subscriptions" 
-                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
-                    pathname === '/subscriptions' 
-                      ? 'bg-purple-100 text-purple-600 font-medium' 
-                      : 'text-purple-600 hover:bg-purple-50 hover:text-purple-700'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  VIP Packages
-                </Link>
-                <Link 
-                  href="/dashboard/predictions?plan=standard" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Standard Package
-                </Link>
-                <Link 
-                  href="/dashboard/predictions?plan=daily-2-odds" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Daily 2 Odds
-                </Link>
-                <Link 
-                  href="/dashboard/predictions?plan=profit-multiplier" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Profit Multiplier
-                </Link>
-                <Link 
-                  href="/dashboard/predictions?plan=correct-score" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Correct Score
-                </Link>
-                <Link 
-                  href="/livescores" 
-                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
-                    pathname === '/livescores' 
-                      ? 'bg-blue-100 text-blue-600 font-medium' 
-                      : 'text-blue-600 hover:bg-blue-50 hover:text-blue-700'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Livescores
-                </Link>
-                <Link 
-                  href="/blog" 
-                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
-                    pathname === '/blog' 
-                      ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a]'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Blog
-                </Link>
-                <Link 
-                  href="/faq" 
-                  className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  FAQ
-                </Link>
-                <Link 
-                  href="/contact" 
-                  className={`px-4 py-3 rounded-lg transition-colors w-full ${
-                    pathname === '/contact' 
-                      ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a]'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Contact Us
-                </Link>
+            <div className="flex-1 overflow-y-auto overflow-x-hidden">
+              <div className="flex flex-col">
+                {/* Main Navigation */}
+                <div className="px-4 py-3">
+                  <Link 
+                    href="/" 
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors w-full ${
+                      pathname === '/' 
+                        ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-semibold' 
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a]'
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Home
+                  </Link>
+                </div>
+
+                {/* Premium Tips Section */}
+                <div className="px-4 py-2">
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Premium Tips</div>
+                  <div className="space-y-1">
+                    <Link 
+                      href="/subscriptions" 
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors w-full ${
+                        pathname === '/subscriptions' 
+                          ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a]'
+                      }`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      </svg>
+                      VIP Packages
+                    </Link>
+                    <Link 
+                      href="/dashboard/predictions?plan=standard" 
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full text-sm"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                      Standard Package
+                    </Link>
+                    <Link 
+                      href="/dashboard/predictions?plan=daily-2-odds" 
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full text-sm"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                      Daily 2 Odds
+                    </Link>
+                    <Link 
+                      href="/dashboard/predictions?plan=profit-multiplier" 
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full text-sm"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                      Profit Multiplier
+                    </Link>
+                    <Link 
+                      href="/dashboard/predictions?plan=correct-score" 
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full text-sm"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                      Correct Score
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Other Services */}
+                <div className="px-4 py-2">
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Services</div>
+                  <div className="space-y-1">
+                    <Link 
+                      href="/livescores" 
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors w-full ${
+                        pathname === '/livescores' 
+                          ? 'bg-blue-50 text-blue-600 font-medium' 
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a]'
+                      }`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      Livescores
+                    </Link>
+                    <Link 
+                      href="/blog" 
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors w-full ${
+                        pathname === '/blog' 
+                          ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a]'
+                      }`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      </svg>
+                      Blog
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Support & Info */}
+                <div className="px-4 py-2">
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Support</div>
+                  <div className="space-y-1">
+                    <Link 
+                      href="/faq" 
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      FAQ
+                    </Link>
+                    <Link 
+                      href="/contact" 
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors w-full ${
+                        pathname === '/contact' 
+                          ? 'bg-[#1e3a8a]/10 text-[#1e3a8a] font-medium' 
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a]'
+                      }`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      Contact Us
+                    </Link>
+                  </div>
+                </div>
               </div>
+              {/* Ad Links Section */}
               {adLinks.length > 0 && (
-                  <>
-                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Links</div>
+                <div className="px-4 py-2 border-t border-gray-200 mt-2">
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Quick Links</div>
+                  <div className="space-y-1">
                     {adLinks.map((link) => (
                       <a
                         key={link.id}
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
+                        className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
                         onClick={() => setMobileMenuOpen(false)}
                       >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
                         {link.title}
                       </a>
                     ))}
-                  </>
-                )}
+                  </div>
+                </div>
+              )}
 
               {/* User Section */}
-              {loading ? (
-                <div className="mt-4 px-4">
-                  <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200" />
-                </div>
-              ) : user ? (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="px-4 mb-4">
-                    <div className="flex items-center gap-3">
+              <div className="border-t border-gray-200 mt-auto">
+                {loading ? (
+                  <div className="p-4">
+                    <div className="h-12 w-full animate-pulse rounded-lg bg-gray-200" />
+                  </div>
+                ) : user ? (
+                  <div className="p-4">
+                    <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
                       <Avatar className="h-10 w-10">
                         {user?.avatar_url ? (
                           <AvatarImage src={user.avatar_url} alt={user.email} />
                         ) : (
-                        <AvatarFallback className="bg-[#1e3a8a] text-white">{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                          <AvatarFallback className="bg-[#1e3a8a] text-white text-sm">{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                         )}
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{user.email}</p>
+                        <p className="text-sm font-semibold text-gray-900 truncate">{user.email}</p>
+                        <p className="text-xs text-gray-500">Account</p>
                       </div>
                     </div>
+                    <div className="space-y-1">
+                      <Link 
+                        href="/dashboard" 
+                        className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Dashboard
+                      </Link>
+                      <Link 
+                        href="/dashboard/settings" 
+                        className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors w-full"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Settings
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false)
+                          handleLogout()
+                        }}
+                        className="flex items-center gap-3 w-full text-left px-4 py-2.5 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Log out
+                      </button>
+                    </div>
                   </div>
-                  <Link 
-                    href="/dashboard" 
-                    className="block w-full px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                  <Link 
-                    href="/dashboard/settings" 
-                    className="block w-full px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#1e3a8a] transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Settings
-                  </Link>
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false)
-                      handleLogout()
-                    }}
-                    className="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-red-600 transition-colors"
-                  >
-                    Log out
-                  </button>
-                </div>
-              ) : (
-                <div className="mt-6 pt-6 border-t border-gray-200 px-4 space-y-2 flex flex-col gap-2 w-full">
-                  <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full">
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white bg-transparent rounded-lg"
-                    >
-                      <User className="h-4 w-4 mr-2" />
-                      Register
-                    </Button>
-                  </Link>
-                  <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full">
-                    <Button 
-                      className="w-full bg-[#1e3a8a] hover:bg-[#0f172a] text-white rounded-lg"
-                    >
-                      <ArrowRight className="h-4 w-4 mr-2" />
-                      Login
-                    </Button>
-                  </Link>
-                </div>
-              )}
+                ) : (
+                  <div className="p-4 space-y-2">
+                    <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="w-full">
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 bg-white rounded-lg font-medium"
+                      >
+                        <User className="h-4 w-4 mr-2" />
+                        Register
+                      </Button>
+                    </Link>
+                    <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full">
+                      <Button 
+                        className="w-full bg-gradient-to-r from-[#1e3a8a] to-[#0f172a] hover:from-[#1e3a8a] hover:to-[#1e3a8a] text-white rounded-lg font-medium"
+                      >
+                        <ArrowRight className="h-4 w-4 mr-2" />
+                        Login
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
